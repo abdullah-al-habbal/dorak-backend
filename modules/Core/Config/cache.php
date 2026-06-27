@@ -1,5 +1,7 @@
 <?php
 declare(strict_types=1);
+namespace Modules\Core\Config;
+
 use Illuminate\Support\Str;
 return [
     'default' => env('CACHE_STORE', 'database'),
