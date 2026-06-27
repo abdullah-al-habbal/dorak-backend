@@ -26,6 +26,38 @@ class UserModel extends Authenticatable
 - PascalCase for class names and module names.
 - snake_case for table columns and config keys.
 
+### Mandatory class-name suffixes
+
+Every class **must** carry a suffix matching its layer/role. No bare names like `User` or `Booking`.
+
+| Layer / Role            | Suffix           | Example                                    |
+|-------------------------|------------------|--------------------------------------------|
+| Eloquent Model          | `Model`          | `UserModel`, `BookingModel`                |
+| Enum                    | `Enum`           | `ErrorCodeEnum`, `SuccessCodeEnum`         |
+| Invocable Action        | `Action`         | `ListAllBookingsAction`, `CreateBookingAction` |
+| Business Handler        | `Handler`        | `ListAllBookingsHandler`, `CreateBookingHandler` |
+| Data Resolver           | `Resolver`       | `ListAllBookingsEloquentResolver`          |
+| CQRS Command payload    | `Command`        | `CreateBookingCommand`                     |
+| CQRS Query payload      | `Query`          | `FindAvailableChairsQuery`                 |
+| Form Request            | `Request`        | `CreateBookingRequest`                     |
+| API Resource / Presenter| `Presenter`      | `BookingPresenter`                         |
+| Middleware              | `Middleware`     | `AssignRequestUuidMiddleware`              |
+| Event                   | `Event`          | `BookingCreatedEvent`                      |
+| Listener                | `Listener`       | `SendBookingConfirmationListener`          |
+| Service (infrastructure)| `Service`        | `LoggerService`, `TranslatorHandlerService` |
+| Service Provider        | `ServiceProvider`| `ApplicationServiceProvider`               |
+| Trait                   | `Trait`          | `ApiResponseTrait`                         |
+| Seeder                  | `Seeder`         | `UserSeeder`                               |
+| Factory                 | `Factory`        | `UserFactory`                              |
+| Console Command         | `Command`        | `SyncBookingsCommand`                      |
+| Exception               | `Exception`      | `ChairAlreadyBookedException`              |
+| Job                     | `Job`            | `SendReminderJob`                          |
+| Notification            | `Notification`   | `BookingConfirmationNotification`          |
+| Value Object            | `ValueObject`    | `ApiResponseBodyValueObject`               |
+| Filament Resource       | `Resource`       | `BookingResource`                          |
+| Filament Page           | `Page`           | `FloorPlanPage`                            |
+| Filament Widget         | `Widget`         | `BookingsOverviewWidget`                   |
+
 ## Autoloading
 
 PSR-4: `Modules\` → `modules/`, `Database\Seeders\` → `database/seeders/`, `Tests\` → `tests/`.

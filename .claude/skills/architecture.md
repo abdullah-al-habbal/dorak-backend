@@ -37,9 +37,9 @@ modules/Core/
 │   └── Web/
 ├── Services/
 │   ├── LoggerService.php
-│   └── TranslatorHandler.php
+│   └── TranslatorHandlerService.php
 ├── ValuesObjects/
-│   └── ApiResponseBody.php
+│   └── ApiResponseBodyValueObject.php
 └── lang/
     ├── en/core.php
     └── ar/core.php
@@ -51,6 +51,10 @@ modules/Core/
 2. `bootstrap/providers.php` — registers `ApplicationServiceProvider`
 3. `ApplicationServiceProvider::register()` → `loadConfig()` — manually `require`s every file in `Config/*.php`, sets config key = filename
 4. `ApplicationServiceProvider::boot()` — loads migrations from `Database/Migrations/`, translations from `lang/` under `core::` namespace
+
+## Naming conventions
+
+Every class **must** carry a suffix identifying its layer/role (e.g. `UserModel`, `CreateBookingAction`, `TranslatorHandlerService`). See [coding-standards.md](coding-standards.md) for the full suffix table.
 
 ## PSR-4 mapping
 

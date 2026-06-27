@@ -5,7 +5,7 @@ namespace Modules\Core\Services;
 
 use Illuminate\Contracts\Translation\Translator;
 
-final class TranslatorHandler
+final class TranslatorHandlerService
 {
     public function __construct(
         private readonly Translator $translator

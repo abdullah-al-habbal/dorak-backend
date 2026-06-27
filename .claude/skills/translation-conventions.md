@@ -37,7 +37,7 @@ Add in both languages:
 ### From any class
 
 ```php
-app(TranslatorHandler::class)->translate('core::messages.booking_confirmed');
+app(TranslatorHandlerService::class)->translate('core::messages.booking_confirmed');
 ```
 
 ### From ApiResponseTrait
@@ -55,6 +55,6 @@ $this->error(ErrorCodeEnum::RESOURCE_NOT_FOUND);
 // Automatically translates core::messages.not_found
 ```
 
-## TranslatorHandler
+## TranslatorHandlerService
 
-`Modules\Core\Services\TranslatorHandler` wraps `__()` with fallback — if the key is missing, it returns the key itself instead of an empty string.
+`Modules\Core\Services\TranslatorHandlerService` wraps `__()` with fallback — if the key is missing, it returns the key itself instead of an empty string.

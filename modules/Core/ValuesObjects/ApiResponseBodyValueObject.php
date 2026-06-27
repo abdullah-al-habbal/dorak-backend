@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace Modules\Core\ValuesObjects;
 
-final class ApiResponseBody
+final class ApiResponseBodyValueObject
 {
     public function __construct(
         public readonly bool $success,

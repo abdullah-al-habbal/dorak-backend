@@ -17,9 +17,9 @@
 
 `success`, `statusCode`, `code`, `message`, `timestamp` always present. `data`, `meta`, `errors` appear only when non-null.
 
-## ApiResponseBody
+## ApiResponseBodyValueObject
 
-ValueObject at `Modules\Core\ValuesObjects\ApiResponseBody`. Fields: `success`, `statusCode`, `code`, `message`, `timestamp`, `data`, `meta`, `errors`.
+ValueObject at `Modules\Core\ValuesObjects\ApiResponseBodyValueObject`. Fields: `success`, `statusCode`, `code`, `message`, `timestamp`, `data`, `meta`, `errors`.
 
 ## ApiResponseTrait
 

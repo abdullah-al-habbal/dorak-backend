@@ -8,14 +8,14 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Carbon;
 use Modules\Core\Enums\ErrorCodeEnum;
 use Modules\Core\Enums\SuccessCodeEnum;
-use Modules\Core\Services\TranslatorHandler;
-use Modules\Core\ValuesObjects\ApiResponseBody;
+use Modules\Core\Services\TranslatorHandlerService;
+use Modules\Core\ValuesObjects\ApiResponseBodyValueObject;
 
 trait ApiResponseTrait
 {
     protected function trans(string $key, array $replace = [], ?string $locale = null): string
     {
-        return app(TranslatorHandler::class)->translate($key, $replace, $locale);
+        return app(TranslatorHandlerService::class)->translate($key, $replace, $locale);
     }
 
     public function paginated(
@@ -56,7 +56,7 @@ trait ApiResponseTrait
             $message = $message ?? $this->trans('core::messages.success');
         }
 
-        $body = new ApiResponseBody(
+        $body = new ApiResponseBodyValueObject(
             success: true,
             statusCode: $status,
             code: $codeString,
@@ -118,7 +118,7 @@ trait ApiResponseTrait
             $message = $message ?? $this->trans('core::messages.error');
         }
 
-        $body = new ApiResponseBody(
+        $body = new ApiResponseBodyValueObject(
             success: false,
             statusCode: $status,
             code: $codeString,

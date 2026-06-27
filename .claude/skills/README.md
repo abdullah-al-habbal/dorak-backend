@@ -10,7 +10,7 @@ This directory contains focused guides for AI agents working on this codebase. E
 | [how-to-add-a-route.md](how-to-add-a-route.md) | Defining API and web routes per module |
 | [cqrs-pattern.md](cqrs-pattern.md) | Command/Query flow: Request → Action → Handler → Resolver |
 | [api-response-standard.md](api-response-standard.md) | Unified JSON response format and helpers |
-| [translation-conventions.md](translation-conventions.md) | i18n with `core::` namespace and TranslatorHandler |
+| [translation-conventions.md](translation-conventions.md) | i18n with `core::` namespace and TranslatorHandlerService |
 | [logging-and-tracing.md](logging-and-tracing.md) | LoggerService and request_uuid tracing |
 | [database-conventions.md](database-conventions.md) | Migrations, factories, Eloquent patterns |
 | [feature-flags.md](feature-flags.md) | Laravel Pennant for freemium gating |
