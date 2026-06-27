@@ -1,6 +1,9 @@
 <?php
+// /home/lenovo/work/me/dorak/dorak-backend/modules/Core/Config/auth.php
 declare(strict_types=1);
 namespace Modules\Core\Config;
+
+use Modules\Core\Models\UserModel;
 
 return [
     'defaults' => [
@@ -16,7 +19,7 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => env('AUTH_MODEL'),
+            'model' => UserModel::class,
         ],
     ],
     'passwords' => [
