@@ -12,6 +12,5 @@ use Illuminate\Console\Command;
 #[Description('Command description')]
 class {{ class }} extends Command
 {
-    public function handle()
-    {}
+    public function handle(){}
 }
