@@ -1,6 +1,5 @@
 <?php
 
-// filePath: modules/Core/Config/app.php
 declare(strict_types=1);
 
 namespace Modules\Core\Config;

@@ -2,8 +2,6 @@
 declare(strict_types=1);
 namespace Modules\Core\Config;
 
-use Modules\Core\Models\UserModel;
-
 return [
     'defaults' => [
         'guard' => env('AUTH_GUARD'),
