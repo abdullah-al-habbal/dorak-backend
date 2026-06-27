@@ -7,7 +7,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
-final class AssignRequestUuid
+final class AssignRequestUuidMiddleware
 {
     public function handle(Request $request, Closure $next): mixed
     {
