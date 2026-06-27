@@ -1,6 +1,8 @@
 <?php
 declare(strict_types=1);
 
+use Modules\Core\Providers\ApplicationServiceProvider;
+
 return [
-    Modules\Core\Providers\ApplicationServiceProvider::class,
+    ApplicationServiceProvider::class,
 ];
