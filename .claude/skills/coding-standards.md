@@ -8,6 +8,13 @@
 - No magic strings for statuses, codes, or errors — use enums (`ErrorCodeEnum`, `SuccessCodeEnum`).
 - No default values in `env()` calls — all env vars defined in `.env.example`.
 
+### `env()` is Forbidden Outside Config Files
+
+- `env()` is only allowed inside files under `modules/*/Config/`.
+- No other class, action, handler, or resolver may call `env()`.
+- Always retrieve configuration with `config('key')`.
+- This rule is enforced by code review and static analysis.
+
 ## PHP 8 attributes
 
 Use PHP 8 attributes for Eloquent model metadata instead of `$fillable`/`$hidden` arrays:

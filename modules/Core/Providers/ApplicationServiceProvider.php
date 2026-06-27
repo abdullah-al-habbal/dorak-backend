@@ -16,7 +16,7 @@ final class ApplicationServiceProvider extends ServiceProvider
     public function boot(): void
     {
         $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
-        $this->loadTranslationsFrom(__DIR__ . '/../lang', 'core');
+        $this->loadTranslationsFrom(__DIR__ . '/../Lang', 'core');
     }
 
     private function loadConfig(): void

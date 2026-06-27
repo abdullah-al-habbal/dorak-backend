@@ -10,16 +10,21 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Modules\Core\Database\Factories\UserFactory;
+use Spatie\Translatable\HasTranslations;
 
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
 class UserModel extends Authenticatable
 {
-    protected $table = 'users';
-
     use HasFactory;
     use HasUuids;
+    use HasTranslations;
     use Notifiable;
+
+    protected $table = 'users';
+
+    /** @phpstan-ignore-next-line */
+    public array $translatable = ['name'];
 
     protected static function newFactory(): UserFactory
     {

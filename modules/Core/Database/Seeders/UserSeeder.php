@@ -12,7 +12,10 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         UserModel::factory()->create([
-            'name'  => 'Admin',
+            'name'  => [
+                'en' => 'Admin',
+                'ar' => 'مدير النظام',
+            ],
             'email' => 'admin@dorak.sy',
         ]);
     }

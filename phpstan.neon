@@ -6,9 +6,11 @@ parameters:
     paths:
         - modules/
         - database/
-        - tests/
     excludePaths:
         - vendor/*
         - node_modules/*
         - storage/*
+        - .env.testing
     tmpDir: storage/framework/cache/phpstan
+    configDirectories:
+        - modules/Core/Config
