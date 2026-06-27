@@ -4,7 +4,7 @@ namespace Modules\Core\Config;
 
 use Illuminate\Support\Str;
 return [
-    'default' => env('CACHE_STORE', 'database'),
+    'default' => env('CACHE_STORE'),
     'stores' => [
         'array' => [
             'driver' => 'array',
@@ -13,7 +13,7 @@ return [
         'database' => [
             'driver' => 'database',
             'connection' => env('DB_CACHE_CONNECTION'),
-            'table' => env('DB_CACHE_TABLE', 'cache'),
+            'table' => env('DB_CACHE_TABLE'),
             'lock_connection' => env('DB_CACHE_LOCK_CONNECTION'),
             'lock_table' => env('DB_CACHE_LOCK_TABLE'),
         ],
@@ -25,7 +25,7 @@ return [
         'storage' => [
             'driver' => 'storage',
             'disk' => env('CACHE_STORAGE_DISK'),
-            'path' => env('CACHE_STORAGE_PATH', 'framework/cache/data'),
+            'path' => env('CACHE_STORAGE_PATH'),
         ],
         'memcached' => [
             'driver' => 'memcached',
@@ -35,23 +35,23 @@ return [
             ],
             'servers' => [
                 [
-                    'host' => env('MEMCACHED_HOST', '127.0.0.1'),
-                    'port' => env('MEMCACHED_PORT', 11211),
+                    'host' => env('MEMCACHED_HOST'),
+                    'port' => env('MEMCACHED_PORT'),
                     'weight' => 100,
                 ],
             ],
         ],
         'redis' => [
             'driver' => 'redis',
-            'connection' => env('REDIS_CACHE_CONNECTION', 'cache'),
-            'lock_connection' => env('REDIS_CACHE_LOCK_CONNECTION', 'default'),
+            'connection' => env('REDIS_CACHE_CONNECTION'),
+            'lock_connection' => env('REDIS_CACHE_LOCK_CONNECTION'),
         ],
         'dynamodb' => [
             'driver' => 'dynamodb',
             'key' => env('AWS_ACCESS_KEY_ID'),
             'secret' => env('AWS_SECRET_ACCESS_KEY'),
-            'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
-            'table' => env('DYNAMODB_CACHE_TABLE', 'cache'),
+            'region' => env('AWS_DEFAULT_REGION'),
+            'table' => env('DYNAMODB_CACHE_TABLE'),
             'endpoint' => env('DYNAMODB_ENDPOINT'),
         ],
         'octane' => [
@@ -62,6 +62,6 @@ return [
             'stores' => ['database', 'array'],
         ],
     ],
-    'prefix' => env('CACHE_PREFIX', Str::slug((string) env('APP_NAME', 'laravel')) . '-cache-'),
+    'prefix' => env('CACHE_PREFIX'),
     'serializable_classes' => false,
 ];
