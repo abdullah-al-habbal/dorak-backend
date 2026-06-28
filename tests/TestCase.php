@@ -1,8 +1,8 @@
 <?php
-
+// tests/TestCase.php
 declare(strict_types=1);
 
-namespace Modules\Core\Tests;
+namespace Tests;
 
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\TestCase as BaseTestCase;

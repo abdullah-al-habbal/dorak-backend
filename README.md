@@ -78,7 +78,6 @@ modules/
     ├── Providers/
     ├── Routes/
     ├── Services/
-    ├── Tests/                   # Unit, Integration, Feature
     ├── ValuesObjects/
     └── lang/                    # ar/ & en/ translation files
 ```
@@ -105,12 +104,12 @@ These files are the **source of truth** for any future development.
 
 ## Testing
 
-Tests are co‑located with each module in `Tests/Unit`, `Integration`, and `Feature` directories.  
+Tests live in the root `tests/` directory under `Unit`, `Integration`, and `Feature` subdirectories.  
 Integration and feature tests use a real MySQL database (defined in `.env.testing`) and the `RefreshDatabase` trait.
 
 ```bash
 php artisan test                 # all tests
-php artisan test --filter Core   # only Core module tests
+php artisan test --filter Core   # only Core-related tests
 ```
 
 ## Deployment
@@ -124,7 +123,7 @@ php artisan test --filter Core   # only Core module tests
 1. Read `AGENTS.md` and the `.claude/skills/` files.
 2. Create a new branch per feature.
 3. Follow the established naming conventions and code rules.
-4. Write tests in the relevant module's `Tests/` directory.
+4. Write tests in the `tests/` directory.
 5. Ensure `composer analyze` and `composer test` pass before pushing.
 
 ## License
