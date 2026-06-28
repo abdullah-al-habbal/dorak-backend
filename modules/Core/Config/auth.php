@@ -3,7 +3,7 @@
 declare(strict_types=1);
 namespace Modules\Core\Config;
 
-use Modules\Core\Models\UserModel;
+use Modules\Client\Models\ClientModel;
 
 return [
     'defaults' => [
@@ -13,18 +13,18 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'clients',
         ],
     ],
     'providers' => [
-        'users' => [
+        'clients' => [
             'driver' => 'eloquent',
-            'model' => UserModel::class,
+            'model' => ClientModel::class,
         ],
     ],
     'passwords' => [
-        'users' => [
-            'provider' => 'users',
+        'clients' => [
+            'provider' => 'clients',
             'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE'),
             'expire' => 60,
             'throttle' => 60,

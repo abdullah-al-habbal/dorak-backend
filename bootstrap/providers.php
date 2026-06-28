@@ -12,5 +12,6 @@ return [
     FilesystemServiceProvider::class,
     ViewServiceProvider::class,
     HashServiceProvider::class,
+    \Modules\Client\Providers\ClientServiceProvider::class,
     ApplicationServiceProvider::class,
 ];
