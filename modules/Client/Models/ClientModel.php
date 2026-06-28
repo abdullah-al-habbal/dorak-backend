@@ -4,18 +4,22 @@ declare(strict_types=1);
 
 namespace Modules\Client\Models;
 
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Modules\Ban\Models\BanModel;
 use Modules\Client\Database\Factories\ClientFactory;
 use Spatie\Translatable\HasTranslations;
 
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
-class ClientModel extends Authenticatable
+class ClientModel extends Authenticatable implements FilamentUser
 {
     use HasFactory;
     use HasUuids;
@@ -30,6 +34,26 @@ class ClientModel extends Authenticatable
     protected static function newFactory(): ClientFactory
     {
         return ClientFactory::new();
+    }
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        return $panel->getId() === 'barber' && $this->isBarber();
+    }
+
+    public function isBarber(): bool
+    {
+        return false;
+    }
+
+    public function bans(): MorphMany
+    {
+        return $this->morphMany(BanModel::class, 'bannable');
+    }
+
+    public function isBanned(): bool
+    {
+        return $this->bans()->active()->exists();
     }
 
     protected function casts(): array

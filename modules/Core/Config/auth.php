@@ -3,7 +3,10 @@
 declare(strict_types=1);
 namespace Modules\Core\Config;
 
+use Modules\Barber\Models\BarberModel;
 use Modules\Client\Models\ClientModel;
+use Modules\Admin\Models\AdminModel;
+use Modules\Branch\Models\BranchModel;
 
 return [
     'defaults' => [
@@ -11,9 +14,25 @@ return [
         'passwords' => env('AUTH_PASSWORD_BROKER'),
     ],
     'guards' => [
-        'web' => [
-            'driver' => 'session',
+        'client' => [
+            'driver' => 'sanctum',
             'provider' => 'clients',
+        ],
+        'barber' => [
+            'driver' => 'sanctum',
+            'provider' => 'barbers',
+        ],
+        'barber_dashboard' => [
+            'driver' => 'session',
+            'provider' => 'barbers',
+        ],
+        'branch' => [
+            'driver' => 'session',
+            'provider' => 'branches',
+        ],
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admins',
         ],
     ],
     'providers' => [
@@ -21,11 +40,41 @@ return [
             'driver' => 'eloquent',
             'model' => ClientModel::class,
         ],
+        'barbers' => [
+            'driver' => 'eloquent',
+            'model' => BarberModel::class,
+        ],
+        'branches' => [
+            'driver' => 'eloquent',
+            'model' => BranchModel::class,
+        ],
+        'admins' => [
+            'driver' => 'eloquent',
+            'model' => AdminModel::class,
+        ],
     ],
     'passwords' => [
         'clients' => [
             'provider' => 'clients',
-            'table' => env('AUTH_PASSWORD_RESET_TOKEN_TABLE'),
+            'table' => 'password_reset_tokens_clients',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'barbers' => [
+            'provider' => 'barbers',
+            'table' => 'password_reset_tokens_barbers',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'branches' => [
+            'provider' => 'branches',
+            'table' => 'password_reset_tokens_branches',
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'admins' => [
+            'provider' => 'admins',
+            'table' => 'password_reset_tokens_admins',
             'expire' => 60,
             'throttle' => 60,
         ],
