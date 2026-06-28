@@ -1,4 +1,5 @@
 <?php
+// modules/Core/Config/app.php
 
 declare(strict_types=1);
 

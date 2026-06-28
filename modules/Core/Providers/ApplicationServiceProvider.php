@@ -1,4 +1,5 @@
 <?php
+// modules/Core/Providers/ApplicationServiceProvider.php
 declare(strict_types=1);
 
 namespace Modules\Core\Providers;
