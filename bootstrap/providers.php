@@ -10,6 +10,9 @@ use Modules\Ban\Providers\BanServiceProvider;
 use Modules\Language\Providers\LanguageServiceProvider;
 use Modules\Currency\Providers\CurrencyServiceProvider;
 use Modules\Core\Providers\ApplicationServiceProvider;
+use Modules\Core\Providers\Filament\AdminPanelProvider;
+use Modules\Core\Providers\Filament\BarberPanelProvider;
+use Modules\Core\Providers\Filament\BranchPanelProvider;
 use Modules\Admin\Providers\AdminServiceProvider;
 use Modules\Barber\Providers\BarberServiceProvider;
 use Modules\Branch\Providers\BranchServiceProvider;
@@ -32,6 +35,9 @@ return [
     ActivationServiceProvider::class,
     BanServiceProvider::class,
     ApplicationServiceProvider::class,
+    AdminPanelProvider::class,
+    BarberPanelProvider::class,
+    BranchPanelProvider::class,
     AdminServiceProvider::class,
     BarberServiceProvider::class,
     BranchServiceProvider::class,

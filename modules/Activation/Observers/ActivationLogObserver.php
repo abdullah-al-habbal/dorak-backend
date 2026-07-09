@@ -21,8 +21,10 @@ final class ActivationLogObserver
     private function syncEntityStatus(ActivationLogModel $log): void
     {
         if ($entity = $log->activable) {
-            $entity->status = $log->status;
-            $entity->saveQuietly();
+            if ($entity->isFillable('status')) {
+                $entity->status = $log->status;
+                $entity->saveQuietly();
+            }
         }
     }
 }

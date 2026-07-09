@@ -116,3 +116,557 @@ Seeded from the MVP scope in `02_prd.md` §4 — re-prioritize as you like.
 | CU-01 | Currency on-the-fly conversion + optional dual display | D3, D4, D5 | 07 Flow 10 |
 
 Each becomes a full ticket (template above) when it moves from Backlog → Ready.
+
+---
+
+## Filament panels + resources (CRESCENT run: 2026-06-28)
+
+### Column: Backlog
+
+---
+
+```
+### TICKET INFRA-01 — 3 PanelProviders + scoping middleware + config
+
+- Type:           feature
+- Universe/area:  admin panel, infrastructure
+
+- Implements (doc IDs):
+  - Entity:       06 -> Barber, Branch, Client, Admin (auth entities)
+  - House rules:  04 -> H7 (tenancy isolation)
+  - Flow:         (auth flows — login, panel access)
+  - Edge cases:   none
+
+- Applicable skills: module-architecture, coding-standards
+
+- Acceptance criteria:
+  - [ ] AdminPanelProvider serves at `/admin` with guard `admin`
+  - [ ] BarberPanelProvider serves at `/barber` with guard `barber_dashboard`
+  - [ ] BranchPanelProvider serves at `/branch` with guard `branch`
+  - [ ] Each provider dynamically discovers Resources from `modules/*/Filament/Panels/{panel}/`
+  - [ ] ScopePanelToCurrentUser middleware scopes barber panel to auth barber's data
+  - [ ] ScopePanelToCurrentUser middleware scopes branch panel to auth branch's data
+  - [ ] providers.php updated with 3 panel providers after ApplicationServiceProvider
+  - [ ] filament config file in Core/Config/filament.php
+
+- Definition of Done:
+  - [ ] all 3 panels load at their paths without 500 errors
+  - [ ] full suite green (no regressions)
+
+- Blockers:  none
+- Notes: dynamic discovery loops `scandir(base_path('modules'))` and registers each module's Filament resources if the directory exists. Scoping middleware uses `filament()->getCurrentPanel()->getId()` to switch rules.
+```
+
+---
+
+```
+### TICKET SKILL-01 — Filament module structure skill file
+
+- Type:           feature
+- Universe/area:  AI agent harness
+
+- Implements (doc IDs):
+  - Entity:       none (skill file)
+  - House rules:  none
+  - Flow:         none
+  - Edge cases:   none
+
+- Applicable skills: none (creating a skill)
+
+- Acceptance criteria:
+  - [ ] `.claude/skills/filament-module-structure/SKILL.md` exists
+  - [ ] Codifies directory tree per module: `Filament/Panels/{Admin,Barber,Branch}/Resources/{Name}/`
+  - [ ] States naming rules (Resource suffix, Page suffix, Schema/Table extraction)
+  - [ ] States scoping rules via global middleware
+  - [ ] States ToggleActivation action pattern
+
+- Definition of Done:
+  - [ ] file exists and is internally consistent
+
+- Blockers:  none
+- Notes: skill consumed by the Ralph loop in phase 6 when building each resource ticket.
+```
+
+---
+
+```
+### TICKET ACTN-01 — ToggleActivation reusable action class
+
+- Type:           feature
+- Universe/area:  activation module, admin panel
+
+- Implements (doc IDs):
+  - Entity:       06 -> ActivationLog, Barber, Branch
+  - House rules:  04 -> (activation lifecycle)
+  - Flow:         none
+  - Edge cases:   none
+
+- Applicable skills: coding-standards
+
+- Acceptance criteria:
+  - [ ] `modules/Activation/Filament/Actions/ToggleActivationAction.php` exists
+  - [ ] Action creates ActivationLogModel with correct status
+  - [ ] Action respects the morph map (`barber`, `branch`)
+  - [ ] Can be called from any resource with `ToggleActivationAction::make()`
+  - [ ] Runs the observer to sync entity status
+
+- Definition of Done:
+  - [ ] action class exists and is unit-testable
+  - [ ] full suite green
+
+- Blockers:  none
+- Notes: reusable Filament Action class — callable from BarberResource, BranchResource.
+```
+
+---
+
+### Column: Ready
+
+(empty)
+
+---
+
+### Column: In Progress
+
+(empty)
+
+---
+
+### Column: In Review / QA
+
+(empty)
+
+---
+
+### Column: Blocked
+
+(empty)
+
+---
+
+### Column: Done
+
+(empty — INFRA-01, SKILL-01, ACTN-01 must be done first)
+
+---
+
+```
+### TICKET AUTH-01 — AdminUser resource
+
+- Type:           feature
+- Universe/area:  admin panel, auth
+
+- Implements (doc IDs):
+  - Entity:       06 -> Admin
+  - House rules:  04 -> (admin can manage everything)
+  - Flow:         none
+  - Edge cases:   none
+
+- Applicable skills: coding-standards, filament-module-structure
+
+- Acceptance criteria:
+  - [ ] `modules/Admin/Filament/Panels/Admin/Resources/AdminUserResource/` exists
+  - [ ] Resource lists admin users with name, email, created_at
+  - [ ] Can create, edit, view, and delete admin users
+  - [ ] Resources are auto-discovered by AdminPanelProvider
+
+- Definition of Done:
+  - [ ] admin can log in at /admin and see AdminUserResource
+  - [ ] full suite green
+
+- Blockers:  none (depends on INFRA-01)
+- Notes: first admin resource — validates the discovery pipeline works end-to-end.
+```
+
+---
+
+```
+### TICKET AUTH-02 — Barber resources (Admin + Barber panel)
+
+- Type:           feature
+- Universe/area:  admin panel, barber panel
+
+- Implements (doc IDs):
+  - Entity:       06 -> Barber
+  - House rules:  04 -> H7 (tenancy isolation — barber sees own data)
+  - Flow:         none
+  - Edge cases:   none
+
+- Applicable skills: coding-standards, filament-module-structure
+
+- Acceptance criteria:
+  - [ ] `modules/Barber/Filament/Panels/Admin/Resources/BarberResource/` exists with full CRUD
+  - [ ] BarberResource has ToggleActivation action in the action bar
+  - [ ] `modules/Barber/Filament/Panels/Barber/Resources/ProfileResource/` exists (read-only)
+  - [ ] ScopePanelToCurrentUser filters ProfileResource to auth barber only
+  - [ ] Barber can log in at /barber and see only own profile
+
+- Definition of Done:
+  - [ ] admin lists/creates/edits barbers
+  - [ ] barber logs into /barber, sees own profile
+  - [ ] toggle activation creates ActivationLog record
+  - [ ] full suite green
+
+- Blockers:  none (depends on INFRA-01, ACTN-01)
+- Notes: first barber panel resource — validates scoping middleware.
+```
+
+---
+
+```
+### TICKET AUTH-03 — Branch resources (Admin + Branch panel)
+
+- Type:           feature
+- Universe/area:  admin panel, branch panel
+
+- Implements (doc IDs):
+  - Entity:       06 -> Branch
+  - House rules:  04 -> H7 (tenancy isolation — branch sees own data)
+  - Flow:         none
+  - Edge cases:   none
+
+- Applicable skills: coding-standards, filament-module-structure
+
+- Acceptance criteria:
+  - [ ] `modules/Branch/Filament/Panels/Admin/Resources/BranchResource/` exists with full CRUD
+  - [ ] BranchResource has ToggleActivation action
+  - [ ] `modules/Branch/Filament/Panels/Branch/Resources/ProfileResource/` exists (read-only)
+  - [ ] ScopePanelToCurrentUser filters ProfileResource to auth branch only
+  - [ ] Branch can log in at /branch and see only own profile
+
+- Definition of Done:
+  - [ ] admin lists/creates/edits branches
+  - [ ] branch logs into /branch, sees own profile
+  - [ ] toggle activation creates ActivationLog record
+  - [ ] full suite green
+
+- Blockers:  none (depends on INFRA-01, ACTN-01)
+- Notes: first branch panel resource.
+```
+
+---
+
+```
+### TICKET AUTH-04 — Client resource (Admin panel)
+
+- Type:           feature
+- Universe/area:  admin panel
+
+- Implements (doc IDs):
+  - Entity:       06 -> Client
+  - House rules:  none
+  - Flow:         none
+  - Edge cases:   none
+
+- Applicable skills: coding-standards, filament-module-structure
+
+- Acceptance criteria:
+  - [ ] `modules/Client/Filament/Panels/Admin/Resources/ClientResource/` exists
+  - [ ] Shows isBanned status indicator
+  - [ ] Full CRUD for clients
+
+- Definition of Done:
+  - [ ] admin can manage clients
+  - [ ] full suite green
+
+- Blockers:  none (depends on INFRA-01)
+- Notes: clients have no panel — they use the mobile app, not Filament.
+```
+
+---
+
+```
+### TICKET FOUND-01 — Language + Currency + ExchangeRate resources (Admin panel)
+
+- Type:           feature
+- Universe/area:  admin panel
+
+- Implements (doc IDs):
+  - Entity:       06 -> Language, Currency, ExchangeRate
+  - House rules:  none
+  - Flow:         none
+  - Edge cases:   none
+
+- Applicable skills: coding-standards, filament-module-structure
+
+- Acceptance criteria:
+  - [ ] `modules/Language/Filament/Panels/Admin/Resources/LanguageResource/` exists
+  - [ ] `modules/Currency/Filament/Panels/Admin/Resources/CurrencyResource/` exists
+  - [ ] `modules/Currency/Filament/Panels/Admin/Resources/ExchangeRateResource/` exists
+  - [ ] All show name, code, direction/symbol, default flag
+
+- Definition of Done:
+  - [ ] admin can CRUD languages, currencies, exchange rates
+  - [ ] full suite green
+
+- Blockers:  none (depends on INFRA-01)
+- Notes: reference data — simplest resources to build.
+```
+
+---
+
+```
+### TICKET FOUND-02 — ActivationLog resource (Admin panel)
+
+- Type:           feature
+- Universe/area:  admin panel
+
+- Implements (doc IDs):
+  - Entity:       06 -> ActivationLog
+  - House rules:  none
+  - Flow:         none
+  - Edge cases:   none
+
+- Applicable skills: coding-standards, filament-module-structure
+
+- Acceptance criteria:
+  - [ ] `modules/Activation/Filament/Panels/Admin/Resources/ActivationLogResource/` exists
+  - [ ] Read-only list (logs created by ToggleActivation action)
+  - [ ] Shows activable type/id, status, admin, reason, timestamps
+
+- Definition of Done:
+  - [ ] admin can view activation history
+  - [ ] full suite green
+
+- Blockers:  none (depends on INFRA-01)
+- Notes: read-only resource; writes happen through ToggleActivationAction.
+```
+
+---
+
+```
+### TICKET FOUND-03 — Ban resource (Admin panel)
+
+- Type:           feature
+- Universe/area:  admin panel
+
+- Implements (doc IDs):
+  - Entity:       06 -> Ban
+  - House rules:  none
+  - Flow:         none
+  - Edge cases:   none
+
+- Applicable skills: coding-standards, filament-module-structure
+
+- Acceptance criteria:
+  - [ ] `modules/Ban/Filament/Panels/Admin/Resources/BanResource/` exists
+  - [ ] Full CRUD for bans
+  - [ ] Shows active/permanent status indicator
+  - [ ] Can filter by bannable type (client/barber)
+
+- Definition of Done:
+  - [ ] admin can manage bans
+  - [ ] full suite green
+
+- Blockers:  none (depends on INFRA-01)
+- Notes: date-window bans; permanent = banned_until null.
+```
+
+---
+
+```
+### TICKET CORE-01 — Brand + Preference resources (Admin panel)
+
+- Type:           feature
+- Universe/area:  admin panel
+
+- Implements (doc IDs):
+  - Entity:       06 -> Brand, Preference
+  - House rules:  none
+  - Flow:         none
+  - Edge cases:   none
+
+- Applicable skills: coding-standards, filament-module-structure
+
+- Acceptance criteria:
+  - [ ] `modules/Brand/Filament/Panels/Admin/Resources/BrandResource/` exists
+  - [ ] `modules/Preference/Filament/Panels/Admin/Resources/PreferenceResource/` exists (read-only)
+  - [ ] BrandResource shows owner, base currency, feature flags
+  - [ ] PreferenceResource shows polymorphic owner
+
+- Definition of Done:
+  - [ ] admin can CRUD brands, view preferences
+  - [ ] full suite green
+
+- Blockers:  none (depends on INFRA-01)
+- Notes: Brand is the tenant core — deletion cascades handled by model.
+```
+
+---
+
+```
+### TICKET CORE-02 — BarberAffiliation resources (Admin + Branch panel)
+
+- Type:           feature
+- Universe/area:  admin panel, branch panel
+
+- Implements (doc IDs):
+  - Entity:       06 -> BarberAffiliation
+  - House rules:  none
+  - Flow:         none
+  - Edge cases:   none
+
+- Applicable skills: coding-standards, filament-module-structure
+
+- Acceptance criteria:
+  - [ ] `modules/BarberAffiliation/Filament/Panels/Admin/Resources/BarberAffiliationResource/` exists
+  - [ ] `modules/BarberAffiliation/Filament/Panels/Branch/Resources/AffiliationResource/` exists
+  - [ ] Shows barber, affiliable (polymorphic), status, timestamps
+
+- Definition of Done:
+  - [ ] admin views all affiliations; branch views own affiliations
+  - [ ] full suite green
+
+- Blockers:  none (depends on INFRA-01, AUTH-02, AUTH-03)
+- Notes: branch panel scopes by branch_id via middleware.
+```
+
+---
+
+```
+### TICKET CORE-03 — OfferedService resources (Admin + Barber + Branch)
+
+- Type:           feature
+- Universe/area:  admin panel, barber panel, branch panel
+
+- Implements (doc IDs):
+  - Entity:       06 -> OfferedService
+  - House rules:  none
+  - Flow:         none
+  - Edge cases:   none
+
+- Applicable skills: coding-standards, filament-module-structure
+
+- Acceptance criteria:
+  - [ ] `modules/OfferedService/Filament/Panels/Admin/Resources/OfferedServiceResource/` exists
+  - [ ] `modules/OfferedService/Filament/Panels/Barber/Resources/MyServiceResource/` exists
+  - [ ] `modules/OfferedService/Filament/Panels/Branch/Resources/ServiceResource/` exists
+  - [ ] Admin sees all; barber sees own (serviceable_type=barber); branch sees own
+
+- Definition of Done:
+  - [ ] all three panels show correct scoped services
+  - [ ] full suite green
+
+- Blockers:  none (depends on INFRA-01, AUTH-02, AUTH-03)
+- Notes: polymorphic owner — scoping middleware must check serviceable_type + serviceable_id.
+```
+
+---
+
+```
+### TICKET CORE-04 — Chair resources (Admin + Branch panel)
+
+- Type:           feature
+- Universe/area:  admin panel, branch panel
+
+- Implements (doc IDs):
+  - Entity:       06 -> Chair
+  - House rules:  none
+  - Flow:         none
+  - Edge cases:   none
+
+- Applicable skills: coding-standards, filament-module-structure
+
+- Acceptance criteria:
+  - [ ] `modules/Chair/Filament/Panels/Admin/Resources/ChairResource/` exists
+  - [ ] `modules/Chair/Filament/Panels/Branch/Resources/ChairResource/` exists
+  - [ ] Admin sees all chairs; branch sees own (branch_id scoped)
+
+- Definition of Done:
+  - [ ] admin manages all chairs; branch manages own chairs
+  - [ ] full suite green
+
+- Blockers:  none (depends on INFRA-01, AUTH-03)
+- Notes: belongs to Branch — scoping middleware filters by branch_id.
+```
+
+---
+
+```
+### TICKET TRAN-01 — Booking resources (Admin + Barber + Branch)
+
+- Type:           feature
+- Universe/area:  admin panel, barber panel, branch panel
+
+- Implements (doc IDs):
+  - Entity:       06 -> Booking, BookingService (pivot)
+  - House rules:  04 -> E1, E2, B3 (booking invariants — read-only in Filament)
+  - Flow:         none (bookings are created via API, not Filament)
+  - Edge cases:   none (read-only in admin; concurrency handled by API)
+
+- Applicable skills: coding-standards, filament-module-structure
+
+- Acceptance criteria:
+  - [ ] `modules/Booking/Filament/Panels/Admin/Resources/BookingResource/` exists
+  - [ ] `modules/Booking/Filament/Panels/Barber/Resources/MyBookingResource/` exists
+  - [ ] `modules/Booking/Filament/Panels/Branch/Resources/BookingResource/` exists
+  - [ ] Admin sees all bookings; barber sees own; branch sees own
+
+- Definition of Done:
+  - [ ] all three panels show correct scoped bookings
+  - [ ] full suite green
+
+- Blockers:  none (depends on INFRA-01, AUTH-02, AUTH-03)
+- Notes: read-only in Filament (bookings created via API). Shows services pivot table as relation manager.
+```
+
+---
+
+```
+### TICKET TRAN-02 — Review resources (Admin + Barber + Branch)
+
+- Type:           feature
+- Universe/area:  admin panel, barber panel, branch panel
+
+- Implements (doc IDs):
+  - Entity:       06 -> Review
+  - House rules:  none
+  - Flow:         none
+  - Edge cases:   none
+
+- Applicable skills: coding-standards, filament-module-structure
+
+- Acceptance criteria:
+  - [ ] `modules/Review/Filament/Panels/Admin/Resources/ReviewResource/` exists
+  - [ ] `modules/Review/Filament/Panels/Barber/Resources/MyReviewResource/` exists
+  - [ ] `modules/Review/Filament/Panels/Branch/Resources/ReviewResource/` exists
+  - [ ] Shows rating, comment, author/subject polymorphic links
+
+- Definition of Done:
+  - [ ] all three panels show correct scoped reviews
+  - [ ] full suite green
+
+- Blockers:  none (depends on INFRA-01, AUTH-02, AUTH-03)
+- Notes: two-way polymorphic — author/subject. Scoping: barber sees reviews of their bookings.
+```
+
+---
+
+```
+### TICKET TRAN-03 — JobPosting + Application resources (Admin + Branch)
+
+- Type:           feature
+- Universe/area:  admin panel, branch panel
+
+- Implements (doc IDs):
+  - Entity:       06 -> JobPosting, Application
+  - House rules:  none
+  - Flow:         none
+  - Edge cases:   none
+
+- Applicable skills: coding-standards, filament-module-structure
+
+- Acceptance criteria:
+  - [ ] `modules/JobPosting/Filament/Panels/Admin/Resources/JobPostingResource/` exists
+  - [ ] `modules/JobPosting/Filament/Panels/Admin/Resources/ApplicationResource/` exists
+  - [ ] `modules/JobPosting/Filament/Panels/Branch/Resources/JobResource/` exists
+  - [ ] `modules/JobPosting/Filament/Panels/Branch/Resources/ApplicationResource/` exists
+  - [ ] Admin sees all; branch sees own jobs and their applications
+
+- Definition of Done:
+  - [ ] admin manages all job postings + applications; branch manages own
+  - [ ] full suite green
+
+- Blockers:  none (depends on INFRA-01, AUTH-03)
+- Notes: Application has profile snapshot (JSON). Branch panel scopes by branch_id.
+```

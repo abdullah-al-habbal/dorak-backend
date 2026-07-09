@@ -7,6 +7,7 @@ namespace Modules\Activation\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Activation\Models\ActivationLogModel;
 use Modules\Admin\Models\AdminModel;
+use Modules\Barber\Models\BarberModel;
 
 class ActivationLogFactory extends Factory
 {
@@ -15,8 +16,8 @@ class ActivationLogFactory extends Factory
     public function definition(): array
     {
         return [
-            'activable_id'   => AdminModel::factory(),
-            'activable_type' => 'admin',
+            'activable_id'   => BarberModel::factory(),
+            'activable_type' => BarberModel::class,
             'status'         => 'pending',
             'admin_id'       => AdminModel::factory(),
             'activated_at'   => now(),
