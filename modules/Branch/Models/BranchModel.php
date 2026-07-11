@@ -11,7 +11,9 @@ use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
+use Modules\Chair\Models\ChairModel;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Modules\Activation\Models\ActivationLogModel;
@@ -45,6 +47,11 @@ class BranchModel extends Authenticatable implements FilamentUser
     public function brand(): BelongsTo
     {
         return $this->belongsTo(BrandModel::class);
+    }
+
+    public function chairs(): HasMany
+    {
+        return $this->hasMany(ChairModel::class);
     }
 
     public function getIsEnabledAttribute(): bool
