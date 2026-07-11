@@ -33,6 +33,7 @@ The documents move from **"What problem are we solving?"** → **"Who does what?
 | 09 | [`09_c4-context.md`](./09_c4-context.md) | C4 Level 1 — the system as one box and who/what touches it | Eng, Stakeholders |
 | 10 | [`10_c4-containers.md`](./10_c4-containers.md) | C4 Level 2 — the major moving parts inside the system | Eng |
 | 11 | [`11_backend-architecture.md`](./11_backend-architecture.md) | C4 Level 3 — module layout + the **Action → Handler → EloquentResolver** pattern + coding conventions | Eng |
+| — | [`feature-index.md`](./feature-index.md) | **Chronological map of built features** — append after each new feature | AI Agents |
 
 The **PRD (02)** is the master. Everything else supports and expands it.
 
