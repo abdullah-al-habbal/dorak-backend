@@ -25,18 +25,18 @@ class ChairSeeder extends Seeder
         foreach ($positions as $i => $pos) {
             $status = $i === 3 ? 'maintenance' : 'available';
             ChairModel::create([
-                'branch_id'   => $branch->id,
-                'barber_id'   => null,
-                'label'       => (string) ($i + 1),
+                'branch_id' => $branch->id,
+                'barber_id' => null,
+                'label' => (string) ($i + 1),
                 'ui_metadata' => [
-                    'shape'      => 'rectangle',
+                    'shape' => 'rectangle',
                     'position_x' => $pos['x'],
                     'position_y' => $pos['y'],
-                    'width'      => 60,
-                    'height'     => 60,
-                    'rotation'   => 0,
+                    'width' => 60,
+                    'height' => 60,
+                    'rotation' => 0,
                 ],
-                'status'      => $status,
+                'status' => $status,
             ]);
         }
     }

@@ -1,4 +1,5 @@
 <?php
+
 // dorak-backend/modules/Website/Routes/Web/website_routes.php
 declare(strict_types=1);
 

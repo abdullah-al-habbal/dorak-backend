@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Client\Http\Actions;
@@ -19,7 +20,7 @@ final class LoginAction extends BaseApiAction
 
         $client = ClientModel::where('email', $data['email'])->first();
 
-        if (!$client || !Hash::check($data['password'], $client->password)) {
+        if (! $client || ! Hash::check($data['password'], $client->password)) {
             return $this->unauthorized(
                 message: $this->trans('core::messages.invalid_credentials'),
             );

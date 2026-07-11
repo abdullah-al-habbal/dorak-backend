@@ -1,4 +1,5 @@
 <?php
+
 // modules/OfferedService/Models/OfferedServiceModel.php
 declare(strict_types=1);
 
@@ -38,12 +39,12 @@ class OfferedServiceModel extends Model
     protected function casts(): array
     {
         return [
-            'name'        => 'array',
+            'name' => 'array',
             'description' => 'array',
-            'price'       => 'decimal:2',
-            'at_home'     => 'boolean',
-            'active'      => 'boolean',
-            'duration'    => 'integer',
+            'price' => 'decimal:2',
+            'at_home' => 'boolean',
+            'active' => 'boolean',
+            'duration' => 'integer',
         ];
     }
 

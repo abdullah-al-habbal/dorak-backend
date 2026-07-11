@@ -1,4 +1,5 @@
 <?php
+
 // tests/Unit/Core/Handlers/HealthCheck/HealthCheckHandlerTest.php
 declare(strict_types=1);
 
@@ -8,7 +9,7 @@ use Modules\Core\Handlers\HealthCheck\HealthCheckHandler;
 
 beforeEach(function () {
     $this->resolver = Mockery::mock(HealthCheckResolver::class);
-    $this->handler  = new HealthCheckHandler($this->resolver);
+    $this->handler = new HealthCheckHandler($this->resolver);
 });
 
 it('returns ok when all checks pass', function () {

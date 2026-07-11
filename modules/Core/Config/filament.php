@@ -1,4 +1,5 @@
 <?php
+
 // modules/Core/Config/filament.php
 declare(strict_types=1);
 

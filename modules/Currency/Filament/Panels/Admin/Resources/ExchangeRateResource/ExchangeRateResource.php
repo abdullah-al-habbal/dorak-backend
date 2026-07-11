@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Currency\Filament\Panels\Admin\Resources\ExchangeRateResource;
@@ -42,10 +43,10 @@ class ExchangeRateResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListExchangeRatesPage::route('/'),
+            'index' => Pages\ListExchangeRatesPage::route('/'),
             'create' => Pages\CreateExchangeRatePage::route('/create'),
-            'view'   => Pages\ViewExchangeRatePage::route('/{record}'),
-            'edit'   => Pages\EditExchangeRatePage::route('/{record}/edit'),
+            'view' => Pages\ViewExchangeRatePage::route('/{record}'),
+            'edit' => Pages\EditExchangeRatePage::route('/{record}/edit'),
         ];
     }
 }

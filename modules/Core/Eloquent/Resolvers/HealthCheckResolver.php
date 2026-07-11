@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Core\Eloquent\Resolvers;
@@ -14,9 +15,10 @@ class HealthCheckResolver
 
         try {
             DB::connection()->getPdo();
+
             return [
-                'status'     => 'ok',
-                'driver'     => (string) config('database.default'),
+                'status' => 'ok',
+                'driver' => (string) config('database.default'),
                 'latency_ms' => round((microtime(true) - $start) * 1000, 2),
             ];
         } catch (Throwable) {

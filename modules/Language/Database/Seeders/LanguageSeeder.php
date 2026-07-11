@@ -12,16 +12,16 @@ class LanguageSeeder extends Seeder
     public function run(): void
     {
         LanguageModel::create([
-            'code'       => 'en',
-            'name'       => ['en' => 'English', 'ar' => 'الإنجليزية'],
-            'direction'  => 'ltr',
+            'code' => 'en',
+            'name' => ['en' => 'English', 'ar' => 'الإنجليزية'],
+            'direction' => 'ltr',
             'is_default' => true,
         ]);
 
         LanguageModel::create([
-            'code'       => 'ar',
-            'name'       => ['en' => 'Arabic', 'ar' => 'العربية'],
-            'direction'  => 'rtl',
+            'code' => 'ar',
+            'name' => ['en' => 'Arabic', 'ar' => 'العربية'],
+            'direction' => 'rtl',
             'is_default' => false,
         ]);
     }

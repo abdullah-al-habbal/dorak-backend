@@ -5,25 +5,25 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-use Modules\Admin\Database\Seeders\AdminSeeder;
-use Modules\Barber\Database\Seeders\BarberSeeder;
 use Modules\Activation\Database\Seeders\ActivationSeeder;
+use Modules\Admin\Database\Seeders\AdminSeeder;
 use Modules\Ban\Database\Seeders\BanSeeder;
-use Modules\Language\Database\Seeders\LanguageSeeder;
-use Modules\Currency\Database\Seeders\CurrencySeeder;
-use Modules\Branch\Database\Seeders\BranchSeeder;
-use Modules\Client\Database\Seeders\ClientSeeder;
-use Modules\Brand\Database\Seeders\BrandSeeder;
-use Modules\Preference\Database\Seeders\PreferenceSeeder;
+use Modules\Barber\Database\Seeders\BarberSeeder;
 use Modules\BarberAffiliation\Database\Seeders\BarberAffiliationSeeder;
-use Modules\OfferedService\Database\Seeders\OfferedServiceSeeder;
-use Modules\Chair\Database\Seeders\ChairSeeder;
 use Modules\Booking\Database\Seeders\BookingSeeder;
-use Modules\Review\Database\Seeders\ReviewSeeder;
+use Modules\Branch\Database\Seeders\BranchSeeder;
+use Modules\Brand\Database\Seeders\BrandSeeder;
+use Modules\Chair\Database\Seeders\ChairSeeder;
+use Modules\Client\Database\Seeders\ClientSeeder;
+use Modules\Currency\Database\Seeders\CurrencySeeder;
 use Modules\JobPosting\Database\Seeders\JobPostingSeeder;
+use Modules\Language\Database\Seeders\LanguageSeeder;
 use Modules\Marketing\Database\Seeders\MarketingPageSeeder;
 use Modules\Marketing\Database\Seeders\SectionSeeder;
 use Modules\Marketing\Database\Seeders\TestimonialSeeder;
+use Modules\OfferedService\Database\Seeders\OfferedServiceSeeder;
+use Modules\Preference\Database\Seeders\PreferenceSeeder;
+use Modules\Review\Database\Seeders\ReviewSeeder;
 
 class DatabaseSeeder extends Seeder
 {

@@ -20,27 +20,27 @@ class OfferedServiceSeeder extends Seeder
             ?? BrandModel::factory()->create();
 
         OfferedServiceModel::create([
-            'serviceable_id'   => $brand->id,
+            'serviceable_id' => $brand->id,
             'serviceable_type' => 'brand',
-            'name'             => ['en' => 'Haircut', 'ar' => 'قص شعر'],
-            'description'      => ['en' => 'Classic haircut', 'ar' => 'قص شعر كلاسيكي'],
-            'price'            => 25000,
-            'currency_id'      => $syp->id,
-            'duration'         => 30,
-            'at_home'          => false,
-            'active'           => true,
+            'name' => ['en' => 'Haircut', 'ar' => 'قص شعر'],
+            'description' => ['en' => 'Classic haircut', 'ar' => 'قص شعر كلاسيكي'],
+            'price' => 25000,
+            'currency_id' => $syp->id,
+            'duration' => 30,
+            'at_home' => false,
+            'active' => true,
         ]);
 
         OfferedServiceModel::create([
-            'serviceable_id'   => $brand->id,
+            'serviceable_id' => $brand->id,
             'serviceable_type' => 'brand',
-            'name'             => ['en' => 'Beard Trim', 'ar' => 'تهذيب لحية'],
-            'description'      => ['en' => 'Beard shaping and trim', 'ar' => 'تشذيب وتشكيل اللحية'],
-            'price'            => 15000,
-            'currency_id'      => $syp->id,
-            'duration'         => 20,
-            'at_home'          => false,
-            'active'           => true,
+            'name' => ['en' => 'Beard Trim', 'ar' => 'تهذيب لحية'],
+            'description' => ['en' => 'Beard shaping and trim', 'ar' => 'تشذيب وتشكيل اللحية'],
+            'price' => 15000,
+            'currency_id' => $syp->id,
+            'duration' => 20,
+            'at_home' => false,
+            'active' => true,
         ]);
     }
 }

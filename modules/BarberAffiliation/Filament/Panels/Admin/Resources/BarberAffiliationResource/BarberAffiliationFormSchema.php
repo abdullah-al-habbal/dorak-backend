@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\BarberAffiliation\Filament\Panels\Admin\Resources\BarberAffiliationResource;
@@ -9,6 +10,7 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
+use Modules\Brand\Models\BrandModel;
 
 final class BarberAffiliationFormSchema
 {
@@ -24,14 +26,14 @@ final class BarberAffiliationFormSchema
                     MorphToSelect::make('affiliable')
                         ->label('Entity')
                         ->types([
-                            MorphToSelect\Type::make(\Modules\Brand\Models\BrandModel::class)
+                            MorphToSelect\Type::make(BrandModel::class)
                                 ->titleAttribute('name.en'),
                         ])
                         ->required(),
                     Select::make('status')
                         ->options([
-                            'pending'    => 'Pending',
-                            'accepted'   => 'Accepted',
+                            'pending' => 'Pending',
+                            'accepted' => 'Accepted',
                             'terminated' => 'Terminated',
                         ])
                         ->required(),

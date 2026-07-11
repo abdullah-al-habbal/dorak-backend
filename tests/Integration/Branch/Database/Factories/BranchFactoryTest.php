@@ -1,4 +1,5 @@
 <?php
+
 // tests/Integration/Branch/Database/Factories/BranchFactoryTest.php
 declare(strict_types=1);
 

@@ -1,4 +1,5 @@
 <?php
+
 // modules/Preference/Database/Factories/PreferenceFactory.php
 declare(strict_types=1);
 
@@ -14,13 +15,13 @@ class PreferenceFactory extends Factory
     public function definition(): array
     {
         return [
-            'preferenceable_id'   => null,
+            'preferenceable_id' => null,
             'preferenceable_type' => null,
-            'preferred_language'  => 'ar',
+            'preferred_language' => 'ar',
             'notification_enabled' => true,
             'display_currency_id' => null,
-            'theme'               => 'light',
-            'price_display_mode'  => 'single',
+            'theme' => 'light',
+            'price_display_mode' => 'single',
         ];
     }
 }

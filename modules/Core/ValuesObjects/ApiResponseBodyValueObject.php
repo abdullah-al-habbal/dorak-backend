@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Core\ValuesObjects;
@@ -30,7 +31,7 @@ final class ApiResponseBodyValueObject
             $payload['data'] = $this->data;
         }
 
-        if (!empty($this->meta)) {
+        if (! empty($this->meta)) {
             $payload['meta'] = $this->meta;
         }
 

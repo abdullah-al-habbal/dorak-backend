@@ -1,4 +1,5 @@
 <?php
+
 // modules/Branch/Models/BranchModel.php
 declare(strict_types=1);
 
@@ -13,11 +14,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
-use Modules\Chair\Models\ChairModel;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Modules\Activation\Models\ActivationLogModel;
 use Modules\Brand\Models\BrandModel;
+use Modules\Chair\Models\ChairModel;
 use Spatie\Translatable\HasTranslations;
 
 #[Fillable(['name', 'email', 'password', 'brand_id', 'latitude', 'longitude'])]
@@ -25,8 +26,8 @@ use Spatie\Translatable\HasTranslations;
 class BranchModel extends Authenticatable implements FilamentUser
 {
     use HasFactory;
-    use HasUuids;
     use HasTranslations;
+    use HasUuids;
     use Notifiable;
 
     protected $table = 'branches';

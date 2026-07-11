@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Core\Helpers;
@@ -136,6 +137,7 @@ trait ApiResponseTrait
         ErrorCodeEnum|string $code = ErrorCodeEnum::VALIDATION_FAILED
     ): JsonResponse {
         $message = $message ?? $this->trans('core::messages.validation_failed');
+
         return $this->error($code, $message, 422, $errors);
     }
 
@@ -144,6 +146,7 @@ trait ApiResponseTrait
         ErrorCodeEnum|string $code = ErrorCodeEnum::RESOURCE_NOT_FOUND
     ): JsonResponse {
         $message = $message ?? $this->trans('core::messages.not_found');
+
         return $this->error($code, $message, 404);
     }
 
@@ -152,6 +155,7 @@ trait ApiResponseTrait
         ErrorCodeEnum|string $code = ErrorCodeEnum::UNAUTHORIZED
     ): JsonResponse {
         $message = $message ?? $this->trans('core::messages.unauthorized');
+
         return $this->error($code, $message, 401);
     }
 
@@ -160,6 +164,7 @@ trait ApiResponseTrait
         ErrorCodeEnum|string $code = ErrorCodeEnum::FORBIDDEN
     ): JsonResponse {
         $message = $message ?? $this->trans('core::messages.forbidden');
+
         return $this->error($code, $message, 403);
     }
 
@@ -169,6 +174,7 @@ trait ApiResponseTrait
         ErrorCodeEnum|string $code = ErrorCodeEnum::UNPROCESSABLE_ENTITY
     ): JsonResponse {
         $message = $message ?? $this->trans('core::messages.unprocessable');
+
         return $this->error($code, $message, 422, $errors);
     }
 
@@ -177,6 +183,7 @@ trait ApiResponseTrait
         ErrorCodeEnum|string $code = ErrorCodeEnum::TOO_MANY_REQUESTS
     ): JsonResponse {
         $message = $message ?? $this->trans('core::messages.too_many_requests');
+
         return $this->error($code, $message, 429);
     }
 

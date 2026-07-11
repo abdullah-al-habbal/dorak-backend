@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Explore\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
+use Modules\Branch\Http\Resources\BranchResource;
 use Modules\Branch\Models\BranchModel;
 use Modules\Core\Http\Actions\BaseApiAction;
 
@@ -37,7 +39,7 @@ final class ExploreBranchesAction extends BaseApiAction
 
         return $this->paginated(
             paginator: $branches,
-            resourceClass: \Modules\Branch\Http\Resources\BranchResource::class,
+            resourceClass: BranchResource::class,
         );
     }
 }

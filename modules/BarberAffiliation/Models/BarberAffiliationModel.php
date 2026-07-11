@@ -1,4 +1,5 @@
 <?php
+
 // modules/BarberAffiliation/Models/BarberAffiliationModel.php
 declare(strict_types=1);
 
@@ -33,9 +34,9 @@ class BarberAffiliationModel extends Model
     {
         return [
             'commission_rate' => 'decimal:2',
-            'invited_at'      => 'datetime',
-            'accepted_at'     => 'datetime',
-            'terminated_at'   => 'datetime',
+            'invited_at' => 'datetime',
+            'accepted_at' => 'datetime',
+            'terminated_at' => 'datetime',
         ];
     }
 

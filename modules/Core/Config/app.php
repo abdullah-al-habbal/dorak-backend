@@ -1,4 +1,5 @@
 <?php
+
 // modules/Core/Config/app.php
 
 declare(strict_types=1);
@@ -8,7 +9,7 @@ namespace Modules\Core\Config;
 return [
     'name' => env('APP_NAME'),
     'env' => env('APP_ENV'),
-    'debug' => (bool) 
+    'debug' => (bool)
         env('APP_DEBUG'),
     'url' => env('APP_URL'),
     'timezone' => 'UTC',
@@ -18,8 +19,8 @@ return [
     'cipher' => 'AES-256-CBC',
     'key' => env('APP_KEY'),
     'previous_keys' => [
-        ...array_filter(explode(',', (string) 
-            env('APP_PREVIOUS_KEYS')))
+        ...array_filter(explode(',', (string)
+            env('APP_PREVIOUS_KEYS'))),
     ],
     'maintenance' => [
         'driver' => env('APP_MAINTENANCE_DRIVER'),

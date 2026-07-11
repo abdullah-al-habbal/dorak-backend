@@ -12,6 +12,12 @@ Before building, read `docs/02_prd.md` then `docs/feature-index.md` to see what 
 ## 🗺 Feature Index
 After adding a feature, append entry to `docs/feature-index.md`.
 
+## 🛠️ AI Agent Skills
+Key skills under `.claude/skills/`:
+| Skill | Trigger |
+|---|---|
+| **Strict Backend Architecture** (`10StrictBackendArchitecture`) | Writing Actions, Resources, Requests, or Handlers. Enforces FormRequests, Command objects, strict imports, Resource composition. |
+
 ## 🚀 Protocol
 1. Read `docs/02_prd.md` + `docs/feature-index.md`
 2. Read relevant `.claude/skills/*/SKILL.md`

@@ -1,4 +1,5 @@
 <?php
+
 // modules/Ban/Models/BanModel.php
 declare(strict_types=1);
 
@@ -31,7 +32,7 @@ class BanModel extends Model
     protected function casts(): array
     {
         return [
-            'banned_from'  => 'datetime',
+            'banned_from' => 'datetime',
             'banned_until' => 'datetime',
         ];
     }

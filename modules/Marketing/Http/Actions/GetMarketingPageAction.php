@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Marketing\Http\Actions;
@@ -12,6 +13,7 @@ use Modules\Marketing\Http\Requests\GetMarketingPageRequest;
 final class GetMarketingPageAction
 {
     use ApiResponseTrait;
+
     public function __construct(
         private readonly GetMarketingPageHandler $handler,
         private readonly TranslatorHandlerService $translator,

@@ -1,12 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Booking\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Modules\Booking\Models\BookingModel;
 use Modules\Booking\Http\Resources\BookingResource;
+use Modules\Booking\Models\BookingModel;
 use Modules\Core\Http\Actions\BaseApiAction;
 
 final class ListUserBookingsAction extends BaseApiAction

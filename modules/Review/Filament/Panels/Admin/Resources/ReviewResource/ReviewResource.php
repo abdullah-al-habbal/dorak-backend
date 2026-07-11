@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Review\Filament\Panels\Admin\Resources\ReviewResource;
@@ -43,7 +44,7 @@ class ReviewResource extends Resource
     {
         return [
             'index' => Pages\ListReviewsPage::route('/'),
-            'view'  => Pages\ViewReviewPage::route('/{record}'),
+            'view' => Pages\ViewReviewPage::route('/{record}'),
         ];
     }
 }

@@ -20,10 +20,10 @@ class BrandSeeder extends Seeder
             ?? CurrencyModel::factory()->create(['code' => 'SYP']);
 
         BrandModel::create([
-            'owner_id'         => $client->id,
-            'name'             => ['en' => 'Dorak Demo', 'ar' => 'دوراك التجريبي'],
-            'description'      => ['en' => 'Demo brand for development', 'ar' => 'علامة تجريبية للتطوير'],
-            'logo'             => null,
+            'owner_id' => $client->id,
+            'name' => ['en' => 'Dorak Demo', 'ar' => 'دوراك التجريبي'],
+            'description' => ['en' => 'Demo brand for development', 'ar' => 'علامة تجريبية للتطوير'],
+            'logo' => null,
             'base_currency_id' => $syp->id,
         ]);
     }

@@ -12,7 +12,7 @@ class BarberSeeder extends Seeder
     public function run(): void
     {
         BarberModel::factory()->create([
-            'name'  => [
+            'name' => [
                 'en' => 'Barber',
                 'ar' => 'حلاق',
             ],

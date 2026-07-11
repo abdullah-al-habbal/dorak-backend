@@ -1,4 +1,5 @@
 <?php
+
 // modules/Barber/Filament/Panels/Admin/Resources/BarberResource/BarberFormSchema.php
 declare(strict_types=1);
 
@@ -42,8 +43,8 @@ final class BarberFormSchema
                 ->schema([
                     Select::make('status')
                         ->options([
-                            'pending'  => 'Pending',
-                            'enabled'  => 'Enabled',
+                            'pending' => 'Pending',
+                            'enabled' => 'Enabled',
                             'disabled' => 'Disabled',
                         ])
                         ->required(),

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Client\Filament\Panels\Admin\Resources\ClientResource;
@@ -24,9 +25,9 @@ final class ClientInfolistSchema
                     TextEntry::make('status')
                         ->badge()
                         ->color(fn (string $state): string => match ($state) {
-                            'enabled'  => 'success',
+                            'enabled' => 'success',
                             'disabled' => 'danger',
-                            default    => 'warning',
+                            default => 'warning',
                         }),
                     TextEntry::make('created_at')
                         ->dateTime(),

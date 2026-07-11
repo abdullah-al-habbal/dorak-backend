@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Branch\Filament\Panels\Admin\Resources\BranchResource;
@@ -7,7 +8,6 @@ use Filament\Forms\Form;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
-use Modules\Activation\Filament\Actions\ToggleActivationAction;
 use Modules\Branch\Models\BranchModel;
 
 class BranchResource extends Resource
@@ -43,10 +43,10 @@ class BranchResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListBranchesPage::route('/'),
+            'index' => Pages\ListBranchesPage::route('/'),
             'create' => Pages\CreateBranchPage::route('/create'),
-            'view'   => Pages\ViewBranchPage::route('/{record}'),
-            'edit'   => Pages\EditBranchPage::route('/{record}/edit'),
+            'view' => Pages\ViewBranchPage::route('/{record}'),
+            'edit' => Pages\EditBranchPage::route('/{record}/edit'),
         ];
     }
 }

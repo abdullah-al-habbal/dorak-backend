@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Explore\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
+use Modules\Barber\Http\Resources\BarberResource;
 use Modules\Barber\Models\BarberModel;
 use Modules\Core\Http\Actions\BaseApiAction;
 
@@ -33,7 +35,7 @@ final class ExploreBarbersAction extends BaseApiAction
 
         return $this->paginated(
             paginator: $barbers,
-            resourceClass: \Modules\Barber\Http\Resources\BarberResource::class,
+            resourceClass: BarberResource::class,
         );
     }
 }

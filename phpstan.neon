@@ -6,8 +6,6 @@ parameters:
     paths:
         - modules/
         - bootstrap/
-        - config/
-        - routes/
     excludePaths:
         - vendor/*
         - node_modules/*

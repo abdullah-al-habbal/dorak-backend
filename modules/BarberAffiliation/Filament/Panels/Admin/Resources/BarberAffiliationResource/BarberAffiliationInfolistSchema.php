@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\BarberAffiliation\Filament\Panels\Admin\Resources\BarberAffiliationResource;
@@ -24,9 +25,9 @@ final class BarberAffiliationInfolistSchema
                     TextEntry::make('status')
                         ->badge()
                         ->color(fn (string $state): string => match ($state) {
-                            'accepted'   => 'success',
+                            'accepted' => 'success',
                             'terminated' => 'danger',
-                            default      => 'warning',
+                            default => 'warning',
                         }),
                     TextEntry::make('commission_rate'),
                     TextEntry::make('invited_at')

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\BarberAffiliation\Filament\Panels\Admin\Resources\BarberAffiliationResource;
@@ -42,10 +43,10 @@ class BarberAffiliationResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListBarberAffiliationsPage::route('/'),
+            'index' => Pages\ListBarberAffiliationsPage::route('/'),
             'create' => Pages\CreateBarberAffiliationPage::route('/create'),
-            'view'   => Pages\ViewBarberAffiliationPage::route('/{record}'),
-            'edit'   => Pages\EditBarberAffiliationPage::route('/{record}/edit'),
+            'view' => Pages\ViewBarberAffiliationPage::route('/{record}'),
+            'edit' => Pages\EditBarberAffiliationPage::route('/{record}/edit'),
         ];
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 // tests/Unit/Barber/Models/BarberModelTest.php
 declare(strict_types=1);
 
@@ -16,21 +17,21 @@ it('stores translatable name', function () {
 });
 
 it('can access barber panel', function () {
-    $barber = new BarberModel();
+    $barber = new BarberModel;
     $panel = Panel::make()->id('barber');
 
     expect($barber->canAccessPanel($panel))->toBeTrue();
 });
 
 it('cannot access admin panel', function () {
-    $barber = new BarberModel();
+    $barber = new BarberModel;
     $panel = Panel::make()->id('admin');
 
     expect($barber->canAccessPanel($panel))->toBeFalse();
 });
 
 it('cannot access branch panel', function () {
-    $barber = new BarberModel();
+    $barber = new BarberModel;
     $panel = Panel::make()->id('branch');
 
     expect($barber->canAccessPanel($panel))->toBeFalse();

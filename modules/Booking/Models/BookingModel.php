@@ -1,4 +1,5 @@
 <?php
+
 // modules/Booking/Models/BookingModel.php
 declare(strict_types=1);
 
@@ -30,7 +31,7 @@ class BookingModel extends Model
     protected function casts(): array
     {
         return [
-            'time_slot'       => 'datetime',
+            'time_slot' => 'datetime',
             'at_home_location' => 'array',
         ];
     }

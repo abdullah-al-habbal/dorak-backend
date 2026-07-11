@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\OfferedService\Filament\Panels\Admin\Resources\OfferedServiceResource;
@@ -10,6 +11,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Forms\Form;
+use Modules\Brand\Models\BrandModel;
 
 final class OfferedServiceFormSchema
 {
@@ -28,7 +30,7 @@ final class OfferedServiceFormSchema
                     MorphToSelect::make('serviceable')
                         ->label('Entity')
                         ->types([
-                            MorphToSelect\Type::make(\Modules\Brand\Models\BrandModel::class)
+                            MorphToSelect\Type::make(BrandModel::class)
                                 ->titleAttribute('name.en'),
                         ])
                         ->required(),

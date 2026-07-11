@@ -1,4 +1,5 @@
 <?php
+
 // modules/Activation/Database/Factories/ActivationLogFactory.php
 declare(strict_types=1);
 
@@ -16,11 +17,11 @@ class ActivationLogFactory extends Factory
     public function definition(): array
     {
         return [
-            'activable_id'   => BarberModel::factory(),
+            'activable_id' => BarberModel::factory(),
             'activable_type' => BarberModel::class,
-            'status'         => 'pending',
-            'admin_id'       => AdminModel::factory(),
-            'activated_at'   => now(),
+            'status' => 'pending',
+            'admin_id' => AdminModel::factory(),
+            'activated_at' => now(),
         ];
     }
 

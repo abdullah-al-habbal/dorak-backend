@@ -1,4 +1,5 @@
 <?php
+
 // tests/Unit/Admin/Models/AdminModelTest.php
 declare(strict_types=1);
 
@@ -16,14 +17,14 @@ it('stores translatable name', function () {
 });
 
 it('can access admin panel', function () {
-    $admin = new AdminModel();
+    $admin = new AdminModel;
     $panel = Panel::make()->id('admin');
 
     expect($admin->canAccessPanel($panel))->toBeTrue();
 });
 
 it('cannot access branch panel', function () {
-    $admin = new AdminModel();
+    $admin = new AdminModel;
     $panel = Panel::make()->id('branch');
 
     expect($admin->canAccessPanel($panel))->toBeFalse();

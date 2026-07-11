@@ -1,4 +1,5 @@
 <?php
+
 // modules/JobPosting/Database/Factories/JobPostingFactory.php
 declare(strict_types=1);
 
@@ -15,8 +16,8 @@ class JobPostingFactory extends Factory
     public function definition(): array
     {
         return [
-            'branch_id'   => BranchModel::factory(),
-            'title'       => [
+            'branch_id' => BranchModel::factory(),
+            'title' => [
                 'en' => fake()->jobTitle(),
                 'ar' => fake('ar_SA')->jobTitle(),
             ],
@@ -24,7 +25,7 @@ class JobPostingFactory extends Factory
                 'en' => fake()->paragraph(),
                 'ar' => fake('ar_SA')->paragraph(),
             ],
-            'status'      => 'open',
+            'status' => 'open',
         ];
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Currency\Filament\Panels\Admin\Resources\CurrencyResource;
@@ -42,10 +43,10 @@ class CurrencyResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListCurrenciesPage::route('/'),
+            'index' => Pages\ListCurrenciesPage::route('/'),
             'create' => Pages\CreateCurrencyPage::route('/create'),
-            'view'   => Pages\ViewCurrencyPage::route('/{record}'),
-            'edit'   => Pages\EditCurrencyPage::route('/{record}/edit'),
+            'view' => Pages\ViewCurrencyPage::route('/{record}'),
+            'edit' => Pages\EditCurrencyPage::route('/{record}/edit'),
         ];
     }
 }

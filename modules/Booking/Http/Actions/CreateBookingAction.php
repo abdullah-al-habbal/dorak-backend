@@ -1,29 +1,31 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Booking\Http\Actions;
 
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
-use Illuminate\Validation\ValidationException;
+use Modules\Booking\Domain\Commands\CreateBookingCommand;
+use Modules\Booking\Http\Requests\CreateBookingRequest;
+use Modules\Booking\Http\Resources\BookingResource;
 use Modules\Booking\Models\BookingModel;
 use Modules\Chair\Models\ChairModel;
 use Modules\Core\Http\Actions\BaseApiAction;
 
 final class CreateBookingAction extends BaseApiAction
 {
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(CreateBookingRequest $request): JsonResponse
     {
-        $validated = $request->validate([
-            'chair_id' => ['required', 'string', 'exists:chairs,id'],
-            'barber_id' => ['nullable', 'string', 'exists:barbers,id'],
-            'time_slot' => ['required', 'date_format:Y-m-d H:i:s', 'after:now'],
-            'service_ids' => ['nullable', 'array'],
-            'service_ids.*' => ['string', 'exists:offered_services,id'],
-        ]);
+        $command = new CreateBookingCommand(
+            ChairId: $request->validated('chair_id'),
+            BarberId: $request->validated('barber_id'),
+            ClientId: $request->user()->id,
+            TimeSlot: Carbon::parse($request->validated('time_slot')),
+            ServiceIds: $request->validated('service_ids', []),
+        );
 
-        $chair = ChairModel::findOrFail($validated['chair_id']);
+        $chair = ChairModel::findOrFail($command->ChairId);
 
         if ($chair->status !== 'available') {
             return $this->error(
@@ -32,10 +34,8 @@ final class CreateBookingAction extends BaseApiAction
             );
         }
 
-        $timeSlot = Carbon::parse($validated['time_slot']);
-
-        $conflict = BookingModel::where('chair_id', $validated['chair_id'])
-            ->where('time_slot', $timeSlot)
+        $conflict = BookingModel::where('chair_id', $command->ChairId)
+            ->where('time_slot', $command->TimeSlot)
             ->whereNotIn('status', ['cancelled'])
             ->exists();
 
@@ -47,21 +47,21 @@ final class CreateBookingAction extends BaseApiAction
         }
 
         $booking = BookingModel::create([
-            'client_id' => $request->user()->id,
-            'chair_id' => $validated['chair_id'],
-            'barber_id' => $validated['barber_id'] ?? $chair->barber_id,
-            'time_slot' => $timeSlot,
+            'client_id' => $command->ClientId,
+            'chair_id' => $command->ChairId,
+            'barber_id' => $command->BarberId ?? $chair->barber_id,
+            'time_slot' => $command->TimeSlot,
             'status' => 'confirmed',
         ]);
 
-        if (!empty($validated['service_ids'])) {
-            $booking->services()->attach($validated['service_ids']);
+        if ($command->ServiceIds !== []) {
+            $booking->services()->attach($command->ServiceIds);
         }
 
         $booking->load(['chair.barber', 'barber', 'services']);
 
         return $this->created(
-            data: new \Modules\Booking\Http\Resources\BookingResource($booking),
+            data: new BookingResource($booking),
             message: __('booking::messages.booking_created'),
         );
     }

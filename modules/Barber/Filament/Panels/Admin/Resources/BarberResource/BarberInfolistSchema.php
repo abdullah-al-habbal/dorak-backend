@@ -1,4 +1,5 @@
 <?php
+
 // modules/Barber/Filament/Panels/Admin/Resources/BarberResource/BarberInfolistSchema.php
 declare(strict_types=1);
 
@@ -25,9 +26,9 @@ final class BarberInfolistSchema
                     TextEntry::make('status')
                         ->badge()
                         ->color(fn (string $state): string => match ($state) {
-                            'enabled'  => 'success',
+                            'enabled' => 'success',
                             'disabled' => 'danger',
-                            default    => 'warning',
+                            default => 'warning',
                         }),
                     IconEntry::make('is_freelancer')
                         ->boolean(),

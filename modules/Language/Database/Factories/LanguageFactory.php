@@ -1,4 +1,5 @@
 <?php
+
 // modules/Language/Database/Factories/LanguageFactory.php
 declare(strict_types=1);
 
@@ -14,12 +15,12 @@ class LanguageFactory extends Factory
     public function definition(): array
     {
         return [
-            'code'       => fake()->unique()->randomElement(['en', 'ar']),
-            'name'       => [
+            'code' => fake()->unique()->randomElement(['en', 'ar']),
+            'name' => [
                 'en' => fake()->word(),
                 'ar' => fake('ar_SA')->word(),
             ],
-            'direction'  => 'ltr',
+            'direction' => 'ltr',
             'is_default' => false,
         ];
     }

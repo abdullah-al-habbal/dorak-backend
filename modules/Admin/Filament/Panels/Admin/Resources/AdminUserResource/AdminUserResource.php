@@ -1,4 +1,5 @@
 <?php
+
 // modules/Admin/Filament/Panels/Admin/Resources/AdminUserResource/AdminUserResource.php
 declare(strict_types=1);
 
@@ -47,10 +48,10 @@ class AdminUserResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListAdminUsersPage::route('/'),
+            'index' => Pages\ListAdminUsersPage::route('/'),
             'create' => Pages\CreateAdminUserPage::route('/create'),
-            'view'   => Pages\ViewAdminUserPage::route('/{record}'),
-            'edit'   => Pages\EditAdminUserPage::route('/{record}/edit'),
+            'view' => Pages\ViewAdminUserPage::route('/{record}'),
+            'edit' => Pages\EditAdminUserPage::route('/{record}/edit'),
         ];
     }
 }

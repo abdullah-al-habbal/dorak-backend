@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Booking\Filament\Panels\Admin\Resources\BookingResource;
@@ -30,11 +31,11 @@ final class BookingFormSchema
                         ->required(),
                     Select::make('status')
                         ->options([
-                            'pending'    => 'Pending',
-                            'confirmed'  => 'Confirmed',
+                            'pending' => 'Pending',
+                            'confirmed' => 'Confirmed',
                             'in_progress' => 'In Progress',
-                            'completed'  => 'Completed',
-                            'cancelled'  => 'Cancelled',
+                            'completed' => 'Completed',
+                            'cancelled' => 'Cancelled',
                         ])
                         ->required(),
                     KeyValue::make('at_home_location'),

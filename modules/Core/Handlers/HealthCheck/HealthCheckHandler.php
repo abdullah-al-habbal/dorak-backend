@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Core\Handlers\HealthCheck;
@@ -17,34 +18,34 @@ class HealthCheckHandler
     public function handle(): array
     {
         $checks = [
-            'app'      => $this->checkApp(),
+            'app' => $this->checkApp(),
             'database' => $this->resolver->checkDatabase(),
-            'cache'    => $this->checkCache(),
-            'php'      => $this->checkPhp(),
-            'queue'    => $this->checkQueue(),
+            'cache' => $this->checkCache(),
+            'php' => $this->checkPhp(),
+            'queue' => $this->checkQueue(),
         ];
 
         return [
-            'status'    => $this->resolveOverallStatus($checks),
+            'status' => $this->resolveOverallStatus($checks),
             'timestamp' => now()->toIso8601String(),
-            'checks'    => $checks,
+            'checks' => $checks,
         ];
     }
 
     private function checkApp(): array
     {
         return [
-            'status'      => 'ok',
+            'status' => 'ok',
             'environment' => (string) config('app.env'),
-            'debug_mode'  => (bool) config('app.debug'),
-            'timezone'    => (string) config('app.timezone'),
-            'locale'      => (string) config('app.locale'),
+            'debug_mode' => (bool) config('app.debug'),
+            'timezone' => (string) config('app.timezone'),
+            'locale' => (string) config('app.locale'),
         ];
     }
 
     private function checkCache(): array
     {
-        $key = 'health:probe:' . uniqid('', true);
+        $key = 'health:probe:'.uniqid('', true);
 
         try {
             Cache::put($key, true, 10);
@@ -65,16 +66,16 @@ class HealthCheckHandler
 
     private function checkPhp(): array
     {
-        $required   = ['pdo', 'mbstring', 'openssl', 'tokenizer', 'xml', 'ctype', 'json', 'bcmath'];
-        $loaded     = array_map('strtolower', get_loaded_extensions());
+        $required = ['pdo', 'mbstring', 'openssl', 'tokenizer', 'xml', 'ctype', 'json', 'bcmath'];
+        $loaded = array_map('strtolower', get_loaded_extensions());
         $extensions = array_combine(
             $required,
             array_map(fn (string $ext): bool => in_array($ext, $loaded, true), $required),
         );
 
         return [
-            'status'     => ! in_array(false, $extensions, true) ? 'ok' : 'warn',
-            'version'    => PHP_VERSION,
+            'status' => ! in_array(false, $extensions, true) ? 'ok' : 'warn',
+            'version' => PHP_VERSION,
             'extensions' => $extensions,
         ];
     }

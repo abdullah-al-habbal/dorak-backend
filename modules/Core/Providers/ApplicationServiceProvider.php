@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Core\Providers;
@@ -39,7 +40,7 @@ final class ApplicationServiceProvider extends BaseModuleServiceProvider
     private function registerMorphMap(): void
     {
         Relation::enforceMorphMap([
-            'brand'  => BrandModel::class,
+            'brand' => BrandModel::class,
             'branch' => BranchModel::class,
             'barber' => BarberModel::class,
             'client' => ClientModel::class,
@@ -61,15 +62,15 @@ final class ApplicationServiceProvider extends BaseModuleServiceProvider
     {
         Route::prefix('api')
             ->middleware('api')
-            ->group(__DIR__ . '/../Routes/Api/V1/api_v1_routes.php');
+            ->group(__DIR__.'/../Routes/Api/V1/api_v1_routes.php');
     }
 
     private function loadAppConfig(): void
     {
         $config = $this->app->make(ConfigRepository::class);
-        $path   = __DIR__ . '/../Config';
+        $path = __DIR__.'/../Config';
 
-        foreach (glob($path . '/*.php') as $file) {
+        foreach (glob($path.'/*.php') as $file) {
             $key = basename($file, '.php');
             $config->set($key, require $file);
         }

@@ -1,4 +1,5 @@
 <?php
+
 // tests/Integration/Client/Database/Factories/ClientFactoryTest.php
 declare(strict_types=1);
 

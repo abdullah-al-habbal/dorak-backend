@@ -1,4 +1,5 @@
 <?php
+
 // modules/Currency/Database/Factories/ExchangeRateFactory.php
 declare(strict_types=1);
 
@@ -16,9 +17,9 @@ class ExchangeRateFactory extends Factory
     {
         return [
             'from_currency_id' => CurrencyModel::factory(),
-            'to_currency_id'   => CurrencyModel::factory(),
-            'rate'             => fake()->randomFloat(6, 0.5, 100),
-            'effective_at'     => now(),
+            'to_currency_id' => CurrencyModel::factory(),
+            'rate' => fake()->randomFloat(6, 0.5, 100),
+            'effective_at' => now(),
         ];
     }
 }

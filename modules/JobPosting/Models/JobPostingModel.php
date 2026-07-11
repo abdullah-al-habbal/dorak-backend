@@ -1,4 +1,5 @@
 <?php
+
 // modules/JobPosting/Models/JobPostingModel.php
 declare(strict_types=1);
 
@@ -30,7 +31,7 @@ class JobPostingModel extends Model
     protected function casts(): array
     {
         return [
-            'title'       => 'array',
+            'title' => 'array',
             'description' => 'array',
         ];
     }

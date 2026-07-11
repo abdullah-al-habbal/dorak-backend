@@ -1,4 +1,5 @@
 <?php
+
 // tests/Unit/Client/Models/ClientModelTest.php
 declare(strict_types=1);
 
@@ -16,7 +17,7 @@ it('stores translatable name', function () {
 });
 
 it('cannot access barber panel when not a barber', function () {
-    $client = new ClientModel();
+    $client = new ClientModel;
     $panel = Panel::make()->id('barber');
 
     expect($client->canAccessPanel($panel))->toBeFalse();

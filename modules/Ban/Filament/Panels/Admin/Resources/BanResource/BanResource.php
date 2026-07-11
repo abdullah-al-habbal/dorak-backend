@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Ban\Filament\Panels\Admin\Resources\BanResource;
@@ -42,10 +43,10 @@ class BanResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListBansPage::route('/'),
+            'index' => Pages\ListBansPage::route('/'),
             'create' => Pages\CreateBanPage::route('/create'),
-            'view'   => Pages\ViewBanPage::route('/{record}'),
-            'edit'   => Pages\EditBanPage::route('/{record}/edit'),
+            'view' => Pages\ViewBanPage::route('/{record}'),
+            'edit' => Pages\EditBanPage::route('/{record}/edit'),
         ];
     }
 }

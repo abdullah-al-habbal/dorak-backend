@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\BarberAffiliation\Filament\Panels\Admin\Resources\BarberAffiliationResource;
@@ -23,9 +24,9 @@ final class BarberAffiliationsTable
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'accepted'   => 'success',
+                        'accepted' => 'success',
                         'terminated' => 'danger',
-                        default      => 'warning',
+                        default => 'warning',
                     }),
                 TextColumn::make('commission_rate')
                     ->suffix('%'),

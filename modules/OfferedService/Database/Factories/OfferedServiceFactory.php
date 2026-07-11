@@ -1,4 +1,5 @@
 <?php
+
 // modules/OfferedService/Database/Factories/OfferedServiceFactory.php
 declare(strict_types=1);
 
@@ -16,21 +17,21 @@ class OfferedServiceFactory extends Factory
     public function definition(): array
     {
         return [
-            'serviceable_id'    => BrandModel::factory(),
-            'serviceable_type'  => 'brand',
-            'name'              => [
+            'serviceable_id' => BrandModel::factory(),
+            'serviceable_type' => 'brand',
+            'name' => [
                 'en' => fake()->word(),
                 'ar' => fake('ar_SA')->word(),
             ],
-            'description'       => [
+            'description' => [
                 'en' => fake()->sentence(),
                 'ar' => fake('ar_SA')->sentence(),
             ],
-            'price'             => fake()->randomFloat(2, 10, 500),
-            'currency_id'       => CurrencyModel::factory(),
-            'duration'          => fake()->randomElement([15, 30, 45, 60]),
-            'at_home'           => false,
-            'active'            => true,
+            'price' => fake()->randomFloat(2, 10, 500),
+            'currency_id' => CurrencyModel::factory(),
+            'duration' => fake()->randomElement([15, 30, 45, 60]),
+            'at_home' => false,
+            'active' => true,
         ];
     }
 

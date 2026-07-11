@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\JobPosting\Filament\Panels\Admin\Resources\JobPostingResource\Pages;

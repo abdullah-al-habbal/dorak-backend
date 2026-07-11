@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Booking\Filament\Panels\Admin\Resources\BookingResource\Pages;

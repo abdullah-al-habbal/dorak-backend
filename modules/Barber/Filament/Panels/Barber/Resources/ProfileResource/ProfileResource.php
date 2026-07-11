@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Barber\Filament\Panels\Barber\Resources\ProfileResource;
@@ -7,6 +8,7 @@ use Filament\Forms\Form;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Modules\Barber\Models\BarberModel;
 
 class ProfileResource extends Resource
@@ -19,7 +21,7 @@ class ProfileResource extends Resource
 
     protected static ?string $slug = 'profile';
 
-    public static function getEloquentQuery(): \Illuminate\Database\Eloquent\Builder
+    public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('id', filament()->auth()->id());
     }
@@ -48,8 +50,8 @@ class ProfileResource extends Resource
     {
         return [
             'index' => Pages\ListProfilesPage::route('/'),
-            'edit'  => Pages\EditProfilePage::route('/{record}/edit'),
-            'view'  => Pages\ViewProfilePage::route('/{record}'),
+            'edit' => Pages\EditProfilePage::route('/{record}/edit'),
+            'view' => Pages\ViewProfilePage::route('/{record}'),
         ];
     }
 }

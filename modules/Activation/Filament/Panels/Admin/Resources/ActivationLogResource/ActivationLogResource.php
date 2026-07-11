@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Activation\Filament\Panels\Admin\Resources\ActivationLogResource;
@@ -43,7 +44,7 @@ class ActivationLogResource extends Resource
     {
         return [
             'index' => Pages\ListActivationLogsPage::route('/'),
-            'view'  => Pages\ViewActivationLogPage::route('/{record}'),
+            'view' => Pages\ViewActivationLogPage::route('/{record}'),
         ];
     }
 }

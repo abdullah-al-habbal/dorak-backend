@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\OfferedService\Filament\Panels\Admin\Resources\OfferedServiceResource;
@@ -42,10 +43,10 @@ class OfferedServiceResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListOfferedServicesPage::route('/'),
+            'index' => Pages\ListOfferedServicesPage::route('/'),
             'create' => Pages\CreateOfferedServicePage::route('/create'),
-            'view'   => Pages\ViewOfferedServicePage::route('/{record}'),
-            'edit'   => Pages\EditOfferedServicePage::route('/{record}/edit'),
+            'view' => Pages\ViewOfferedServicePage::route('/{record}'),
+            'edit' => Pages\EditOfferedServicePage::route('/{record}/edit'),
         ];
     }
 }

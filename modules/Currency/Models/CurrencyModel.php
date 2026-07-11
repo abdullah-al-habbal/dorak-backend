@@ -1,4 +1,5 @@
 <?php
+
 // modules/Currency/Models/CurrencyModel.php
 declare(strict_types=1);
 
@@ -7,6 +8,7 @@ namespace Modules\Currency\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class CurrencyModel extends Model
 {
@@ -22,17 +24,17 @@ class CurrencyModel extends Model
     protected function casts(): array
     {
         return [
-            'name'       => 'array',
+            'name' => 'array',
             'is_default' => 'boolean',
         ];
     }
 
-    public function exchangeRatesFrom(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function exchangeRatesFrom(): HasMany
     {
         return $this->hasMany(ExchangeRateModel::class, 'from_currency_id');
     }
 
-    public function exchangeRatesTo(): \Illuminate\Database\Eloquent\Relations\HasMany
+    public function exchangeRatesTo(): HasMany
     {
         return $this->hasMany(ExchangeRateModel::class, 'to_currency_id');
     }

@@ -1,9 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Branch\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Modules\Barber\Http\Resources\BarberResource;
 
 final class ChairResource extends JsonResource
 {
@@ -14,10 +16,7 @@ final class ChairResource extends JsonResource
             'label' => $this->label,
             'status' => $this->status,
             'ui_metadata' => $this->ui_metadata,
-            'barber' => $this->when($this->relationLoaded('barber') && $this->barber !== null, fn () => [
-                'id' => $this->barber->id,
-                'name' => $this->barber->name,
-            ]),
+            'barber' => BarberResource::make($this->whenLoaded('barber')),
         ];
     }
 }

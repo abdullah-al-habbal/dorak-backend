@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Chair\Filament\Panels\Admin\Resources\ChairResource;
@@ -42,10 +43,10 @@ class ChairResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListChairsPage::route('/'),
+            'index' => Pages\ListChairsPage::route('/'),
             'create' => Pages\CreateChairPage::route('/create'),
-            'view'   => Pages\ViewChairPage::route('/{record}'),
-            'edit'   => Pages\EditChairPage::route('/{record}/edit'),
+            'view' => Pages\ViewChairPage::route('/{record}'),
+            'edit' => Pages\EditChairPage::route('/{record}/edit'),
         ];
     }
 }

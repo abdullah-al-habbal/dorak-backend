@@ -1,4 +1,5 @@
 <?php
+
 // modules/Barber/Models/BarberModel.php
 declare(strict_types=1);
 
@@ -24,8 +25,8 @@ use Spatie\Translatable\HasTranslations;
 class BarberModel extends Authenticatable implements FilamentUser
 {
     use HasFactory;
-    use HasUuids;
     use HasTranslations;
+    use HasUuids;
     use Notifiable;
 
     protected $table = 'barbers';

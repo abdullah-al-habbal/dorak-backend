@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\JobPosting\Filament\Panels\Admin\Resources\ApplicationResource;
@@ -25,7 +26,7 @@ final class ApplicationInfolistSchema
                             'accepted' => 'success',
                             'rejected' => 'danger',
                             'reviewed' => 'info',
-                            default    => 'warning',
+                            default => 'warning',
                         }),
                 ]),
         ]);

@@ -1,4 +1,5 @@
 <?php
+
 // modules/Activation/Models/ActivationLogModel.php
 declare(strict_types=1);
 
@@ -32,9 +33,9 @@ class ActivationLogModel extends Model
     protected function casts(): array
     {
         return [
-            'status'       => ActivationStatusEnum::class,
+            'status' => ActivationStatusEnum::class,
             'activated_at' => 'datetime',
-            'expires_at'   => 'datetime',
+            'expires_at' => 'datetime',
         ];
     }
 

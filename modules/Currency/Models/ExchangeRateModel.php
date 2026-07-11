@@ -1,4 +1,5 @@
 <?php
+
 // modules/Currency/Models/ExchangeRateModel.php
 declare(strict_types=1);
 
@@ -23,7 +24,7 @@ class ExchangeRateModel extends Model
     protected function casts(): array
     {
         return [
-            'rate'         => 'decimal:6',
+            'rate' => 'decimal:6',
             'effective_at' => 'datetime',
         ];
     }

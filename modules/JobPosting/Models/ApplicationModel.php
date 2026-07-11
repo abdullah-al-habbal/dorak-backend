@@ -1,4 +1,5 @@
 <?php
+
 // modules/JobPosting/Models/ApplicationModel.php
 declare(strict_types=1);
 

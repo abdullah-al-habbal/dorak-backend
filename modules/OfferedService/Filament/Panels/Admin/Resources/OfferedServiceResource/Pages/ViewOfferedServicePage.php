@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\OfferedService\Filament\Panels\Admin\Resources\OfferedServiceResource\Pages;

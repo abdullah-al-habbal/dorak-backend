@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Language\Filament\Panels\Admin\Resources\LanguageResource;

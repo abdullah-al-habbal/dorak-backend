@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Branch\Filament\Panels\Admin\Resources\BranchResource;
@@ -6,7 +7,6 @@ namespace Modules\Branch\Filament\Panels\Admin\Resources\BranchResource;
 use Filament\Tables\Actions\DeleteAction;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Modules\Activation\Filament\Actions\ToggleActivationAction;
@@ -26,9 +26,9 @@ final class BranchsTable
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'enabled'  => 'success',
+                        'enabled' => 'success',
                         'disabled' => 'danger',
-                        default    => 'warning',
+                        default => 'warning',
                     }),
                 TextColumn::make('created_at')
                     ->dateTime()

@@ -1,4 +1,5 @@
 <?php
+
 // modules/Currency/Database/Migrations/0001_01_01_000002_create_exchange_rates_table.php
 declare(strict_types=1);
 

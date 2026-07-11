@@ -12,7 +12,7 @@ class BranchSeeder extends Seeder
     public function run(): void
     {
         BranchModel::factory()->create([
-            'name'  => [
+            'name' => [
                 'en' => 'Branch',
                 'ar' => 'فرع',
             ],

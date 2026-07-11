@@ -1,4 +1,5 @@
 <?php
+
 // modules/Ban/Database/Migrations/0001_01_01_200091_create_bans_table.php
 declare(strict_types=1);
 

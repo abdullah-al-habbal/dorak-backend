@@ -1,12 +1,14 @@
 <?php
+
 // /home/lenovo/work/me/dorak/dorak-backend/modules/Core/Config/auth.php
 declare(strict_types=1);
+
 namespace Modules\Core\Config;
 
-use Modules\Barber\Models\BarberModel;
-use Modules\Client\Models\ClientModel;
 use Modules\Admin\Models\AdminModel;
+use Modules\Barber\Models\BarberModel;
 use Modules\Branch\Models\BranchModel;
+use Modules\Client\Models\ClientModel;
 
 return [
     'defaults' => [

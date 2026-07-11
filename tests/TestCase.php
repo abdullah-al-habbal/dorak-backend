@@ -1,4 +1,5 @@
 <?php
+
 // tests/TestCase.php
 declare(strict_types=1);
 

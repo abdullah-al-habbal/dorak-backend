@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\JobPosting\Filament\Panels\Admin\Resources\ApplicationResource;
@@ -24,10 +25,10 @@ final class ApplicationFormSchema
                         ->required(),
                     Select::make('status')
                         ->options([
-                            'pending'   => 'Pending',
-                            'reviewed'  => 'Reviewed',
-                            'accepted'  => 'Accepted',
-                            'rejected'  => 'Rejected',
+                            'pending' => 'Pending',
+                            'reviewed' => 'Reviewed',
+                            'accepted' => 'Accepted',
+                            'rejected' => 'Rejected',
                         ])
                         ->required(),
                     KeyValue::make('profile_snapshot'),

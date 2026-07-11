@@ -1,4 +1,5 @@
 <?php
+
 // modules/Activation/Observers/ActivationLogObserver.php
 declare(strict_types=1);
 

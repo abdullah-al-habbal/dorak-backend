@@ -1,4 +1,5 @@
 <?php
+
 // modules/Brand/Database/Factories/BrandFactory.php
 declare(strict_types=1);
 
@@ -16,16 +17,16 @@ class BrandFactory extends Factory
     public function definition(): array
     {
         return [
-            'owner_id'         => ClientModel::factory(),
-            'name'             => [
+            'owner_id' => ClientModel::factory(),
+            'name' => [
                 'en' => fake()->company(),
                 'ar' => fake('ar_SA')->company(),
             ],
-            'description'      => [
+            'description' => [
                 'en' => fake()->sentence(),
                 'ar' => fake('ar_SA')->sentence(),
             ],
-            'logo'             => null,
+            'logo' => null,
             'base_currency_id' => CurrencyModel::factory(),
         ];
     }

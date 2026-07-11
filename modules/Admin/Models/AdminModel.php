@@ -1,4 +1,5 @@
 <?php
+
 // modules/Admin/Models/AdminModel.php
 declare(strict_types=1);
 
@@ -19,8 +20,8 @@ use Spatie\Translatable\HasTranslations;
 class AdminModel extends Authenticatable implements FilamentUser
 {
     use HasFactory;
-    use HasUuids;
     use HasTranslations;
+    use HasUuids;
     use Notifiable;
 
     protected $table = 'admins';

@@ -1,4 +1,5 @@
 <?php
+
 // modules/JobPosting/Database/Migrations/0001_01_01_000002_create_job_applications_table.php
 declare(strict_types=1);
 

@@ -1,4 +1,5 @@
 <?php
+
 // modules/BarberAffiliation/Database/Factories/BarberAffiliationFactory.php
 declare(strict_types=1);
 
@@ -16,21 +17,21 @@ class BarberAffiliationFactory extends Factory
     public function definition(): array
     {
         return [
-            'barber_id'        => BarberModel::factory(),
-            'affiliable_id'    => BranchModel::factory(),
-            'affiliable_type'  => 'branch',
-            'status'           => 'active',
-            'commission_rate'  => null,
-            'invited_at'       => now()->subDays(7),
-            'accepted_at'      => now()->subDays(6),
-            'terminated_at'    => null,
+            'barber_id' => BarberModel::factory(),
+            'affiliable_id' => BranchModel::factory(),
+            'affiliable_type' => 'branch',
+            'status' => 'active',
+            'commission_rate' => null,
+            'invited_at' => now()->subDays(7),
+            'accepted_at' => now()->subDays(6),
+            'terminated_at' => null,
         ];
     }
 
     public function pending(): static
     {
         return $this->state(fn (array $attrs) => [
-            'status'      => 'pending',
+            'status' => 'pending',
             'accepted_at' => null,
         ]);
     }
@@ -38,7 +39,7 @@ class BarberAffiliationFactory extends Factory
     public function terminated(): static
     {
         return $this->state(fn (array $attrs) => [
-            'status'        => 'terminated',
+            'status' => 'terminated',
             'terminated_at' => now(),
         ]);
     }

@@ -1,4 +1,5 @@
 <?php
+
 // modules/Preference/Database/Migrations/0001_01_01_000001_create_preferences_table.php
 declare(strict_types=1);
 

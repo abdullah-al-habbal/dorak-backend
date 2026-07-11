@@ -12,7 +12,7 @@ class ClientSeeder extends Seeder
     public function run(): void
     {
         ClientModel::factory()->create([
-            'name'  => [
+            'name' => [
                 'en' => 'Admin',
                 'ar' => 'مدير النظام',
             ],

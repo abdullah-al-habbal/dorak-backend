@@ -28,11 +28,11 @@ class BookingSeeder extends Seeder
             ?? OfferedServiceModel::factory()->create();
 
         $booking = BookingModel::create([
-            'client_id'       => $client->id,
-            'chair_id'        => $chair->id,
-            'barber_id'       => $barber->id,
-            'time_slot'       => now()->addDay()->setHour(10)->setMinute(0),
-            'status'          => 'completed',
+            'client_id' => $client->id,
+            'chair_id' => $chair->id,
+            'barber_id' => $barber->id,
+            'time_slot' => now()->addDay()->setHour(10)->setMinute(0),
+            'status' => 'completed',
             'at_home_location' => null,
         ]);
 

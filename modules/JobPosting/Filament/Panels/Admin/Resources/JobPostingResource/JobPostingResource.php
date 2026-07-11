@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\JobPosting\Filament\Panels\Admin\Resources\JobPostingResource;
@@ -42,10 +43,10 @@ class JobPostingResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListJobPostingsPage::route('/'),
+            'index' => Pages\ListJobPostingsPage::route('/'),
             'create' => Pages\CreateJobPostingPage::route('/create'),
-            'view'   => Pages\ViewJobPostingPage::route('/{record}'),
-            'edit'   => Pages\EditJobPostingPage::route('/{record}/edit'),
+            'view' => Pages\ViewJobPostingPage::route('/{record}'),
+            'edit' => Pages\EditJobPostingPage::route('/{record}/edit'),
         ];
     }
 }

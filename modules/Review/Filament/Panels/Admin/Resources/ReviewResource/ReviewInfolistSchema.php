@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Review\Filament\Panels\Admin\Resources\ReviewResource;
@@ -28,7 +29,7 @@ final class ReviewInfolistSchema
                         ->color(fn (int $state): string => match (true) {
                             $state >= 4 => 'success',
                             $state >= 3 => 'warning',
-                            default     => 'danger',
+                            default => 'danger',
                         }),
                     TextEntry::make('comment')
                         ->columnSpanFull(),

@@ -1,4 +1,5 @@
 <?php
+
 // modules/Brand/Database/Migrations/0001_01_01_000001_create_brands_table.php
 declare(strict_types=1);
 

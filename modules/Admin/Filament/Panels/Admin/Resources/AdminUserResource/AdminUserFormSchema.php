@@ -1,4 +1,5 @@
 <?php
+
 // modules/Admin/Filament/Panels/Admin/Resources/AdminUserResource/AdminUserFormSchema.php
 declare(strict_types=1);
 
@@ -22,7 +23,7 @@ final class AdminUserFormSchema
                         ->label('Name (English)')
                         ->required()
                         ->live(true)
-                        ->afterStateUpdated(fn (Set $set, ?string $state) => $set('email', $state ? Str::slug($state) . '@dorak.sy' : null)),
+                        ->afterStateUpdated(fn (Set $set, ?string $state) => $set('email', $state ? Str::slug($state).'@dorak.sy' : null)),
                     TextInput::make('name.ar')
                         ->label('Name (Arabic)')
                         ->required(),

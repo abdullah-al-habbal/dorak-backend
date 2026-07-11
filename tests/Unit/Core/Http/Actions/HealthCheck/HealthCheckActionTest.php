@@ -1,4 +1,5 @@
 <?php
+
 // tests/Unit/Core/Http/Actions/HealthCheck/HealthCheckActionTest.php
 declare(strict_types=1);
 
@@ -7,7 +8,7 @@ use Modules\Core\Http\Actions\HealthCheck\HealthCheckAction;
 
 beforeEach(function () {
     $this->handler = Mockery::mock(HealthCheckHandler::class);
-    $this->action  = new HealthCheckAction($this->handler);
+    $this->action = new HealthCheckAction($this->handler);
 });
 
 it('returns 200 when status is ok', function () {
@@ -46,7 +47,7 @@ it('wraps response in api success envelope', function () {
     ]);
 
     $response = ($this->action)();
-    $body     = $response->getData(true);
+    $body = $response->getData(true);
 
     expect($body)->toHaveKeys(['success', 'statusCode', 'code', 'message', 'timestamp', 'data']);
     expect($body['success'])->toBeTrue();

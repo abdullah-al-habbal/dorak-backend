@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Client\Filament\Panels\Admin\Resources\ClientResource;
@@ -7,7 +8,6 @@ use Filament\Forms\Form;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
-use Modules\Activation\Filament\Actions\ToggleActivationAction;
 use Modules\Client\Models\ClientModel;
 
 class ClientResource extends Resource
@@ -43,10 +43,10 @@ class ClientResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListClientsPage::route('/'),
+            'index' => Pages\ListClientsPage::route('/'),
             'create' => Pages\CreateClientPage::route('/create'),
-            'view'   => Pages\ViewClientPage::route('/{record}'),
-            'edit'   => Pages\EditClientPage::route('/{record}/edit'),
+            'view' => Pages\ViewClientPage::route('/{record}'),
+            'edit' => Pages\EditClientPage::route('/{record}/edit'),
         ];
     }
 }

@@ -1,4 +1,5 @@
 <?php
+
 // bootstrap/providers.php
 declare(strict_types=1);
 
@@ -6,27 +7,27 @@ use Illuminate\Filesystem\FilesystemServiceProvider;
 use Illuminate\Hashing\HashServiceProvider;
 use Illuminate\View\ViewServiceProvider;
 use Modules\Activation\Providers\ActivationServiceProvider;
+use Modules\Admin\Providers\AdminServiceProvider;
 use Modules\Ban\Providers\BanServiceProvider;
-use Modules\Language\Providers\LanguageServiceProvider;
-use Modules\Currency\Providers\CurrencyServiceProvider;
+use Modules\Barber\Providers\BarberServiceProvider;
+use Modules\BarberAffiliation\Providers\BarberAffiliationServiceProvider;
+use Modules\Booking\Providers\BookingServiceProvider;
+use Modules\Branch\Providers\BranchServiceProvider;
+use Modules\Brand\Providers\BrandServiceProvider;
+use Modules\Chair\Providers\ChairServiceProvider;
+use Modules\Client\Providers\ClientServiceProvider;
 use Modules\Core\Providers\ApplicationServiceProvider;
 use Modules\Core\Providers\Filament\AdminPanelProvider;
 use Modules\Core\Providers\Filament\BarberPanelProvider;
 use Modules\Core\Providers\Filament\BranchPanelProvider;
-use Modules\Admin\Providers\AdminServiceProvider;
-use Modules\Barber\Providers\BarberServiceProvider;
-use Modules\Branch\Providers\BranchServiceProvider;
-use Modules\Client\Providers\ClientServiceProvider;
-use Modules\Brand\Providers\BrandServiceProvider;
-use Modules\Preference\Providers\PreferenceServiceProvider;
-use Modules\BarberAffiliation\Providers\BarberAffiliationServiceProvider;
-use Modules\OfferedService\Providers\OfferedServiceServiceProvider;
-use Modules\Chair\Providers\ChairServiceProvider;
-use Modules\Booking\Providers\BookingServiceProvider;
-use Modules\Review\Providers\ReviewServiceProvider;
-use Modules\JobPosting\Providers\JobPostingServiceProvider;
-use Modules\Marketing\Providers\MarketingServiceProvider;
+use Modules\Currency\Providers\CurrencyServiceProvider;
 use Modules\Explore\Providers\ExploreServiceProvider;
+use Modules\JobPosting\Providers\JobPostingServiceProvider;
+use Modules\Language\Providers\LanguageServiceProvider;
+use Modules\Marketing\Providers\MarketingServiceProvider;
+use Modules\OfferedService\Providers\OfferedServiceServiceProvider;
+use Modules\Preference\Providers\PreferenceServiceProvider;
+use Modules\Review\Providers\ReviewServiceProvider;
 use Modules\Website\Providers\WebsiteServiceProvider;
 
 return [

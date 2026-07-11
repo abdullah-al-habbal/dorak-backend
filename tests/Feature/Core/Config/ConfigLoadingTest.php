@@ -1,4 +1,5 @@
 <?php
+
 // tests/Feature/Core/Config/ConfigLoadingTest.php
 declare(strict_types=1);
 

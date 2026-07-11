@@ -1,4 +1,5 @@
 <?php
+
 // tests/Integration/Barber/Database/Factories/BarberFactoryTest.php
 declare(strict_types=1);
 

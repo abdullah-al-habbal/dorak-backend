@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\JobPosting\Filament\Panels\Admin\Resources\ApplicationResource;
@@ -43,8 +44,8 @@ class ApplicationResource extends Resource
     {
         return [
             'index' => Pages\ListApplicationsPage::route('/'),
-            'view'  => Pages\ViewApplicationPage::route('/{record}'),
-            'edit'  => Pages\EditApplicationPage::route('/{record}/edit'),
+            'view' => Pages\ViewApplicationPage::route('/{record}'),
+            'edit' => Pages\EditApplicationPage::route('/{record}/edit'),
         ];
     }
 }

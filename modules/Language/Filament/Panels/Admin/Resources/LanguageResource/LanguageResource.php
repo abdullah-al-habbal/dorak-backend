@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Language\Filament\Panels\Admin\Resources\LanguageResource;
@@ -42,10 +43,10 @@ class LanguageResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListLanguagesPage::route('/'),
+            'index' => Pages\ListLanguagesPage::route('/'),
             'create' => Pages\CreateLanguagePage::route('/create'),
-            'view'   => Pages\ViewLanguagePage::route('/{record}'),
-            'edit'   => Pages\EditLanguagePage::route('/{record}/edit'),
+            'view' => Pages\ViewLanguagePage::route('/{record}'),
+            'edit' => Pages\EditLanguagePage::route('/{record}/edit'),
         ];
     }
 }

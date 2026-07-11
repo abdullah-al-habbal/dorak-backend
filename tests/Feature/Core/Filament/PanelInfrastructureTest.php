@@ -1,11 +1,16 @@
 <?php
+
 // tests/Feature/Core/Filament/PanelInfrastructureTest.php
 declare(strict_types=1);
 
 use Filament\PanelRegistry;
+use Modules\Activation\Models\ActivationLogModel;
 use Modules\Admin\Models\AdminModel;
 use Modules\Barber\Models\BarberModel;
 use Modules\Branch\Models\BranchModel;
+use Modules\Currency\Models\CurrencyModel;
+use Modules\Currency\Models\ExchangeRateModel;
+use Modules\Language\Models\LanguageModel;
 
 beforeEach(function () {
     $this->registry = app(PanelRegistry::class);
@@ -152,7 +157,7 @@ it('admin can access client resource', function () {
 
 it('admin can access language resource', function () {
     $admin = AdminModel::factory()->create();
-    Modules\Language\Models\LanguageModel::factory()->create();
+    LanguageModel::factory()->create();
     $this->actingAs($admin, 'admin');
 
     $this->get('/admin/languages')->assertStatus(200);
@@ -160,7 +165,7 @@ it('admin can access language resource', function () {
 
 it('admin can access currency resource', function () {
     $admin = AdminModel::factory()->create();
-    Modules\Currency\Models\CurrencyModel::factory()->create();
+    CurrencyModel::factory()->create();
     $this->actingAs($admin, 'admin');
 
     $this->get('/admin/currencies')->assertStatus(200);
@@ -168,10 +173,10 @@ it('admin can access currency resource', function () {
 
 it('admin can access exchange rate resource', function () {
     $admin = AdminModel::factory()->create();
-    $currency = Modules\Currency\Models\CurrencyModel::factory()->create();
-    Modules\Currency\Models\ExchangeRateModel::factory()->create([
+    $currency = CurrencyModel::factory()->create();
+    ExchangeRateModel::factory()->create([
         'from_currency_id' => $currency->id,
-        'to_currency_id'   => $currency->id,
+        'to_currency_id' => $currency->id,
     ]);
     $this->actingAs($admin, 'admin');
 
@@ -180,7 +185,7 @@ it('admin can access exchange rate resource', function () {
 
 it('admin can access activation log resource', function () {
     $admin = AdminModel::factory()->create();
-    Modules\Activation\Models\ActivationLogModel::factory()->create();
+    ActivationLogModel::factory()->create();
     $this->actingAs($admin, 'admin');
 
     $this->get('/admin/activation-logs')->assertStatus(200);

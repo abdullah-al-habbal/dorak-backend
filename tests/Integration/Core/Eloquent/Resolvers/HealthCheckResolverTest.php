@@ -1,12 +1,13 @@
 <?php
+
 // tests/Integration/Core/Eloquent/Resolvers/HealthCheckResolverTest.php
 declare(strict_types=1);
 
 use Modules\Core\Eloquent\Resolvers\HealthCheckResolver;
 
 it('returns ok with driver and latency when database is reachable', function () {
-    $resolver = new HealthCheckResolver();
-    $result   = $resolver->checkDatabase();
+    $resolver = new HealthCheckResolver;
+    $result = $resolver->checkDatabase();
 
     expect($result['status'])->toBe('ok');
     expect($result['driver'])->toBe(

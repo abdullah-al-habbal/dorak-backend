@@ -1,4 +1,5 @@
 <?php
+
 // modules/Language/Models/LanguageModel.php
 declare(strict_types=1);
 
@@ -22,7 +23,7 @@ class LanguageModel extends Model
     protected function casts(): array
     {
         return [
-            'name'       => 'array',
+            'name' => 'array',
             'is_default' => 'boolean',
         ];
     }

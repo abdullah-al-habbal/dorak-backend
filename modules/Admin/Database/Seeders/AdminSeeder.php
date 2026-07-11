@@ -12,7 +12,7 @@ class AdminSeeder extends Seeder
     public function run(): void
     {
         AdminModel::factory()->create([
-            'name'  => [
+            'name' => [
                 'en' => 'Admin',
                 'ar' => 'مدير النظام',
             ],

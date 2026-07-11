@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Chair\Filament\Panels\Admin\Resources\ChairResource;
@@ -26,9 +27,9 @@ final class ChairsTable
                 TextColumn::make('status')
                     ->badge()
                     ->color(fn (string $state): string => match ($state) {
-                        'active'   => 'success',
+                        'active' => 'success',
                         'occupied' => 'warning',
-                        default    => 'gray',
+                        default => 'gray',
                     }),
             ])
             ->actions([

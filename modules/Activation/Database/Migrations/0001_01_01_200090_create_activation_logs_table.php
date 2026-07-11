@@ -1,4 +1,5 @@
 <?php
+
 // modules/Activation/Database/Migrations/0001_01_01_200090_create_activation_logs_table.php
 declare(strict_types=1);
 

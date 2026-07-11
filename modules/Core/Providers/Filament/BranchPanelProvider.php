@@ -1,4 +1,5 @@
 <?php
+
 // modules/Core/Providers/Filament/BranchPanelProvider.php
 declare(strict_types=1);
 

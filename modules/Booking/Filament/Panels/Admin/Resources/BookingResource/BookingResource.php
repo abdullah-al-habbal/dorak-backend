@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Booking\Filament\Panels\Admin\Resources\BookingResource;
@@ -43,8 +44,8 @@ class BookingResource extends Resource
     {
         return [
             'index' => Pages\ListBookingsPage::route('/'),
-            'view'  => Pages\ViewBookingPage::route('/{record}'),
-            'edit'  => Pages\EditBookingPage::route('/{record}/edit'),
+            'view' => Pages\ViewBookingPage::route('/{record}'),
+            'edit' => Pages\EditBookingPage::route('/{record}/edit'),
         ];
     }
 }

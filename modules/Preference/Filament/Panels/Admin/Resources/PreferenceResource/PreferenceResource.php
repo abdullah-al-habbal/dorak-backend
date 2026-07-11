@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Preference\Filament\Panels\Admin\Resources\PreferenceResource;
@@ -42,10 +43,10 @@ class PreferenceResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListPreferencesPage::route('/'),
+            'index' => Pages\ListPreferencesPage::route('/'),
             'create' => Pages\CreatePreferencePage::route('/create'),
-            'view'   => Pages\ViewPreferencePage::route('/{record}'),
-            'edit'   => Pages\EditPreferencePage::route('/{record}/edit'),
+            'view' => Pages\ViewPreferencePage::route('/{record}'),
+            'edit' => Pages\EditPreferencePage::route('/{record}/edit'),
         ];
     }
 }

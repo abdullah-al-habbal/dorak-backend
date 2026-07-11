@@ -1,4 +1,5 @@
 <?php
+
 // modules/Barber/Filament/Panels/Admin/Resources/BarberResource/BarberResource.php
 declare(strict_types=1);
 
@@ -8,7 +9,6 @@ use Filament\Forms\Form;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
-use Modules\Activation\Filament\Actions\ToggleActivationAction;
 use Modules\Barber\Models\BarberModel;
 
 class BarberResource extends Resource
@@ -44,10 +44,10 @@ class BarberResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListBarbersPage::route('/'),
+            'index' => Pages\ListBarbersPage::route('/'),
             'create' => Pages\CreateBarberPage::route('/create'),
-            'view'   => Pages\ViewBarberPage::route('/{record}'),
-            'edit'   => Pages\EditBarberPage::route('/{record}/edit'),
+            'view' => Pages\ViewBarberPage::route('/{record}'),
+            'edit' => Pages\EditBarberPage::route('/{record}/edit'),
         ];
     }
 }

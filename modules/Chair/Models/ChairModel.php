@@ -1,4 +1,5 @@
 <?php
+
 // modules/Chair/Models/ChairModel.php
 declare(strict_types=1);
 

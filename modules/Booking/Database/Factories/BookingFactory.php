@@ -1,4 +1,5 @@
 <?php
+
 // modules/Booking/Database/Factories/BookingFactory.php
 declare(strict_types=1);
 
@@ -17,11 +18,11 @@ class BookingFactory extends Factory
     public function definition(): array
     {
         return [
-            'client_id'       => ClientModel::factory(),
-            'chair_id'        => ChairModel::factory(),
-            'barber_id'       => BarberModel::factory(),
-            'time_slot'       => fake()->dateTimeBetween('+1 day', '+1 week'),
-            'status'          => 'booked',
+            'client_id' => ClientModel::factory(),
+            'chair_id' => ChairModel::factory(),
+            'barber_id' => BarberModel::factory(),
+            'time_slot' => fake()->dateTimeBetween('+1 day', '+1 week'),
+            'status' => 'booked',
             'at_home_location' => null,
         ];
     }

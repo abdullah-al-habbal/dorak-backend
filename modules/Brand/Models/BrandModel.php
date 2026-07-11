@@ -1,4 +1,5 @@
 <?php
+
 // modules/Brand/Models/BrandModel.php
 declare(strict_types=1);
 
@@ -38,7 +39,7 @@ class BrandModel extends Model
     {
         return [
             'description' => 'array',
-            'name'        => 'array',
+            'name' => 'array',
         ];
     }
 

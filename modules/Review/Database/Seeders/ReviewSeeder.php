@@ -20,13 +20,13 @@ class ReviewSeeder extends Seeder
             ?? ClientModel::factory()->create(['email' => 'admin@dorak.sy']);
 
         ReviewModel::create([
-            'booking_id'   => $booking->id,
-            'author_id'    => $client->id,
-            'author_type'  => 'client',
-            'subject_id'   => $booking->chair->branch_id,
+            'booking_id' => $booking->id,
+            'author_id' => $client->id,
+            'author_type' => 'client',
+            'subject_id' => $booking->chair->branch_id,
             'subject_type' => 'branch',
-            'rating'       => 5,
-            'comment'      => 'Great service!',
+            'rating' => 5,
+            'comment' => 'Great service!',
         ]);
     }
 }

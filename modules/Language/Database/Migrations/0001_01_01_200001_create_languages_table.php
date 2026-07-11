@@ -1,4 +1,5 @@
 <?php
+
 // modules/Language/Database/Migrations/0001_01_01_000001_create_languages_table.php
 declare(strict_types=1);
 

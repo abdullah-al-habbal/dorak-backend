@@ -1,11 +1,12 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Branch\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
-use Modules\Branch\Models\BranchModel;
 use Modules\Branch\Http\Resources\ChairResource;
+use Modules\Branch\Models\BranchModel;
 use Modules\Core\Http\Actions\BaseApiAction;
 
 final class GetFloorPlanAction extends BaseApiAction

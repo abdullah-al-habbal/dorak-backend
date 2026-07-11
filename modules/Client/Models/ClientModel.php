@@ -1,4 +1,5 @@
 <?php
+
 // modules/Client/Models/ClientModel.php
 declare(strict_types=1);
 
@@ -22,8 +23,8 @@ use Spatie\Translatable\HasTranslations;
 class ClientModel extends Authenticatable implements FilamentUser
 {
     use HasFactory;
-    use HasUuids;
     use HasTranslations;
+    use HasUuids;
     use Notifiable;
 
     protected $table = 'clients';

@@ -1,4 +1,5 @@
 <?php
+
 // modules/JobPosting/Database/Factories/ApplicationFactory.php
 declare(strict_types=1);
 
@@ -16,15 +17,15 @@ class ApplicationFactory extends Factory
     public function definition(): array
     {
         return [
-            'job_posting_id'  => JobPostingModel::factory(),
-            'barber_id'       => BarberModel::factory(),
+            'job_posting_id' => JobPostingModel::factory(),
+            'barber_id' => BarberModel::factory(),
             'profile_snapshot' => [
-                'name'           => fake()->name(),
-                'bio'            => fake()->sentence(),
-                'is_freelancer'  => false,
-                'rating'         => fake()->randomFloat(1, 3, 5),
+                'name' => fake()->name(),
+                'bio' => fake()->sentence(),
+                'is_freelancer' => false,
+                'rating' => fake()->randomFloat(1, 3, 5),
             ],
-            'status'          => 'submitted',
+            'status' => 'submitted',
         ];
     }
 }

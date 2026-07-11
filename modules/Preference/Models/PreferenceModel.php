@@ -1,4 +1,5 @@
 <?php
+
 // modules/Preference/Models/PreferenceModel.php
 declare(strict_types=1);
 

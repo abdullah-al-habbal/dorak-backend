@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\JobPosting\Filament\Panels\Admin\Resources\JobPostingResource;
@@ -28,7 +29,7 @@ final class JobPostingFormSchema
                         ->required(),
                     Select::make('status')
                         ->options([
-                            'open'   => 'Open',
+                            'open' => 'Open',
                             'closed' => 'Closed',
                         ])
                         ->required(),

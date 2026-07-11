@@ -11,7 +11,9 @@ use Illuminate\Support\ServiceProvider;
 abstract class BaseModuleServiceProvider extends ServiceProvider
 {
     protected string $moduleDir;
+
     protected string $moduleNamespace;
+
     protected string $moduleName;
 
     protected array $webMiddleware = ['web'];
@@ -33,11 +35,11 @@ abstract class BaseModuleServiceProvider extends ServiceProvider
 
     protected function loadConfig(): void
     {
-        $path = $this->moduleDir . '/Config';
+        $path = $this->moduleDir.'/Config';
         if (File::isDirectory($path)) {
             foreach (File::files($path) as $file) {
                 if ($file->getExtension() === 'php') {
-                    $key = $this->moduleName . '.' . $file->getFilenameWithoutExtension();
+                    $key = $this->moduleName.'.'.$file->getFilenameWithoutExtension();
                     $this->mergeConfigFrom($file->getPathname(), $key);
                 }
             }
@@ -50,7 +52,7 @@ abstract class BaseModuleServiceProvider extends ServiceProvider
             return;
         }
 
-        $path = $this->moduleDir . '/Routes/Console';
+        $path = $this->moduleDir.'/Routes/Console';
         if (File::isDirectory($path)) {
             foreach (File::files($path) as $file) {
                 if ($file->getExtension() === 'php') {
@@ -68,7 +70,7 @@ abstract class BaseModuleServiceProvider extends ServiceProvider
 
     protected function loadWebRoutes(): void
     {
-        $path = $this->moduleDir . '/Routes/Web';
+        $path = $this->moduleDir.'/Routes/Web';
         if (File::isDirectory($path)) {
             foreach (File::files($path) as $file) {
                 if ($file->getExtension() === 'php') {
@@ -86,7 +88,7 @@ abstract class BaseModuleServiceProvider extends ServiceProvider
 
     protected function loadApiV1Routes(): void
     {
-        $path = $this->moduleDir . '/Routes/Api/V1';
+        $path = $this->moduleDir.'/Routes/Api/V1';
         if (File::isDirectory($path)) {
             foreach (File::files($path) as $file) {
                 if ($file->getExtension() === 'php') {
@@ -101,7 +103,7 @@ abstract class BaseModuleServiceProvider extends ServiceProvider
 
     protected function loadMigrations(): void
     {
-        $path = $this->moduleDir . '/Database/Migrations';
+        $path = $this->moduleDir.'/Database/Migrations';
         if (File::isDirectory($path)) {
             $this->loadMigrationsFrom($path);
         }
@@ -109,7 +111,7 @@ abstract class BaseModuleServiceProvider extends ServiceProvider
 
     protected function loadTranslations(): void
     {
-        $path = $this->moduleDir . '/Lang';
+        $path = $this->moduleDir.'/Lang';
         if (File::isDirectory($path)) {
             $this->loadTranslationsFrom($path, $this->moduleName);
         }
@@ -117,7 +119,7 @@ abstract class BaseModuleServiceProvider extends ServiceProvider
 
     protected function loadViews(): void
     {
-        $path = $this->moduleDir . '/Resources/views';
+        $path = $this->moduleDir.'/Resources/views';
         if (File::isDirectory($path)) {
             $this->loadViewsFrom($path, $this->moduleName);
         }

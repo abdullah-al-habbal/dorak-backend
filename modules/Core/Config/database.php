@@ -1,7 +1,11 @@
 <?php
+
 declare(strict_types=1);
+
 namespace Modules\Core\Config;
+
 use Pdo\Mysql;
+
 return [
     'default' => env('DB_CONNECTION'),
     'connections' => [

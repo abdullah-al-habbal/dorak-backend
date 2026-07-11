@@ -1,4 +1,5 @@
 <?php
+
 // modules/Core/Http/Middleware/ScopePanelToCurrentUser.php
 declare(strict_types=1);
 
@@ -6,7 +7,6 @@ namespace Modules\Core\Http\Middleware;
 
 use Closure;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Date;
 use Modules\Barber\Models\BarberModel;
 use Modules\Booking\Models\BookingModel;
 use Modules\Branch\Models\BranchModel;
@@ -24,7 +24,7 @@ final class ScopePanelToCurrentUser
         match ($panelId) {
             'barber' => $this->scopeToBarber($request),
             'branch' => $this->scopeToBranch($request),
-            default  => null,
+            default => null,
         };
 
         return $next($request);

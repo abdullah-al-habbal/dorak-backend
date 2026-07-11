@@ -1,4 +1,5 @@
 <?php
+
 // modules/Review/Database/Factories/ReviewFactory.php
 declare(strict_types=1);
 
@@ -16,13 +17,13 @@ class ReviewFactory extends Factory
     public function definition(): array
     {
         return [
-            'booking_id'   => BookingModel::factory()->completed(),
-            'author_id'    => ClientModel::factory(),
-            'author_type'  => 'client',
-            'subject_id'   => ClientModel::factory(),
+            'booking_id' => BookingModel::factory()->completed(),
+            'author_id' => ClientModel::factory(),
+            'author_type' => 'client',
+            'subject_id' => ClientModel::factory(),
             'subject_type' => 'client',
-            'rating'       => fake()->numberBetween(1, 5),
-            'comment'      => fake()->sentence(),
+            'rating' => fake()->numberBetween(1, 5),
+            'comment' => fake()->sentence(),
         ];
     }
 }

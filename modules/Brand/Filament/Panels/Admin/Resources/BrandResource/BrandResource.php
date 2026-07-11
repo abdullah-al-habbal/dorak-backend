@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Brand\Filament\Panels\Admin\Resources\BrandResource;
@@ -7,7 +8,6 @@ use Filament\Forms\Form;
 use Filament\Infolists\Infolist;
 use Filament\Resources\Resource;
 use Filament\Tables\Table;
-use Modules\Activation\Filament\Actions\ToggleActivationAction;
 use Modules\Brand\Models\BrandModel;
 
 class BrandResource extends Resource
@@ -43,10 +43,10 @@ class BrandResource extends Resource
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListBrandsPage::route('/'),
+            'index' => Pages\ListBrandsPage::route('/'),
             'create' => Pages\CreateBrandPage::route('/create'),
-            'view'   => Pages\ViewBrandPage::route('/{record}'),
-            'edit'   => Pages\EditBrandPage::route('/{record}/edit'),
+            'view' => Pages\ViewBrandPage::route('/{record}'),
+            'edit' => Pages\EditBrandPage::route('/{record}/edit'),
         ];
     }
 }

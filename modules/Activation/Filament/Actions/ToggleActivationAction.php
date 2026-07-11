@@ -1,4 +1,5 @@
 <?php
+
 // modules/Activation/Filament/Actions/ToggleActivationAction.php
 declare(strict_types=1);
 
@@ -22,11 +23,11 @@ final class ToggleActivationAction
                 $newStatus = $record->status === 'enabled' ? 'disabled' : 'enabled';
 
                 ActivationLogModel::create([
-                    'activable_id'   => $record->getKey(),
+                    'activable_id' => $record->getKey(),
                     'activable_type' => $record->getMorphClass(),
-                    'status'         => $newStatus,
-                    'admin_id'       => auth('admin')->id(),
-                    'activated_at'   => now(),
+                    'status' => $newStatus,
+                    'admin_id' => auth('admin')->id(),
+                    'activated_at' => now(),
                 ]);
 
                 Notification::make()

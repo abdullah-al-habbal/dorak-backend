@@ -1,4 +1,5 @@
 <?php
+
 // modules/Admin/Filament/Panels/Admin/Resources/AdminUserResource/AdminUsersTable.php
 declare(strict_types=1);
 

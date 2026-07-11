@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Marketing\Http\Actions;
@@ -11,6 +12,7 @@ use Modules\Marketing\Handlers\GetFloorPlanDemoHandler;
 final class GetFloorPlanDemoAction
 {
     use ApiResponseTrait;
+
     public function __construct(
         private readonly GetFloorPlanDemoHandler $handler,
         private readonly TranslatorHandlerService $translator,

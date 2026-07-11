@@ -1,4 +1,5 @@
 <?php
+
 // tests/Integration/Admin/Database/Factories/AdminFactoryTest.php
 declare(strict_types=1);
 

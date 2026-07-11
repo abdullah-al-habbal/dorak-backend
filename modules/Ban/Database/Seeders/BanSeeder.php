@@ -17,12 +17,12 @@ class BanSeeder extends Seeder
         $client = ClientModel::first() ?? ClientModel::factory()->create();
 
         BanModel::create([
-            'bannable_id'   => $client->id,
+            'bannable_id' => $client->id,
             'bannable_type' => 'client',
-            'reason'        => 'Demo ban — repeated no-shows',
-            'banned_from'   => now()->subDay(),
-            'banned_until'  => now()->addDays(7),
-            'admin_id'      => $admin->id,
+            'reason' => 'Demo ban — repeated no-shows',
+            'banned_from' => now()->subDay(),
+            'banned_until' => now()->addDays(7),
+            'admin_id' => $admin->id,
         ]);
     }
 }

@@ -13,24 +13,24 @@ class CurrencySeeder extends Seeder
     public function run(): void
     {
         $syp = CurrencyModel::create([
-            'code'       => 'SYP',
-            'name'       => ['en' => 'Syrian Pound', 'ar' => 'الليرة السورية'],
-            'symbol'     => '£',
+            'code' => 'SYP',
+            'name' => ['en' => 'Syrian Pound', 'ar' => 'الليرة السورية'],
+            'symbol' => '£',
             'is_default' => true,
         ]);
 
         $usd = CurrencyModel::create([
-            'code'       => 'USD',
-            'name'       => ['en' => 'US Dollar', 'ar' => 'الدولار الأمريكي'],
-            'symbol'     => '$',
+            'code' => 'USD',
+            'name' => ['en' => 'US Dollar', 'ar' => 'الدولار الأمريكي'],
+            'symbol' => '$',
             'is_default' => false,
         ]);
 
         ExchangeRateModel::create([
             'from_currency_id' => $syp->id,
-            'to_currency_id'   => $usd->id,
-            'rate'             => 0.000067,
-            'effective_at'     => now(),
+            'to_currency_id' => $usd->id,
+            'rate' => 0.000067,
+            'effective_at' => now(),
         ]);
     }
 }

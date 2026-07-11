@@ -1,4 +1,5 @@
 <?php
+
 // modules/Client/Database/Factories/ClientFactory.php
 
 declare(strict_types=1);
@@ -17,14 +18,14 @@ class ClientFactory extends Factory
     public function definition(): array
     {
         return [
-            'name'              => [
+            'name' => [
                 'en' => fake()->name(),
                 'ar' => fake('ar_SA')->name(),
             ],
-            'email'             => fake()->unique()->safeEmail(),
+            'email' => fake()->unique()->safeEmail(),
             'email_verified_at' => now(),
-            'password'          => Hash::make('password'),
-            'remember_token'    => Str::random(10),
+            'password' => Hash::make('password'),
+            'remember_token' => Str::random(10),
         ];
     }
 }

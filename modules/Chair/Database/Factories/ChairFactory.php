@@ -1,4 +1,5 @@
 <?php
+
 // modules/Chair/Database/Factories/ChairFactory.php
 declare(strict_types=1);
 
@@ -15,18 +16,18 @@ class ChairFactory extends Factory
     public function definition(): array
     {
         return [
-            'branch_id'   => BranchModel::factory(),
-            'barber_id'   => null,
-            'label'       => fake()->randomElement(['1', '2', '3', '4']),
+            'branch_id' => BranchModel::factory(),
+            'barber_id' => null,
+            'label' => fake()->randomElement(['1', '2', '3', '4']),
             'ui_metadata' => [
-                'shape'      => 'rectangle',
+                'shape' => 'rectangle',
                 'position_x' => fake()->numberBetween(10, 500),
                 'position_y' => fake()->numberBetween(10, 500),
-                'width'      => 60,
-                'height'     => 60,
-                'rotation'   => 0,
+                'width' => 60,
+                'height' => 60,
+                'rotation' => 0,
             ],
-            'status'      => 'available',
+            'status' => 'available',
         ];
     }
 

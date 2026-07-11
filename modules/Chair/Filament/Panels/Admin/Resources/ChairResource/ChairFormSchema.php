@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Chair\Filament\Panels\Admin\Resources\ChairResource;
@@ -27,7 +28,7 @@ final class ChairFormSchema
                         ->required(),
                     Select::make('status')
                         ->options([
-                            'active'   => 'Active',
+                            'active' => 'Active',
                             'inactive' => 'Inactive',
                             'occupied' => 'Occupied',
                         ])

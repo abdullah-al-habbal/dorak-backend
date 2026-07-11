@@ -19,22 +19,22 @@ class ActivationSeeder extends Seeder
         $barber = BarberModel::first();
         if ($barber) {
             ActivationLogModel::create([
-                'activable_id'   => $barber->id,
+                'activable_id' => $barber->id,
                 'activable_type' => 'barber',
-                'status'         => 'enabled',
-                'admin_id'       => $admin->id,
-                'activated_at'   => now(),
+                'status' => 'enabled',
+                'admin_id' => $admin->id,
+                'activated_at' => now(),
             ]);
         }
 
         $branch = BranchModel::first();
         if ($branch) {
             ActivationLogModel::create([
-                'activable_id'   => $branch->id,
+                'activable_id' => $branch->id,
                 'activable_type' => 'branch',
-                'status'         => 'enabled',
-                'admin_id'       => $admin->id,
-                'activated_at'   => now(),
+                'status' => 'enabled',
+                'admin_id' => $admin->id,
+                'activated_at' => now(),
             ]);
         }
     }

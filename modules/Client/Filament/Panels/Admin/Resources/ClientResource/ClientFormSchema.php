@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Client\Filament\Panels\Admin\Resources\ClientResource;
@@ -41,8 +42,8 @@ final class ClientFormSchema
                 ->schema([
                     Select::make('status')
                         ->options([
-                            'pending'  => 'Pending',
-                            'enabled'  => 'Enabled',
+                            'pending' => 'Pending',
+                            'enabled' => 'Enabled',
                             'disabled' => 'Disabled',
                         ])
                         ->required(),

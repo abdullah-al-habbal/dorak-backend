@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Branch\Filament\Panels\Branch\Resources\ProfileResource;
@@ -24,9 +25,9 @@ final class ProfileInfolistSchema
                     TextEntry::make('status')
                         ->badge()
                         ->color(fn (string $state): string => match ($state) {
-                            'enabled'  => 'success',
+                            'enabled' => 'success',
                             'disabled' => 'danger',
-                            default    => 'warning',
+                            default => 'warning',
                         }),
                     TextEntry::make('created_at')
                         ->dateTime(),

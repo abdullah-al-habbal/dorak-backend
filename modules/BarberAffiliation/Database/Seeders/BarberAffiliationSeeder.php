@@ -20,13 +20,13 @@ class BarberAffiliationSeeder extends Seeder
             ?? BranchModel::factory()->create(['email' => 'branch@dorak.sy']);
 
         BarberAffiliationModel::create([
-            'barber_id'       => $barber->id,
-            'affiliable_id'   => $branch->id,
+            'barber_id' => $barber->id,
+            'affiliable_id' => $branch->id,
             'affiliable_type' => 'branch',
-            'status'          => 'active',
-            'invited_at'      => now()->subDays(7),
-            'accepted_at'     => now()->subDays(6),
-            'terminated_at'   => null,
+            'status' => 'active',
+            'invited_at' => now()->subDays(7),
+            'accepted_at' => now()->subDays(6),
+            'terminated_at' => null,
         ]);
     }
 }

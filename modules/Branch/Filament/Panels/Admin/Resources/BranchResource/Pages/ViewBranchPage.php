@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Branch\Filament\Panels\Admin\Resources\BranchResource\Pages;

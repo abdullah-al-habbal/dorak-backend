@@ -21,22 +21,22 @@ class JobPostingSeeder extends Seeder
             ?? BarberModel::factory()->create(['email' => 'barber@dorak.sy']);
 
         $job = JobPostingModel::create([
-            'branch_id'   => $branch->id,
-            'title'       => ['en' => 'Experienced Barber', 'ar' => 'حلاق ذو خبرة'],
+            'branch_id' => $branch->id,
+            'title' => ['en' => 'Experienced Barber', 'ar' => 'حلاق ذو خبرة'],
             'description' => ['en' => 'Looking for an experienced barber', 'ar' => 'نبحث عن حلاق ذو خبرة'],
-            'status'      => 'open',
+            'status' => 'open',
         ]);
 
         ApplicationModel::create([
-            'job_posting_id'  => $job->id,
-            'barber_id'       => $barber->id,
+            'job_posting_id' => $job->id,
+            'barber_id' => $barber->id,
             'profile_snapshot' => [
-                'name'          => $barber->getTranslation('name', 'en'),
-                'bio'           => 'Experienced barber looking for new opportunities',
+                'name' => $barber->getTranslation('name', 'en'),
+                'bio' => 'Experienced barber looking for new opportunities',
                 'is_freelancer' => $barber->is_freelancer,
-                'rating'        => 4.5,
+                'rating' => 4.5,
             ],
-            'status'          => 'submitted',
+            'status' => 'submitted',
         ]);
     }
 }

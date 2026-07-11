@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Booking\Filament\Panels\Admin\Resources\BookingResource;
@@ -26,11 +27,11 @@ final class BookingInfolistSchema
                     TextEntry::make('status')
                         ->badge()
                         ->color(fn (string $state): string => match ($state) {
-                            'confirmed'   => 'success',
-                            'completed'   => 'info',
-                            'cancelled'   => 'danger',
+                            'confirmed' => 'success',
+                            'completed' => 'info',
+                            'cancelled' => 'danger',
                             'in_progress' => 'warning',
-                            default       => 'gray',
+                            default => 'gray',
                         }),
                     TextEntry::make('created_at')
                         ->dateTime(),

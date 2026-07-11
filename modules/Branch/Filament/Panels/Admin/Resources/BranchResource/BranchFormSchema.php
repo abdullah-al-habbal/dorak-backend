@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Branch\Filament\Panels\Admin\Resources\BranchResource;
@@ -42,8 +43,8 @@ final class BranchFormSchema
                 ->schema([
                     Select::make('status')
                         ->options([
-                            'pending'  => 'Pending',
-                            'enabled'  => 'Enabled',
+                            'pending' => 'Pending',
+                            'enabled' => 'Enabled',
                             'disabled' => 'Disabled',
                         ])
                         ->required(),

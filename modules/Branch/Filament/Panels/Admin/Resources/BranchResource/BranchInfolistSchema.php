@@ -1,9 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Modules\Branch\Filament\Panels\Admin\Resources\BranchResource;
 
-use Filament\Infolists\Components\IconEntry;
 use Filament\Infolists\Components\Section;
 use Filament\Infolists\Components\TextEntry;
 use Filament\Infolists\Infolist;
@@ -25,9 +25,9 @@ final class BranchInfolistSchema
                     TextEntry::make('status')
                         ->badge()
                         ->color(fn (string $state): string => match ($state) {
-                            'enabled'  => 'success',
+                            'enabled' => 'success',
                             'disabled' => 'danger',
-                            default    => 'warning',
+                            default => 'warning',
                         }),
                     TextEntry::make('created_at')
                         ->dateTime(),

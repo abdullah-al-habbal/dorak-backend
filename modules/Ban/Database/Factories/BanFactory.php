@@ -1,4 +1,5 @@
 <?php
+
 // modules/Ban/Database/Factories/BanFactory.php
 declare(strict_types=1);
 
@@ -15,10 +16,10 @@ class BanFactory extends Factory
     public function definition(): array
     {
         return [
-            'bannable_id'   => AdminModel::factory(),
+            'bannable_id' => AdminModel::factory(),
             'bannable_type' => 'admin',
-            'reason'        => fake()->sentence(),
-            'banned_from'   => now()->subDay(),
+            'reason' => fake()->sentence(),
+            'banned_from' => now()->subDay(),
         ];
     }
 
