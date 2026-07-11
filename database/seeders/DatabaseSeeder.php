@@ -21,6 +21,9 @@ use Modules\Chair\Database\Seeders\ChairSeeder;
 use Modules\Booking\Database\Seeders\BookingSeeder;
 use Modules\Review\Database\Seeders\ReviewSeeder;
 use Modules\JobPosting\Database\Seeders\JobPostingSeeder;
+use Modules\Marketing\Database\Seeders\MarketingPageSeeder;
+use Modules\Marketing\Database\Seeders\SectionSeeder;
+use Modules\Marketing\Database\Seeders\TestimonialSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -43,6 +46,10 @@ class DatabaseSeeder extends Seeder
             BookingSeeder::class,
             ReviewSeeder::class,
             JobPostingSeeder::class,
+            MarketingPageSeeder::class,
+            SectionSeeder::class,
+            TestimonialSeeder::class,
+            FloorPlanDemoSeeder::class,
         ]);
     }
 }

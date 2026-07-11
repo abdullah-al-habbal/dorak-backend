@@ -20,6 +20,8 @@ return new class extends Migration
             $table->boolean('is_freelancer')->default(false);
             $table->string('status')->default('pending');
             $table->uuid('client_id')->nullable()->index();
+            $table->decimal('latitude', 10, 8)->nullable();
+            $table->decimal('longitude', 11, 8)->nullable();
             $table->timestamps();
         });
     }

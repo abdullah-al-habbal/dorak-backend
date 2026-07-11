@@ -1,5 +1,4 @@
 <?php
-// modules/Core/Providers/ApplicationServiceProvider.php
 declare(strict_types=1);
 
 namespace Modules\Core\Providers;
@@ -8,26 +7,33 @@ use Illuminate\Contracts\Config\Repository as ConfigRepository;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\ServiceProvider;
 use Modules\Barber\Models\BarberModel;
 use Modules\Branch\Models\BranchModel;
 use Modules\Brand\Models\BrandModel;
 use Modules\Client\Models\ClientModel;
 
-final class ApplicationServiceProvider extends ServiceProvider
+final class ApplicationServiceProvider extends BaseModuleServiceProvider
 {
-    public function register(): void
+    public function __construct($app)
     {
-        $this->loadConfig();
+        parent::__construct($app);
+        $this->moduleDir = dirname(__DIR__);
+        $this->moduleNamespace = __NAMESPACE__;
+        $this->moduleName = 'core';
     }
 
-    public function boot(): void
+    public function register(): void
     {
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
-        $this->loadTranslationsFrom(__DIR__ . '/../Lang', 'core');
+        $this->loadAppConfig();
+    }
+
+    protected function loadRoutes(): void {}
+
+    protected function afterBoot(): void
+    {
         $this->registerMorphMap();
         $this->registerFactoryResolution();
-        $this->loadRoutes();
+        $this->loadAppRoutes();
     }
 
     private function registerMorphMap(): void
@@ -51,19 +57,14 @@ final class ApplicationServiceProvider extends ServiceProvider
         });
     }
 
-    private function loadRoutes(): void
-    {
-        $this->loadApiV1Routes();
-    }
-
-    private function loadApiV1Routes(): void
+    private function loadAppRoutes(): void
     {
         Route::prefix('api')
             ->middleware('api')
             ->group(__DIR__ . '/../Routes/Api/V1/api_v1_routes.php');
     }
 
-    private function loadConfig(): void
+    private function loadAppConfig(): void
     {
         $config = $this->app->make(ConfigRepository::class);
         $path   = __DIR__ . '/../Config';

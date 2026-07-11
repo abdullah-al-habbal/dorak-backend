@@ -14,7 +14,6 @@ class HealthCheckResolver
 
         try {
             DB::connection()->getPdo();
-
             return [
                 'status'     => 'ok',
                 'driver'     => (string) config('database.default'),

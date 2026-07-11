@@ -1,23 +1,24 @@
 <?php
-// modules/Activation/Providers/ActivationServiceProvider.php
 declare(strict_types=1);
 
 namespace Modules\Activation\Providers;
 
-use Illuminate\Support\ServiceProvider;
 use Modules\Activation\Models\ActivationLogModel;
 use Modules\Activation\Observers\ActivationLogObserver;
+use Modules\Core\Providers\BaseModuleServiceProvider;
 
-final class ActivationServiceProvider extends ServiceProvider
+final class ActivationServiceProvider extends BaseModuleServiceProvider
 {
-    public function register(): void
+    public function __construct($app)
     {
+        parent::__construct($app);
+        $this->moduleDir = dirname(__DIR__);
+        $this->moduleNamespace = __NAMESPACE__;
+        $this->moduleName = 'activation';
     }
 
-    public function boot(): void
+    protected function afterBoot(): void
     {
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
-
         ActivationLogModel::observe(ActivationLogObserver::class);
     }
 }

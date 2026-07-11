@@ -1,19 +1,17 @@
 <?php
-// modules/Currency/Providers/CurrencyServiceProvider.php
 declare(strict_types=1);
 
 namespace Modules\Currency\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use Modules\Core\Providers\BaseModuleServiceProvider;
 
-final class CurrencyServiceProvider extends ServiceProvider
+final class CurrencyServiceProvider extends BaseModuleServiceProvider
 {
-    public function register(): void
+    public function __construct($app)
     {
-    }
-
-    public function boot(): void
-    {
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+        parent::__construct($app);
+        $this->moduleDir = dirname(__DIR__);
+        $this->moduleNamespace = __NAMESPACE__;
+        $this->moduleName = 'currency';
     }
 }

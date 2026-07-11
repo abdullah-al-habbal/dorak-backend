@@ -16,6 +16,7 @@ use Illuminate\Notifications\Notifiable;
 use Modules\Activation\Models\ActivationLogModel;
 use Modules\Ban\Models\BanModel;
 use Modules\Barber\Database\Factories\BarberFactory;
+use Modules\OfferedService\Models\OfferedServiceModel;
 use Spatie\Translatable\HasTranslations;
 
 #[Fillable(['name', 'email', 'password'])]
@@ -50,6 +51,11 @@ class BarberModel extends Authenticatable implements FilamentUser
     public function bans(): MorphMany
     {
         return $this->morphMany(BanModel::class, 'bannable');
+    }
+
+    public function services(): MorphMany
+    {
+        return $this->morphMany(OfferedServiceModel::class, 'serviceable');
     }
 
     public function getIsEnabledAttribute(): bool

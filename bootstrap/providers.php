@@ -25,6 +25,9 @@ use Modules\Chair\Providers\ChairServiceProvider;
 use Modules\Booking\Providers\BookingServiceProvider;
 use Modules\Review\Providers\ReviewServiceProvider;
 use Modules\JobPosting\Providers\JobPostingServiceProvider;
+use Modules\Marketing\Providers\MarketingServiceProvider;
+use Modules\Explore\Providers\ExploreServiceProvider;
+use Modules\Website\Providers\WebsiteServiceProvider;
 
 return [
     FilesystemServiceProvider::class,
@@ -50,4 +53,7 @@ return [
     BookingServiceProvider::class,
     ReviewServiceProvider::class,
     JobPostingServiceProvider::class,
+    MarketingServiceProvider::class,
+    WebsiteServiceProvider::class,
+    ExploreServiceProvider::class,
 ];

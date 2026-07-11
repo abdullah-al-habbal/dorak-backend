@@ -1,19 +1,17 @@
 <?php
-// modules/Booking/Providers/BookingServiceProvider.php
 declare(strict_types=1);
 
 namespace Modules\Booking\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use Modules\Core\Providers\BaseModuleServiceProvider;
 
-final class BookingServiceProvider extends ServiceProvider
+final class BookingServiceProvider extends BaseModuleServiceProvider
 {
-    public function register(): void
+    public function __construct($app)
     {
-    }
-
-    public function boot(): void
-    {
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+        parent::__construct($app);
+        $this->moduleDir = dirname(__DIR__);
+        $this->moduleNamespace = __NAMESPACE__;
+        $this->moduleName = 'booking';
     }
 }

@@ -17,8 +17,6 @@ final class HealthCheckAction extends BaseApiAction
     {
         $result = $this->handler->handle();
 
-        // 503 removes the instance from load balancer rotation.
-        // Degraded (cache/queue fail) stays 200 — app still serves traffic.
         $statusCode = $result['status'] === 'down' ? 503 : 200;
 
         return $this->success(

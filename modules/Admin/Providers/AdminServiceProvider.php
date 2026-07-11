@@ -1,15 +1,17 @@
 <?php
-// modules/Admin/Providers/AdminServiceProvider.php
 declare(strict_types=1);
 
 namespace Modules\Admin\Providers;
 
-use Illuminate\Support\ServiceProvider;
+use Modules\Core\Providers\BaseModuleServiceProvider;
 
-final class AdminServiceProvider extends ServiceProvider
+final class AdminServiceProvider extends BaseModuleServiceProvider
 {
-    public function boot(): void
+    public function __construct($app)
     {
-        $this->loadMigrationsFrom(__DIR__ . '/../Database/Migrations');
+        parent::__construct($app);
+        $this->moduleDir = dirname(__DIR__);
+        $this->moduleNamespace = __NAMESPACE__;
+        $this->moduleName = 'admin';
     }
 }
