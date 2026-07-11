@@ -2,15 +2,20 @@ includes:
     - vendor/larastan/larastan/extension.neon
 
 parameters:
-    level: 9
+    level: max
     paths:
         - modules/
-        - database/
+        - bootstrap/
+        - config/
+        - routes/
     excludePaths:
         - vendor/*
         - node_modules/*
         - storage/*
         - .env.testing
+        - modules/*/Database/Migrations/*
+        - modules/*/Database/Factories/*
+        - modules/*/Database/Seeders/*
     tmpDir: storage/framework/cache/phpstan
     configDirectories:
         - modules/Core/Config

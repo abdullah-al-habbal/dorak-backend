@@ -36,3 +36,8 @@
 - `BrandModel` — `owner()` (→ClientModel), `baseCurrency()`, `branches()`, `affiliations()`, `services()`, `preference()`
 - `PreferenceModel` — polymorphic `preferenceable()` (MorphTo). Fields: preferred_language, notification_enabled, display_currency_id, theme, price_display_mode
 - `BanModel` — polymorphic `bannable()` (MorphTo). Scope: `active` (banned_from ≤ now AND banned_until null OR > now)
+
+### CI / Code Quality
+- `phpstan.neon` — level `max`, paths: modules, bootstrap, config, routes. Larastan extension
+- `.github/workflows/backend-ci.yml` — Pint formatting, PHPStan max, PHPUnit coverage, SonarQube scan (MySQL service)
+- `sonar-project.properties` — backend sources, exclusions, coverage reports
