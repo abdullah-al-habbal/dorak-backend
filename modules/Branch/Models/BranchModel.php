@@ -17,8 +17,10 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Modules\Activation\Models\ActivationLogModel;
+use Modules\Barber\Models\BarberModel;
 use Modules\Brand\Models\BrandModel;
 use Modules\Chair\Models\ChairModel;
+use Modules\Review\Models\ReviewModel;
 use Spatie\Translatable\HasTranslations;
 
 #[Fillable(['name', 'email', 'password', 'brand_id', 'latitude', 'longitude'])]
@@ -53,6 +55,16 @@ class BranchModel extends Authenticatable implements FilamentUser
     public function chairs(): HasMany
     {
         return $this->hasMany(ChairModel::class);
+    }
+
+    public function barbers(): HasMany
+    {
+        return $this->hasManyThrough(BarberModel::class, ChairModel::class, 'branch_id', 'id', 'id', 'barber_id');
+    }
+
+    public function reviews(): MorphMany
+    {
+        return $this->morphMany(ReviewModel::class, 'subject');
     }
 
     public function getIsEnabledAttribute(): bool

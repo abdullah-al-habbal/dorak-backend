@@ -1,91 +1,83 @@
 ---
 name: crescent
-description: Run the 7-phase CRESCENT state machine (Idea -> Research -> Prototype -> PRD -> Kanban -> Ralph Loop -> QA) to ship a feature, bug fix, or refactor end-to-end against the project docs. Dispatches deterministically to the matching phase. Use this whenever the user wants to start CRESCENT, ship something with the full process, advance to a named phase, or says "crescent", "start the state machine", "full process this feature", "next phase", or "7 phases". Always use this skill when a unit of work needs to move from idea to verified code, even if the user doesn't say the word "crescent".
+description: Run the 7-phase CRESCENT state machine (Idea → Research → Prototype → PRD → Kanban → Ralph Loop → QA) to ship a feature, bug fix, or refactor end-to-end. Dispatches deterministically to the matching phase skill. Use when the user wants to start CRESCENT, ship a feature with the full process, or says "crescent", "start the state machine", "full process this feature", "7 phases".
 ---
 
-# CRESCENT — feature delivery state machine
+# CRESCENT — 7-Phase Feature Delivery State Machine
 
-CRESCENT moves one unit of work (a feature, bug fix, or refactor) from idea to verified code, **using the project docs as the single source of truth** and the **baseline Laravel skills** as the engineering standard. It is the *process layer*; see `process/PROCESS.md` for how it relates to the docs and the skills.
+CRESCENT is a strict state machine. You enter at Phase 1 and advance one phase at a time. You do NOT skip, reorder, or merge phases. Each phase has an entry artifact on disk, an exit artifact on disk, and a single dispatch target.
 
-## Operating contract (read first, every run)
+Before any work, load [DORAK-CONTEXT.md](./DORAK-CONTEXT.md) — it carries Zad team naming, paths, and tooling rules that every phase obeys.
 
-- **The docs are law.** Read from `docs/` and write back to `docs/` per the phase table below. Never invent product behavior that isn't in the docs — if new behavior is needed, add it in the **PRD** phase first.
-- **Decided vs Open.** You may build autonomously only against ✅ *Decided* spec. Anything flagged 🟡 *Open* in `docs/02_prd.md` §8 (or 🟡 anywhere) **stops and asks the human**. Park such work in the **Blocked** column.
-- **Deterministic dispatch.** Identify the current phase, run *only* that phase, then propose the transition. Do not skip ahead.
-- **State is the Kanban + the docs.** There is no hidden memory; the board (`process/KANBAN.md`) and the docs hold all state.
+## State Machine Law
 
-## Phase dispatch
+1. **No phase may be skipped.** Phase N requires Phase N-1's exit artifact at the canonical path on disk. If missing → return to N-1.
+2. **No phase runs twice in a session without an explicit reset.** A reset is the user typing `crescent reset to <phase>` AND a one-line entry in `NOTES.md` recording why.
+3. **The current phase is named at the top of every reply** while CRESCENT is active. Format: `[CRESCENT · Phase N · <Phase name>]`.
+4. **Phase transitions are explicit and announced.** When a phase's exit artifact is written, announce `Exiting Phase N → entering Phase N+1`, then dispatch.
+5. **Context discipline.** Between phases, do not carry forward speculation, scratch notes, or partial drafts. The exit artifact is the only thing that crosses the boundary.
+6. **Idea (Phase 1) is the user's prompt.** It is not skipped — it is acknowledged, slugged, and written down.
 
-Determine where the work is and run the matching phase. If unclear, ask which phase to start.
+## Phases
 
-| Phase | Goal | Reads | Writes | Skills | Exit criterion (gate) |
-|---|---|---|---|---|---|
-| 1 Idea | One-sentence framing + intent | `01`,`02` | idea note | — | the problem and desired outcome are stated in one paragraph |
-| 2 Research | Resolve unknowns | `02`,`08`, web | research notes; **new edge cases → `08`** | — | every open unknown is answered or explicitly deferred |
-| 3 Prototype | Validate the riskiest assumption | `06`,`07` | a spike (then archived) | type-safety, archive-file | the assumption is confirmed or killed; spike archived |
-| 4 PRD | Freeze a feature-sized slice | `01`,`02`,`04`,`06`,`07` | feature-PRD slice; doc updates | — | scope, entities, rules, and the flow for this feature are written down |
-| 5 Kanban | Decompose into small tickets | `02`,`04`,`07`,`08` | tickets in `process/KANBAN.md` | — | every ticket has doc IDs + acceptance criteria |
-| 6 Ralph Loop | Build each ticket | `06`,`04`,`07` + all skills | code, migrations, tests | **all baseline** | all tickets pass their own stopping conditions |
-| 7 QA | Verify against the spec | `04`,`08`,`07`, acceptance | QA report; tickets → Done | testing, validations | spec satisfied; no regressions; report written |
+| # | Phase      | Entry artifact                       | Skill dispatched                       | Exit artifact                                                                  |
+| - | ---------- | ------------------------------------ | -------------------------------------- | ------------------------------------------------------------------------------ |
+| 1 | Idea       | (user prompt)                        | — (inline in this skill)               | `docs/<JIRA-ID>/<feature-slug>/IDEA.md`                                        |
+| 2 | Research   | IDEA.md                              | [research](../research/SKILL.md)       | `.../research.md` — or `Research skipped: no externals` noted in IDEA.md       |
+| 3 | Prototype  | IDEA.md (+ research.md if present)   | [prototype](../prototype/SKILL.md)     | colocated prototype code + a `NOTES.md` capturing the answer to the question   |
+| 4 | PRD        | Phase 3 exit                         | [to-prd](../to-prd/SKILL.md), grilled by [grill-me](../grill-me/SKILL.md) | `.../PRD.md` + Jira parent epic body                                            |
+| 5 | Kanban     | PRD.md                               | [to-issues](../to-issues/SKILL.md)     | `.../kanban.md` (index of issues) + GitLab issues at `gitlab.zadapps.info`     |
+| 6 | Ralph Loop | kanban.md                            | [ralph-loop](../ralph-loop/SKILL.md)   | merged MRs + closed issues                                                     |
+| 7 | QA         | Phase 6 exit                         | [qa-plan](../qa-plan/SKILL.md)         | `.../qa-plan.md` + new GitLab issues for gaps                                  |
 
-Recommended human gates (override with the user's choice from `process/PROCESS.md` §8): pause for sign-off **after PRD**, **after Kanban**, and **at QA**.
+Phases 6 and 7 may loop (QA produces tickets → Ralph executes → QA again) until the user marks the feature shipped.
 
----
+## Entry procedure
 
-## Phase 1 — Idea
-State the unit of work in one paragraph: the problem, who it's for (cite a persona from `03`), and the desired outcome. Confirm it fits the vision (`01`) and scope (`02`). Output a short idea note. **Transition →** Research.
+When invoked:
 
-## Phase 2 — Research
-List the unknowns (libraries, approaches, local/Syria constraints, anything ambiguous in the spec). Resolve each with targeted research; web research is allowed here. **Any new scenario you discover gets written into `docs/08_edge-cases.md`** so the spec grows. Defer what can't be resolved (flag 🟡). **Transition →** Prototype (or skip to PRD if nothing needs a spike).
+1. Confirm or derive the **feature slug** (kebab-case) and **Jira epic ID** (uppercase). If either is unknown, ask the user — do NOT invent.
+2. Create `docs/<JIRA-ID>/<feature-slug>/` if it does not exist.
+3. Write `IDEA.md` using the template below.
+4. Announce: `[CRESCENT · Phase 1 · Idea] — IDEA.md written. Exiting Phase 1 → entering Phase 2.`
+5. Dispatch the `research` skill.
 
-## Phase 3 — Prototype
-Build the **smallest throwaway spike** that tests the single riskiest assumption (e.g., the backend-driven floor-plan payload renders; the concurrency guard holds under parallel requests). Apply type-safety loosely. **When done, archive the spike** via the archive-file skill — a prototype is not production code unless the user's prototype policy says otherwise (`process/PROCESS.md` §8). **Transition →** PRD.
+<idea-template>
+# Idea
 
-## Phase 4 — PRD (feature slice)
-Write a **feature-sized PRD slice**: goals, scope boundary, the entities it touches (from `06`), the house rules it must obey (from `04`), the user flow it implements (from `07`), and acceptance-shaped success criteria. **Update the docs** where this feature changes them (`02`/`04`/`06`/`07`). This is the contract the loop will build to. **Transition →** Kanban.
+**Jira:** <JIRA-ID>
+**Slug:** <feature-slug>
+**Type:** feature | bug | refactor
+**Created:** <YYYY-MM-DD>
 
-## Phase 5 — Kanban
-Decompose the slice into **small tickets** (each plausibly finishable in one loop pass). Use the ticket template in `process/KANBAN.md`. Every ticket must carry: the **entity** (`06`), the **house-rule IDs** it satisfies (`04`), the **flow** (`07`), the **edge cases** to cover (`08`), the **applicable skills**, and **acceptance criteria derived from those IDs**. Put any 🟡 Open dependency in **Blocked**. **Transition →** Ralph Loop.
+## In the user's words
 
-## Phase 6 — Ralph Loop (the engine)
-For each **Ready** ticket, run the loop:
+(verbatim copy of the user's prompt; do not paraphrase)
 
-> **Think → Research → Plan → Act → Test → Review → Verify → loop/done**
+## What this changes for users
 
-- **Think:** read the ticket + its cited doc sections; load only the relevant skills.
-- **Research:** only if an unknown remains (usually skip — phases 2 & 4 did it).
-- **Plan:** list files to touch; name the rules/entities/flows; pick skills.
-- **Act:** write code to the skills' standards (typed enums for statuses, migrations whose cascades match `04` A6/C5, Form Request validation for the If/Then rules). **Archive any file before a destructive change.**
-- **Test:** write/run a test for **each cited house rule and edge case** (testing skill). Red → green.
-- **Review:** self-check against every applicable skill's checklist + the doc rules; run static analysis.
-- **Verify:** run the **full** suite; confirm acceptance criteria; confirm **no other house rule regressed**.
-- **Loop/Done:** any failure → back to Plan/Act. All pass → ticket **Done**.
+One short paragraph.
 
-**Stopping conditions (all required):** acceptance met · every cited rule/edge-case has a passing test · static analysis clean · full suite green.
-**Escalation:** after the user's chosen N failed verifications (default 3), or if the ticket touches a 🟡 Open item, **stop and ask the human**; move the ticket to **Blocked**.
+## Open questions
 
-**Transition →** QA when all non-blocked tickets are Done.
+A short list. These get answered during Research, Prototype, and PRD — not now.
+</idea-template>
 
-## Phase 7 — QA
-Verify the built feature against the spec, not against itself:
-- every house rule in `04` relevant to this feature has a passing test;
-- every edge case in `08` relevant to this feature is covered;
-- the flow in `07` works end to end;
-- acceptance criteria on each ticket are met;
-- no regression elsewhere.
-Write a short **QA report** (what was checked, results, anything deferred), move passing tickets to **Done**, and surface remaining 🟡 items to the human. **Transition →** ship / next feature.
+## Phase preconditions (the gate that prevents skipping)
 
----
+Before dispatching any phase N ≥ 2, the orchestrator verifies — by reading the disk, not memory:
 
-## Outputs of a full run
-- Updated docs (`08` from Research; `02`/`04`/`06`/`07` from PRD).
-- A populated board in `process/KANBAN.md`.
-- Code + migrations + tests built to the baseline skills.
-- A QA report.
+<preconditions>
+- Phase 2 (Research):   IDEA.md exists at the canonical path
+- Phase 3 (Prototype):  IDEA.md exists; research.md exists OR IDEA.md records `Research skipped: no externals`
+- Phase 4 (PRD):        Phase 3 exit (`prototype/NOTES.md` answering the prototype's question) exists
+- Phase 5 (Kanban):     PRD.md exists AND has a non-empty `## User Stories` section
+- Phase 6 (Ralph Loop): kanban.md exists AND lists at least one GitLab issue ID at `gitlab.zadapps.info`
+- Phase 7 (QA):         kanban.md shows zero open issues
+</preconditions>
 
-## When NOT to run the whole machine
-- A one-line fix with an obvious test → just do **Ralph Loop** on a single ticket.
-- A pure spec question → answer from `docs/` directly; no phases.
-- Anything blocked on a 🟡 Open decision → stop at **Kanban/Blocked** and ask the human.
+If a precondition fails, do NOT dispatch. State the missing artifact and return to the phase that produces it.
 
-See `process/PROCESS.md` for the full rationale and the doc-wiring principles, and `.claude/skills/laravel-baseline/README.md` for the standards the loop obeys.
+## Exit
+
+When Phase 7 produces zero new gaps AND the human walks the QA plan to all-PASS, announce `[CRESCENT · COMPLETE] — <JIRA-ID>/<feature-slug>` and stop. Do not auto-restart.

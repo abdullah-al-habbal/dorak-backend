@@ -11,10 +11,12 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Modules\Ban\Models\BanModel;
+use Modules\Booking\Models\BookingModel;
 use Modules\Client\Database\Factories\ClientFactory;
 use Spatie\Translatable\HasTranslations;
 
@@ -50,6 +52,11 @@ class ClientModel extends Authenticatable implements FilamentUser
     public function bans(): MorphMany
     {
         return $this->morphMany(BanModel::class, 'bannable');
+    }
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(BookingModel::class);
     }
 
     public function isBanned(): bool

@@ -11,13 +11,16 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Modules\Activation\Models\ActivationLogModel;
 use Modules\Ban\Models\BanModel;
 use Modules\Barber\Database\Factories\BarberFactory;
+use Modules\Booking\Models\BookingModel;
 use Modules\OfferedService\Models\OfferedServiceModel;
+use Modules\Review\Models\ReviewModel;
 use Spatie\Translatable\HasTranslations;
 
 #[Fillable(['name', 'email', 'password'])]
@@ -57,6 +60,16 @@ class BarberModel extends Authenticatable implements FilamentUser
     public function services(): MorphMany
     {
         return $this->morphMany(OfferedServiceModel::class, 'serviceable');
+    }
+
+    public function reviews(): MorphMany
+    {
+        return $this->morphMany(ReviewModel::class, 'subject');
+    }
+
+    public function bookings(): HasMany
+    {
+        return $this->hasMany(BookingModel::class);
     }
 
     public function getIsEnabledAttribute(): bool
