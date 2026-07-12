@@ -23,36 +23,48 @@ final class CreateBookingAction extends BaseApiAction
             ClientId: $request->user()->id,
             TimeSlot: Carbon::parse($request->validated('time_slot')),
             ServiceIds: $request->validated('service_ids', []),
+            AtHomeLocation: $request->validated('at_home_location'),
         );
 
-        $chair = ChairModel::findOrFail($command->ChairId);
+        if ($command->ChairId !== null) {
+            $chair = ChairModel::findOrFail($command->ChairId);
 
-        if ($chair->status !== 'available') {
-            return $this->error(
-                message: __('booking::messages.chair_not_available'),
-                statusCode: 409,
-            );
+            if ($chair->status !== 'available') {
+                return $this->error(
+                    message: __('booking::messages.chair_not_available'),
+                    statusCode: 409,
+                );
+            }
+
+            $conflict = BookingModel::where('chair_id', $command->ChairId)
+                ->where('time_slot', $command->TimeSlot)
+                ->whereNotIn('status', ['cancelled'])
+                ->exists();
+
+            if ($conflict) {
+                return $this->error(
+                    message: __('booking::messages.double_booking'),
+                    statusCode: 409,
+                );
+            }
         }
 
-        $conflict = BookingModel::where('chair_id', $command->ChairId)
-            ->where('time_slot', $command->TimeSlot)
-            ->whereNotIn('status', ['cancelled'])
-            ->exists();
-
-        if ($conflict) {
-            return $this->error(
-                message: __('booking::messages.double_booking'),
-                statusCode: 409,
-            );
-        }
-
-        $booking = BookingModel::create([
+        $bookingData = [
             'client_id' => $command->ClientId,
-            'chair_id' => $command->ChairId,
-            'barber_id' => $command->BarberId ?? $chair->barber_id,
+            'barber_id' => $command->BarberId,
             'time_slot' => $command->TimeSlot,
             'status' => 'confirmed',
-        ]);
+        ];
+
+        if ($command->ChairId !== null) {
+            $bookingData['chair_id'] = $command->ChairId;
+        }
+
+        if ($command->AtHomeLocation !== null) {
+            $bookingData['at_home_location'] = $command->AtHomeLocation;
+        }
+
+        $booking = BookingModel::create($bookingData);
 
         if ($command->ServiceIds !== []) {
             $booking->services()->attach($command->ServiceIds);

@@ -9,10 +9,11 @@ use Carbon\Carbon;
 final readonly class CreateBookingCommand
 {
     public function __construct(
-        public string $ChairId,
+        public ?string $ChairId,
         public ?string $BarberId,
         public string $ClientId,
         public Carbon $TimeSlot,
         public array $ServiceIds,
+        public ?array $AtHomeLocation,
     ) {}
 }

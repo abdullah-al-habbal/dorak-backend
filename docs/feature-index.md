@@ -41,13 +41,13 @@
 - `GetFloorPlanAction` [GET /api/v1/branches/{branch}/floor-plan] — returns chairs with barber, no auth
 - `ChairResource` — id, label, status, ui_metadata, barber (via BarberResource::make)
 - `BranchModel.chairs()` — HasMany to ChairModel
-- `CreateBookingAction` [POST /api/v1/bookings] — accepts CreateBookingRequest (FormRequest), builds CreateBookingCommand, double-booking check (409), returns BookingResource (201)
+- `CreateBookingAction` [POST /api/v1/bookings] — accepts CreateBookingRequest (FormRequest), builds CreateBookingCommand, double-booking check (409), at-home booking support, returns BookingResource (201)
 - `ListUserBookingsAction` [GET /api/v1/bookings] — auth client's paginated bookings
-- `BookingResource` — id, time_slot, status, chair (ChairResource::make), barber (BarberResource::make), services (ServiceResource::collection)
+- `BookingResource` — id, time_slot, status, chair (ChairResource::make), barber (BarberResource::make), services (ServiceResource::collection), at_home_location
 - `ServiceResource` — id, name, price
-- `CreateBookingRequest` — extends BaseApiFormRequest, validates chair_id/barber_id/time_slot/service_ids
-- `CreateBookingCommand` — readonly value object with PascalCase properties (ChairId, BarberId, ClientId, TimeSlot, ServiceIds)
-- `BookingModel` — fillable: client_id, chair_id, barber_id, time_slot, status. HasUuids, HasFactory
+- `CreateBookingRequest` — extends BaseApiFormRequest, validates chair_id/barber_id/time_slot/service_ids. Mutually exclusive validation: chair_id XOR at_home_location. at_home_location.lat/lng with required_with/prohibited_with
+- `CreateBookingCommand` — readonly value object with PascalCase properties (ChairId, BarberId, ClientId, TimeSlot, ServiceIds, AtHomeLocation). ChairId nullable
+- `BookingModel` — fillable: client_id, chair_id, barber_id, time_slot, status, at_home_location. HasUuids, HasFactory. at_home_location cast to array
 - Routes: bookings.php (auth:client), floor-plan.php (no auth)
 
 ### CI / Code Quality
