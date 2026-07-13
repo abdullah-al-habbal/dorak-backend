@@ -56,5 +56,32 @@
 - `sonar-project.properties` — backend sources, exclusions, coverage reports
 - BaseApiAction: removed abstract __invoke() (signatures vary per action)
 
+### Branch/Barber Detail
+- `GetBranchDetailAction` [GET /api/v1/explore/branches/{branch}] — branch info + chairs_count + barbers (nested BarberResource) + services (nested ServiceResource)
+- `GetBarberDetailAction` [GET /api/v1/explore/barbers/{barber}] — barber info + services (nested ServiceResource)
+- Routes added to explore.php
+
+### Review API
+- `SubmitReviewAction` [POST /api/v1/client/bookings/{booking}/review] — validates booking ownership + completed status + no duplicate; derives subject_type/subject_id from chair.branch or barber. Auth:client
+- `GetBranchReviewsAction` [GET /api/v1/branches/{branch}/reviews] — paginated reviews for a branch. No auth
+- `ReviewResource` — id, rating, comment, author_name, created_at
+- `SubmitReviewRequest` — validates rating (1-5) + comment (nullable, max 500)
+- Routes: reviews.php
+
+### Booking Cancel & Show
+- `CancelBookingAction` [POST /api/v1/client/bookings/{booking}/cancel] — validates ownership + confirmed status → canceled. Auth:client
+- `ShowBookingAction` [GET /api/v1/bookings/{booking}] — validates ownership, returns booking resource. Auth:client
+
+### Profile Update
+- `UpdateProfileAction` [PATCH /api/v1/client/profile] — nullable name/email/password fields. Auth:client
+- `UpdateProfileRequest` — validates email (unique ignoring current) + password (min 8, nullable)
+
+### Model Relations
+- `BranchModel.reviews()` — MorphMany via subject_type='App\\\\Models\\\\Branch'
+- `BranchModel.barbers()` — HasManyThrough via ChairModel
+- `BarberModel.reviews()` — MorphMany
+- `BarberModel.bookings()` — HasMany (for completed booking validation)
+- `ClientModel.bookings()` — HasMany
+
 ### Skills
 - `10StrictBackendArchitecture/SKILL.md` — FormRequest enforcement, Command objects, strict imports, Resource composition
