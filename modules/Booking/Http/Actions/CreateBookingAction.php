@@ -6,6 +6,7 @@ namespace Modules\Booking\Http\Actions;
 
 use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\DB;
 use Modules\Booking\Domain\Commands\CreateBookingCommand;
 use Modules\Booking\Http\Requests\CreateBookingRequest;
 use Modules\Booking\Http\Resources\BookingResource;
@@ -26,55 +27,58 @@ final class CreateBookingAction extends BaseApiAction
             AtHomeLocation: $request->validated('at_home_location'),
         );
 
-        if ($command->ChairId !== null) {
-            $chair = ChairModel::findOrFail($command->ChairId);
+        return DB::transaction(function () use ($command): JsonResponse {
+            if ($command->ChairId !== null) {
+                $chair = ChairModel::findOrFail($command->ChairId);
 
-            if ($chair->status !== 'available') {
-                return $this->error(
-                    message: __('booking::messages.chair_not_available'),
-                    statusCode: 409,
-                );
+                if ($chair->status !== 'available') {
+                    return $this->error(
+                        message: __('booking::messages.chair_not_available'),
+                        status: 409,
+                    );
+                }
+
+                $conflict = BookingModel::where('chair_id', $command->ChairId)
+                    ->where('time_slot', $command->TimeSlot)
+                    ->whereNotIn('status', ['cancelled'])
+                    ->lockForUpdate()
+                    ->exists();
+
+                if ($conflict) {
+                    return $this->error(
+                        message: __('booking::messages.double_booking'),
+                        status: 409,
+                    );
+                }
             }
 
-            $conflict = BookingModel::where('chair_id', $command->ChairId)
-                ->where('time_slot', $command->TimeSlot)
-                ->whereNotIn('status', ['cancelled'])
-                ->exists();
+            $bookingData = [
+                'client_id' => $command->ClientId,
+                'barber_id' => $command->BarberId,
+                'time_slot' => $command->TimeSlot,
+                'status' => 'confirmed',
+            ];
 
-            if ($conflict) {
-                return $this->error(
-                    message: __('booking::messages.double_booking'),
-                    statusCode: 409,
-                );
+            if ($command->ChairId !== null) {
+                $bookingData['chair_id'] = $command->ChairId;
             }
-        }
 
-        $bookingData = [
-            'client_id' => $command->ClientId,
-            'barber_id' => $command->BarberId,
-            'time_slot' => $command->TimeSlot,
-            'status' => 'confirmed',
-        ];
+            if ($command->AtHomeLocation !== null) {
+                $bookingData['at_home_location'] = $command->AtHomeLocation;
+            }
 
-        if ($command->ChairId !== null) {
-            $bookingData['chair_id'] = $command->ChairId;
-        }
+            $booking = BookingModel::create($bookingData);
 
-        if ($command->AtHomeLocation !== null) {
-            $bookingData['at_home_location'] = $command->AtHomeLocation;
-        }
+            if ($command->ServiceIds !== []) {
+                $booking->services()->attach($command->ServiceIds);
+            }
 
-        $booking = BookingModel::create($bookingData);
+            $booking->load(['chair.barber', 'barber', 'services']);
 
-        if ($command->ServiceIds !== []) {
-            $booking->services()->attach($command->ServiceIds);
-        }
-
-        $booking->load(['chair.barber', 'barber', 'services']);
-
-        return $this->created(
-            data: new BookingResource($booking),
-            message: __('booking::messages.booking_created'),
-        );
+            return $this->created(
+                data: new BookingResource($booking),
+                message: __('booking::messages.booking_created'),
+            );
+        });
     }
 }

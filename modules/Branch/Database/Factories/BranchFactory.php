@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Modules\Branch\Models\BranchModel;
+use Modules\Brand\Models\BrandModel;
 
 class BranchFactory extends Factory
 {
@@ -18,6 +19,7 @@ class BranchFactory extends Factory
     public function definition(): array
     {
         return [
+            'brand_id' => BrandModel::factory(),
             'name' => [
                 'en' => fake()->name(),
                 'ar' => fake('ar_SA')->name(),

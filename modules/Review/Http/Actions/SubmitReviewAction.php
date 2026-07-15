@@ -19,22 +19,22 @@ final class SubmitReviewAction extends BaseApiAction
         $booking = BookingModel::with('chair.branch')->findOrFail($booking);
 
         if ($booking->client_id !== $request->user()->id) {
-            return $this->error(message: __('review::messages.not_own_booking'), statusCode: 403);
+            return $this->error(message: __('review::messages.not_own_booking'), status: 403);
         }
 
         if ($booking->status !== 'completed') {
-            return $this->error(message: __('review::messages.booking_not_completed'), statusCode: 422);
+            return $this->error(message: __('review::messages.booking_not_completed'), status: 422);
         }
 
         if ($booking->review()->exists()) {
-            return $this->error(message: __('review::messages.already_reviewed'), statusCode: 409);
+            return $this->error(message: __('review::messages.already_reviewed'), status: 409);
         }
 
         $subjectId = $booking->chair?->branch_id;
         $subjectType = $subjectId !== null ? BranchModel::class : null;
 
         if ($subjectId === null) {
-            return $this->error(message: __('review::messages.no_subject'), statusCode: 422);
+            return $this->error(message: __('review::messages.no_subject'), status: 422);
         }
 
         $review = ReviewModel::create([

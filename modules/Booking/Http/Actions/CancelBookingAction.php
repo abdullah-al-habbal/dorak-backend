@@ -17,11 +17,11 @@ final class CancelBookingAction extends BaseApiAction
         $booking = BookingModel::with(['chair.barber', 'barber', 'services'])->findOrFail($booking);
 
         if ($booking->client_id !== $request->user()->id) {
-            return $this->error(message: __('booking::messages.not_own_booking'), statusCode: 403);
+            return $this->error(message: __('booking::messages.not_own_booking'), status: 403);
         }
 
         if ($booking->status !== 'confirmed') {
-            return $this->error(message: __('booking::messages.cancel_invalid_status'), statusCode: 422);
+            return $this->error(message: __('booking::messages.cancel_invalid_status'), status: 422);
         }
 
         $booking->update(['status' => 'canceled']);

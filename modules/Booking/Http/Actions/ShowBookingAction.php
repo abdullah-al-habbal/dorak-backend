@@ -17,7 +17,7 @@ final class ShowBookingAction extends BaseApiAction
         $booking = BookingModel::with(['chair.barber', 'barber', 'services'])->findOrFail($booking);
 
         if ($booking->client_id !== $request->user()->id) {
-            return $this->error(message: __('booking::messages.not_own_booking'), statusCode: 403);
+            return $this->error(message: __('booking::messages.not_own_booking'), status: 403);
         }
 
         return $this->ok(data: new BookingResource($booking));

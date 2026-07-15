@@ -96,6 +96,46 @@ it('rejects booking with both chair_id and at_home_location', function () {
     $response->assertStatus(422);
 });
 
+it('ensures only one booking per chair+slot in database after conflict', function () {
+    $chair = ChairModel::factory()->create();
+    $timeSlot = Carbon::now()->addDay()->format('Y-m-d H:i:s');
+
+    $this->postJson('/api/v1/bookings', [
+        'chair_id' => $chair->id,
+        'time_slot' => $timeSlot,
+    ])->assertCreated();
+
+    $this->postJson('/api/v1/bookings', [
+        'chair_id' => $chair->id,
+        'time_slot' => $timeSlot,
+    ])->assertStatus(409);
+
+    expect(BookingModel::where('chair_id', $chair->id)
+        ->whereNotIn('status', ['cancelled'])
+        ->count()
+    )->toBe(1);
+});
+
+it('allows booking after a cancelled booking on same chair+slot', function () {
+    $chair = ChairModel::factory()->create();
+    $timeSlot = Carbon::now()->addDay()->format('Y-m-d H:i:s');
+
+    $this->postJson('/api/v1/bookings', [
+        'chair_id' => $chair->id,
+        'time_slot' => $timeSlot,
+    ])->assertCreated();
+
+    // Cancel the booking
+    $booking = BookingModel::first();
+    $booking->update(['status' => 'cancelled']);
+
+    // Now booking the same slot should succeed
+    $this->postJson('/api/v1/bookings', [
+        'chair_id' => $chair->id,
+        'time_slot' => $timeSlot,
+    ])->assertCreated();
+});
+
 it('requires authentication', function () {
     $this->app->get('auth')->forgetGuards();
 

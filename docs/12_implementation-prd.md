@@ -26,12 +26,12 @@ Each module may need Track A, Track B, or both:
 | Website | — | Web pages | B ✅ only |
 | Branch | Admin + Branch panels | (Explore covers read) | A ✅; B partial |
 | Barber | Admin + Barber panels | (Explore covers read) | A ✅; B partial |
-| Brand | Standard CRUD | **Needed** | A ✅; B missing |
+| Brand | Standard CRUD | **Needed** | A ✅; B ✅ (list, show) |
 | Chair | Standard CRUD | **Needed** | A ✅; B missing |
 | OfferedService | Standard CRUD | **Needed** | A ✅; B missing |
 | Currency + ExchangeRate | Standard CRUD (2 resources) | **Needed** | A ✅; B missing |
-| JobPosting + Application | Standard CRUD (Application missing CreatePage) | **Needed** | A has gaps; B missing |
-| BarberAffiliation | Standard CRUD | **Needed** | A ✅; B missing |
+| JobPosting + Application | Standard CRUD (Application missing CreatePage) | **Needed** | A has gaps; B ✅ (list, show, apply) |
+| BarberAffiliation | Standard CRUD | **Needed** | A ✅; B ✅ (create, accept, reject, list) |
 | Activation | Read-only + ToggleAction | **Needed** | A has gaps; B missing |
 | Ban | Standard CRUD | **Needed** | A ✅; B missing |
 | Admin | Standard CRUD | — | A ✅ only |
@@ -66,18 +66,18 @@ REST API endpoints are missing for modules that the mobile app needs to consume.
 
 ### 3.1 High Priority (required for Phase 1 completion)
 
-| Module | Endpoints Needed | Why | KANBAN ref |
-|--------|-----------------|-----|------------|
-| **Brand** | `GET /brands`, `GET /brands/{id}`, `POST /brands`, `PUT /brands/{id}` | Mobile brand management (list, detail, create, update) | TN-01 |
-| **Chair** | `GET /branches/{branchId}/chairs`, `GET /chairs/{id}` | Floor-plan chair data beyond the basic floor-plan endpoint | CH-01 |
-| **BarberAffiliation** | `POST /barbers/{id}/affiliate`, `POST /affiliations/{id}/accept`, `POST /affiliations/{id}/reject`, `GET /barbers/{id}/affiliations` | Invite/accept/reject flow | AF-01 |
-| **Barber Activation** | `POST /barbers/{id}/activate`, `POST /barbers/{id}/deactivate` | Control which universe a barber appears in | (implied by Activation module) |
+| Module | Endpoints Needed | Why | KANBAN ref | Status |
+|--------|-----------------|-----|------------|--------|
+| **Brand** | `GET /brands`, `GET /brands/{id}`, `POST /brands`, `PUT /brands/{id}` | Mobile brand management (list, detail, create, update) | TN-01 | List/show ✅ (GET); create/update missing |
+| **Chair** | `GET /branches/{branchId}/chairs`, `GET /chairs/{id}` | Floor-plan chair data beyond the basic floor-plan endpoint | CH-01 | ❌ |
+| **BarberAffiliation** | `POST /barbers/{id}/affiliate`, `POST /affiliations/{id}/accept`, `POST /affiliations/{id}/reject`, `GET /barbers/{id}/affiliations` | Invite/accept/reject flow | AF-01 | ✅ All 4 built |
+| **Barber Activation** | `POST /barbers/{id}/activate`, `POST /barbers/{id}/deactivate` | Control which universe a barber appears in | (implied by Activation module) | ❌ |
 
 ### 3.2 Medium Priority (Phase 2 features)
 
-| Module | Endpoints Needed | Why | KANBAN ref |
-|--------|-----------------|-----|------------|
-| **JobPosting** | `GET /jobs`, `GET /jobs/{id}`, `POST /jobs/{id}/apply` | B2B job board — list, detail, apply | (implied by Phase 2) |
+| Module | Endpoints Needed | Why | KANBAN ref | Status |
+|--------|-----------------|-----|------------|--------|
+| **JobPosting** | `GET /jobs`, `GET /jobs/{id}`, `POST /jobs/{id}/apply` | B2B job board — list, detail, apply | (implied by Phase 2) | ✅ All 3 built |
 | **Application** | `GET /applications`, `PUT /applications/{id}/status` | Branch manager reviews applications | (implied) |
 | **Currency** | `GET /currencies`, `GET /exchange-rates`, `GET /convert?from=X&to=Y&amount=Z` | Mobile price display | CU-01 |
 

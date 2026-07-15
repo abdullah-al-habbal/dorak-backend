@@ -83,5 +83,31 @@
 - `BarberModel.bookings()` — HasMany (for completed booking validation)
 - `ClientModel.bookings()` — HasMany
 
+### Brand API
+- `ListBrandsAction` [GET /api/v1/brands] — lists all brands. No auth.
+- `ShowBrandAction` [GET /api/v1/brands/{brand}] — single brand detail. No auth.
+- Routes: brands.php
+
+### BarberAffiliation API
+- `CreateAffiliationAction` [POST /api/v1/barbers/{barber}/affiliate] — invite barber. Auth:barber
+- `AcceptAffiliationAction` [POST /api/v1/affiliations/{affiliation}/accept] — accept invite. Auth:barber
+- `RejectAffiliationAction` [POST /api/v1/affiliations/{affiliation}/reject] — reject invite. Auth:barber
+- `ListBarberAffiliationsAction` [GET /api/v1/barbers/{barber}/affiliations] — list barber's affiliations. Auth:barber
+- Routes: barber-affiliations.php
+
+### JobPosting API
+- `ListJobPostingsAction` [GET /api/v1/jobs] — list active job postings. No auth.
+- `ShowJobPostingAction` [GET /api/v1/jobs/{job}] — single job detail. No auth.
+- `ApplyForJobAction` [POST /api/v1/jobs/{job}/apply] — apply as barber. Auth:barber
+- Routes: jobs.php
+
+### Frontend Consumption
+- Brand list/detail screens (Flutter client app) — connected to Brand API (GET /brands, GET /brands/{id})
+- BarberAffiliation list/accept/reject screens (Flutter client app) — connected to BarberAffiliation API
+- JobPosting list/detail/apply screens (Flutter client app) — connected to JobPosting API
+- All three consume APIs via `ExploreRepositoryImpl` / `BrandRepositoryImpl` / dedicated BLoC or local patterns
+- `ApiEndpoints.dart` (dorak_core) updated with all three module endpoints
+- Translations added for all three features
+
 ### Skills
 - `10StrictBackendArchitecture/SKILL.md` — FormRequest enforcement, Command objects, strict imports, Resource composition
