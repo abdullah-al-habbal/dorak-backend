@@ -44,7 +44,9 @@ class ReviewResource extends Resource
     {
         return [
             'index' => Pages\ListReviewsPage::route('/'),
+            'create' => Pages\CreateReviewPage::route('/create'),
             'view' => Pages\ViewReviewPage::route('/{record}'),
+            'edit' => Pages\EditReviewPage::route('/{record}/edit'),
         ];
     }
 }

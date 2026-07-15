@@ -45,6 +45,7 @@ class ActivationLogResource extends Resource
         return [
             'index' => Pages\ListActivationLogsPage::route('/'),
             'view' => Pages\ViewActivationLogPage::route('/{record}'),
+            'edit' => Pages\EditActivationLogPage::route('/{record}/edit'),
         ];
     }
 }
