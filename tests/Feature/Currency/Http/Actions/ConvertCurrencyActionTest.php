@@ -17,8 +17,8 @@ it('converts between currencies', function () {
     $response = $this->getJson('/api/v1/convert?from=USD&to=EUR&amount=100');
 
     $response->assertOk();
-    expect($response->json('data.result'))->toBe(85.0);
-    expect($response->json('data.rate'))->toBe(0.85);
+    expect($response->json('data.result'))->toEqual(85.0);
+    expect($response->json('data.rate'))->toEqual(0.85);
 });
 
 it('returns same amount for same currency', function () {
@@ -26,8 +26,8 @@ it('returns same amount for same currency', function () {
 
     $response = $this->getJson('/api/v1/convert?from=USD&to=USD&amount=100');
 
-    expect($response->json('data.result'))->toBe(100.0);
-    expect($response->json('data.rate'))->toBe(1.0);
+    expect($response->json('data.result'))->toEqual(100.0);
+    expect($response->json('data.rate'))->toEqual(1.0);
 });
 
 it('returns 404 for missing exchange rate', function () {

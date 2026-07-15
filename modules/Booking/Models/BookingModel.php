@@ -38,17 +38,17 @@ class BookingModel extends Model
 
     public function client(): BelongsTo
     {
-        return $this->belongsTo(ClientModel::class);
+        return $this->belongsTo(ClientModel::class, 'client_id');
     }
 
     public function chair(): BelongsTo
     {
-        return $this->belongsTo(ChairModel::class);
+        return $this->belongsTo(ChairModel::class, 'chair_id');
     }
 
     public function barber(): BelongsTo
     {
-        return $this->belongsTo(BarberModel::class);
+        return $this->belongsTo(BarberModel::class, 'barber_id');
     }
 
     public function services(): BelongsToMany
@@ -58,6 +58,6 @@ class BookingModel extends Model
 
     public function review(): HasOne
     {
-        return $this->hasOne(ReviewModel::class);
+        return $this->hasOne(ReviewModel::class, 'booking_id');
     }
 }

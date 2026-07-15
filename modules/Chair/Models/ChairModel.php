@@ -34,16 +34,16 @@ class ChairModel extends Model
 
     public function branch(): BelongsTo
     {
-        return $this->belongsTo(BranchModel::class);
+        return $this->belongsTo(BranchModel::class, 'branch_id');
     }
 
     public function barber(): BelongsTo
     {
-        return $this->belongsTo(BarberModel::class);
+        return $this->belongsTo(BarberModel::class, 'barber_id');
     }
 
     public function bookings(): HasMany
     {
-        return $this->hasMany(BookingModel::class);
+        return $this->hasMany(BookingModel::class, 'chair_id');
     }
 }

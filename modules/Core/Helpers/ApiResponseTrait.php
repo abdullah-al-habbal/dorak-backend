@@ -96,6 +96,15 @@ trait ApiResponseTrait
         return $this->success($data, $code, $message, 200);
     }
 
+    protected function ok(
+        mixed $data = null,
+        SuccessCodeEnum|string $code = SuccessCodeEnum::SUCCESS,
+        ?string $message = null,
+        array $meta = []
+    ): JsonResponse {
+        return $this->success($data, $code, $message, 200, $meta);
+    }
+
     protected function noContent(
         SuccessCodeEnum|string $code = SuccessCodeEnum::SUCCESS,
         ?string $message = null

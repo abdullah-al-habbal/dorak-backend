@@ -42,7 +42,7 @@ class BarberAffiliationModel extends Model
 
     public function barber(): BelongsTo
     {
-        return $this->belongsTo(BarberModel::class);
+        return $this->belongsTo(BarberModel::class, 'barber_id');
     }
 
     public function affiliable(): MorphTo

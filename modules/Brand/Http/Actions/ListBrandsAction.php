@@ -14,7 +14,8 @@ final class ListBrandsAction extends BaseApiAction
 {
     public function __invoke(Request $request): JsonResponse
     {
-        $brands = BrandModel::with(['owner', 'baseCurrency'])->paginate(20);
+        $perPage = (int) $request->query('per_page', 20);
+        $brands = BrandModel::with(['owner', 'baseCurrency'])->paginate(min($perPage, 100));
 
         return $this->paginated(
             paginator: $brands,

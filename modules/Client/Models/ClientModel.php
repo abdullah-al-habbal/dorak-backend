@@ -56,7 +56,7 @@ class ClientModel extends Authenticatable implements FilamentUser
 
     public function bookings(): HasMany
     {
-        return $this->hasMany(BookingModel::class);
+        return $this->hasMany(BookingModel::class, 'client_id');
     }
 
     public function isBanned(): bool

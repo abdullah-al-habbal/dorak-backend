@@ -55,6 +55,6 @@ class OfferedServiceModel extends Model
 
     public function currency(): BelongsTo
     {
-        return $this->belongsTo(CurrencyModel::class);
+        return $this->belongsTo(CurrencyModel::class, 'currency_id');
     }
 }

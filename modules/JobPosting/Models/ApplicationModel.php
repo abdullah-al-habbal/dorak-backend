@@ -31,11 +31,11 @@ class ApplicationModel extends Model
 
     public function jobPosting(): BelongsTo
     {
-        return $this->belongsTo(JobPostingModel::class);
+        return $this->belongsTo(JobPostingModel::class, 'job_posting_id');
     }
 
     public function barber(): BelongsTo
     {
-        return $this->belongsTo(BarberModel::class);
+        return $this->belongsTo(BarberModel::class, 'barber_id');
     }
 }

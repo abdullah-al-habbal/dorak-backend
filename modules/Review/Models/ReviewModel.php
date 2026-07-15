@@ -32,7 +32,7 @@ class ReviewModel extends Model
 
     public function booking(): BelongsTo
     {
-        return $this->belongsTo(BookingModel::class);
+        return $this->belongsTo(BookingModel::class, 'booking_id');
     }
 
     public function author(): MorphTo

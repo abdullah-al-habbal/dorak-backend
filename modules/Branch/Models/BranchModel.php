@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -49,15 +50,15 @@ class BranchModel extends Authenticatable implements FilamentUser
 
     public function brand(): BelongsTo
     {
-        return $this->belongsTo(BrandModel::class);
+        return $this->belongsTo(BrandModel::class, 'brand_id');
     }
 
     public function chairs(): HasMany
     {
-        return $this->hasMany(ChairModel::class);
+        return $this->hasMany(ChairModel::class, 'branch_id');
     }
 
-    public function barbers(): HasMany
+    public function barbers(): HasManyThrough
     {
         return $this->hasManyThrough(BarberModel::class, ChairModel::class, 'branch_id', 'id', 'id', 'barber_id');
     }

@@ -13,7 +13,7 @@ final class CurrencyResource extends JsonResource
         return [
             'id' => $this->id,
             'code' => $this->code,
-            'name' => $this->getTranslations('name'),
+            'name' => $this->name,
             'symbol' => $this->symbol,
             'is_default' => $this->is_default,
         ];

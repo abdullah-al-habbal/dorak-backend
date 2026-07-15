@@ -38,11 +38,11 @@ class JobPostingModel extends Model
 
     public function branch(): BelongsTo
     {
-        return $this->belongsTo(BranchModel::class);
+        return $this->belongsTo(BranchModel::class, 'branch_id');
     }
 
     public function applications(): HasMany
     {
-        return $this->hasMany(ApplicationModel::class);
+        return $this->hasMany(ApplicationModel::class, 'job_posting_id');
     }
 }

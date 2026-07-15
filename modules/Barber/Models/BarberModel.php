@@ -69,7 +69,7 @@ class BarberModel extends Authenticatable implements FilamentUser
 
     public function bookings(): HasMany
     {
-        return $this->hasMany(BookingModel::class);
+        return $this->hasMany(BookingModel::class, 'barber_id');
     }
 
     public function getIsEnabledAttribute(): bool

@@ -55,7 +55,7 @@ class BrandModel extends Model
 
     public function branches(): HasMany
     {
-        return $this->hasMany(BranchModel::class);
+        return $this->hasMany(BranchModel::class, 'brand_id');
     }
 
     public function affiliations(): MorphMany

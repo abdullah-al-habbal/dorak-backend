@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\JobPosting\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
+use Modules\Core\Enums\ErrorCodeEnum;
 use Modules\Core\Http\Actions\BaseApiAction;
 use Modules\JobPosting\Http\Requests\ApplyForJobRequest;
 use Modules\JobPosting\Http\Resources\ApplicationResource;
@@ -18,7 +19,7 @@ final class ApplyForJobAction extends BaseApiAction
         $jobPosting = JobPostingModel::findOrFail($job);
 
         if ($jobPosting->status !== 'open') {
-            return $this->businessError(message: 'Job posting is not open for applications');
+            return $this->businessError(ErrorCodeEnum::UNPROCESSABLE_ENTITY, message: __('Job posting is not open for applications'));
         }
 
         $existing = ApplicationModel::where('job_posting_id', $jobPosting->id)
@@ -26,7 +27,7 @@ final class ApplyForJobAction extends BaseApiAction
             ->exists();
 
         if ($existing) {
-            return $this->businessError(message: 'Already applied to this job');
+            return $this->businessError(ErrorCodeEnum::UNPROCESSABLE_ENTITY, message: __('Already applied to this job'));
         }
 
         $application = ApplicationModel::create([
