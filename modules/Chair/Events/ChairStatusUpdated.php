@@ -6,11 +6,12 @@ namespace Modules\Chair\Events;
 
 use Illuminate\Broadcasting\Channel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
 final class ChairStatusUpdated implements ShouldBroadcast
 {
-    use SerializesModels;
+    use Dispatchable, SerializesModels;
 
     public string $chairId;
     public string $branchId;
