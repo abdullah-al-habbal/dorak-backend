@@ -16,8 +16,9 @@ final class ListChairsAction extends BaseApiAction
     {
         $query = ChairModel::with(['branch', 'barber']);
 
-        if ($request->has('branch_id')) {
-            $query->where('branch_id', $request->query('branch_id'));
+        $branchId = $request->route('branch') ?? $request->query('branch_id');
+        if ($branchId) {
+            $query->where('branch_id', $branchId);
         }
 
         if ($request->has('status')) {

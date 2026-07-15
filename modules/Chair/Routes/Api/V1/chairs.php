@@ -8,3 +8,4 @@ use Modules\Chair\Http\Actions\ShowChairAction;
 
 Route::get('/chairs', ListChairsAction::class)->name('chairs.list');
 Route::get('/chairs/{chair}', ShowChairAction::class)->name('chairs.show');
+Route::get('/branches/{branch}/chairs', ListChairsAction::class)->name('branches.chairs.list');

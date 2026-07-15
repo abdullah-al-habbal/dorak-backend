@@ -20,7 +20,7 @@ final class GetBranchReviewsAction extends BaseApiAction
             ->where('subject_type', BranchModel::class)
             ->with('author')
             ->orderByDesc('created_at')
-            ->paginate(20);
+            ->paginate(min((int) request()->query('per_page', 20), 100));
 
         return $this->paginated(
             paginator: $reviews,

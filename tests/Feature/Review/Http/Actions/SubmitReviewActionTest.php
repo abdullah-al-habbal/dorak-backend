@@ -78,3 +78,54 @@ it('rejects review for other users booking', function () {
 
     $response->assertForbidden();
 });
+
+it('includes author_name in review response', function () {
+    $booking = BookingModel::factory()->completed()->create([
+        'client_id' => $this->client->id,
+    ]);
+
+    $response = $this->postJson("/api/v1/client/bookings/{$booking->id}/review", [
+        'rating' => 5,
+        'comment' => 'Great!',
+    ]);
+
+    $response->assertCreated();
+    expect($response->json('data.author_name'))->toBe($this->client->name);
+});
+
+it('rejects review for at-home booking without chair', function () {
+    $booking = BookingModel::factory()->completed()->atHome()->create([
+        'client_id' => $this->client->id,
+    ]);
+
+    $response = $this->postJson("/api/v1/client/bookings/{$booking->id}/review", [
+        'rating' => 5,
+    ]);
+
+    $response->assertStatus(422);
+});
+
+it('rejects review with rating below minimum', function () {
+    $booking = BookingModel::factory()->completed()->create([
+        'client_id' => $this->client->id,
+    ]);
+
+    $response = $this->postJson("/api/v1/client/bookings/{$booking->id}/review", [
+        'rating' => 0,
+    ]);
+
+    $response->assertStatus(422);
+});
+
+it('allows review without comment', function () {
+    $booking = BookingModel::factory()->completed()->create([
+        'client_id' => $this->client->id,
+    ]);
+
+    $response = $this->postJson("/api/v1/client/bookings/{$booking->id}/review", [
+        'rating' => 5,
+    ]);
+
+    $response->assertCreated();
+    expect($response->json('data.rating'))->toBe(5);
+});

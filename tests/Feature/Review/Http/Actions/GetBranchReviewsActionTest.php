@@ -30,3 +30,24 @@ it('returns empty for branch with no reviews', function () {
 
     expect($response->json('data'))->toHaveCount(0);
 });
+
+it('paginates reviews for branch', function () {
+    $branch = BranchModel::factory()->create();
+    ReviewModel::factory()->count(25)->create([
+        'subject_id' => $branch->id,
+        'subject_type' => BranchModel::class,
+    ]);
+
+    $response = $this->getJson("/api/v1/branches/{$branch->id}/reviews?per_page=10");
+
+    $response->assertOk();
+    expect($response->json('data'))->toHaveCount(10);
+    expect($response->json('meta.pagination.per_page'))->toBe(10);
+    expect($response->json('meta.pagination.total'))->toBe(25);
+});
+
+it('returns 404 for non-existent branch reviews', function () {
+    $response = $this->getJson('/api/v1/branches/non-existent-id/reviews');
+
+    $response->assertNotFound();
+});

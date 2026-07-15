@@ -35,7 +35,8 @@ final class ExploreBranchesAction extends BaseApiAction
             $query->whereHas('brand', fn ($q) => $q->where('universe', $universe));
         }
 
-        $branches = $query->paginate(20);
+        $perPage = (int) request()->query('per_page', 20);
+        $branches = $query->paginate(min($perPage, 100));
 
         return $this->paginated(
             paginator: $branches,

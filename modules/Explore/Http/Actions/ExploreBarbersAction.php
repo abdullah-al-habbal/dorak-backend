@@ -31,7 +31,8 @@ final class ExploreBarbersAction extends BaseApiAction
             ->havingRaw('distance < ?', [$radius])
             ->orderBy('distance');
 
-        $barbers = $query->paginate(20);
+        $perPage = (int) request()->query('per_page', 20);
+        $barbers = $query->paginate(min($perPage, 100));
 
         return $this->paginated(
             paginator: $barbers,

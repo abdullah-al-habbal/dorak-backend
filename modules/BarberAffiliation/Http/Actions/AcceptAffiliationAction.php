@@ -7,6 +7,7 @@ namespace Modules\BarberAffiliation\Http\Actions;
 use Illuminate\Http\JsonResponse;
 use Modules\BarberAffiliation\Http\Resources\BarberAffiliationResource;
 use Modules\BarberAffiliation\Models\BarberAffiliationModel;
+use Modules\Core\Enums\ErrorCodeEnum;
 use Modules\Core\Http\Actions\BaseApiAction;
 
 final class AcceptAffiliationAction extends BaseApiAction
@@ -16,7 +17,7 @@ final class AcceptAffiliationAction extends BaseApiAction
         $affiliation = BarberAffiliationModel::findOrFail($affiliation);
 
         if ($affiliation->status !== 'pending') {
-            return $this->businessError(message: 'Affiliation is not in pending status');
+            return $this->businessError(ErrorCodeEnum::BAD_REQUEST, message: 'Affiliation is not in pending status');
         }
 
         $affiliation->update([
