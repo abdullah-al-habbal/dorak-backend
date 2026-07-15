@@ -111,7 +111,7 @@ it('ensures only one booking per chair+slot in database after conflict', functio
     ])->assertStatus(409);
 
     expect(BookingModel::where('chair_id', $chair->id)
-        ->whereNotIn('status', ['cancelled'])
+        ->whereNotIn('status', ['canceled'])
         ->count()
     )->toBe(1);
 });
@@ -127,7 +127,7 @@ it('allows booking after a cancelled booking on same chair+slot', function () {
 
     // Cancel the booking
     $booking = BookingModel::first();
-    $booking->update(['status' => 'cancelled']);
+    $booking->update(['status' => 'canceled']);
 
     // Now booking the same slot should succeed
     $this->postJson('/api/v1/bookings', [

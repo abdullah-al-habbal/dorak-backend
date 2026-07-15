@@ -22,7 +22,7 @@ class BookingFactory extends Factory
             'chair_id' => ChairModel::factory(),
             'barber_id' => BarberModel::factory(),
             'time_slot' => fake()->dateTimeBetween('+1 day', '+1 week'),
-            'status' => 'booked',
+            'status' => 'confirmed',
             'at_home_location' => null,
         ];
     }
@@ -37,7 +37,7 @@ class BookingFactory extends Factory
     public function cancelled(): static
     {
         return $this->state(fn (array $attrs) => [
-            'status' => 'cancelled',
+            'status' => 'canceled',
         ]);
     }
 

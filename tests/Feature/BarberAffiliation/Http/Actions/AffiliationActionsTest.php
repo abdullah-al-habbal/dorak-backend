@@ -47,7 +47,7 @@ it('accepts pending affiliation', function () {
     $response = $this->postJson("/api/v1/affiliations/{$affiliation->id}/accept");
 
     $response->assertOk();
-    expect($response->json('data.status'))->toBe('active');
+    expect($response->json('data.status'))->toBe('accepted');
     expect($response->json('data.accepted_at'))->not->toBeNull();
 });
 

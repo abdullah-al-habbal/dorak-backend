@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Modules\Barber\Models\BarberModel;
+use Modules\Booking\Enums\BookingStatus;
 use Modules\Chair\Models\ChairModel;
 use Modules\Client\Models\ClientModel;
 use Modules\OfferedService\Models\OfferedServiceModel;
@@ -31,6 +32,7 @@ class BookingModel extends Model
     protected function casts(): array
     {
         return [
+            'status' => BookingStatus::class,
             'time_slot' => 'datetime',
             'at_home_location' => 'array',
         ];

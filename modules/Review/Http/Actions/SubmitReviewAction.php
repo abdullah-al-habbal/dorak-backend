@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Review\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
+use Modules\Booking\Enums\BookingStatus;
 use Modules\Booking\Models\BookingModel;
 use Modules\Branch\Models\BranchModel;
 use Modules\Core\Http\Actions\BaseApiAction;
@@ -22,7 +23,7 @@ final class SubmitReviewAction extends BaseApiAction
             return $this->error(message: __('review::messages.not_own_booking'), status: 403);
         }
 
-        if ($booking->status !== 'completed') {
+        if ($booking->status !== BookingStatus::Completed) {
             return $this->error(message: __('review::messages.booking_not_completed'), status: 422);
         }
 

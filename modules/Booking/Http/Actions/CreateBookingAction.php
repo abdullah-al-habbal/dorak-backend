@@ -8,9 +8,11 @@ use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\DB;
 use Modules\Booking\Domain\Commands\CreateBookingCommand;
+use Modules\Booking\Enums\BookingStatus;
 use Modules\Booking\Http\Requests\CreateBookingRequest;
 use Modules\Booking\Http\Resources\BookingResource;
 use Modules\Booking\Models\BookingModel;
+use Modules\Chair\Enums\ChairStatus;
 use Modules\Chair\Models\ChairModel;
 use Modules\Core\Http\Actions\BaseApiAction;
 
@@ -31,7 +33,7 @@ final class CreateBookingAction extends BaseApiAction
             if ($command->ChairId !== null) {
                 $chair = ChairModel::findOrFail($command->ChairId);
 
-                if ($chair->status !== 'available') {
+                if ($chair->status !== ChairStatus::Available) {
                     return $this->error(
                         message: __('booking::messages.chair_not_available'),
                         status: 409,
@@ -40,7 +42,7 @@ final class CreateBookingAction extends BaseApiAction
 
                 $conflict = BookingModel::where('chair_id', $command->ChairId)
                     ->where('time_slot', $command->TimeSlot)
-                    ->whereNotIn('status', ['cancelled'])
+                    ->whereNotIn('status', ['canceled'])
                     ->lockForUpdate()
                     ->exists();
 
@@ -56,7 +58,7 @@ final class CreateBookingAction extends BaseApiAction
                 'client_id' => $command->ClientId,
                 'barber_id' => $command->BarberId,
                 'time_slot' => $command->TimeSlot,
-                'status' => 'confirmed',
+                'status' => BookingStatus::Confirmed,
             ];
 
             if ($command->ChairId !== null) {

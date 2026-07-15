@@ -15,7 +15,7 @@ final class ChairObserver
             ChairStatusUpdated::dispatch(
                 chairId: $chair->id,
                 branchId: $chair->branch_id,
-                status: $chair->status,
+                status: $chair->status->value,
             );
         }
     }

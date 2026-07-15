@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Modules\Marketing\Http\Requests;
 
+use Illuminate\Validation\Rules\Enum;
+use Modules\Core\Enums\Locale;
+use Modules\Core\Enums\Universe;
 use Modules\Core\Http\Requests\BaseApiFormRequest;
 
 final class GetMarketingPageRequest extends BaseApiFormRequest
@@ -11,8 +14,8 @@ final class GetMarketingPageRequest extends BaseApiFormRequest
     public function rules(): array
     {
         return [
-            'locale' => ['sometimes', 'string', 'in:ar,en'],
-            'universe' => ['sometimes', 'string', 'in:all,men,women'],
+            'locale' => ['sometimes', 'string', new Enum(Locale::class)],
+            'universe' => ['sometimes', 'string', new Enum(Universe::class)],
         ];
     }
 

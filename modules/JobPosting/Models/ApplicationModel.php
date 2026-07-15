@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Barber\Models\BarberModel;
+use Modules\JobPosting\Enums\ApplicationStatus;
 
 class ApplicationModel extends Model
 {
@@ -25,6 +26,7 @@ class ApplicationModel extends Model
     protected function casts(): array
     {
         return [
+            'status' => ApplicationStatus::class,
             'profile_snapshot' => 'array',
         ];
     }

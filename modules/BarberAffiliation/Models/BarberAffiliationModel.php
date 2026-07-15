@@ -11,6 +11,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Modules\Barber\Models\BarberModel;
+use Modules\BarberAffiliation\Enums\AffiliableType;
+use Modules\BarberAffiliation\Enums\AffiliationStatus;
 
 class BarberAffiliationModel extends Model
 {
@@ -33,6 +35,8 @@ class BarberAffiliationModel extends Model
     protected function casts(): array
     {
         return [
+            'status' => AffiliationStatus::class,
+            'affiliable_type' => AffiliableType::class,
             'commission_rate' => 'decimal:2',
             'invited_at' => 'datetime',
             'accepted_at' => 'datetime',

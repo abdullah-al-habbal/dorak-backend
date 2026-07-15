@@ -17,6 +17,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Modules\Ban\Models\BanModel;
 use Modules\Booking\Models\BookingModel;
+use Modules\Core\Enums\Universe;
 use Modules\Client\Database\Factories\ClientFactory;
 use Spatie\Translatable\HasTranslations;
 
@@ -69,7 +70,7 @@ class ClientModel extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
-            'preferred_universe' => 'string',
+            'preferred_universe' => Universe::class,
         ];
     }
 }

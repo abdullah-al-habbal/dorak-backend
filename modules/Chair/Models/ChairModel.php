@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Barber\Models\BarberModel;
 use Modules\Booking\Models\BookingModel;
 use Modules\Branch\Models\BranchModel;
+use Modules\Chair\Enums\ChairStatus;
 
 class ChairModel extends Model
 {
@@ -28,6 +29,7 @@ class ChairModel extends Model
     protected function casts(): array
     {
         return [
+            'status' => ChairStatus::class,
             'ui_metadata' => 'array',
         ];
     }

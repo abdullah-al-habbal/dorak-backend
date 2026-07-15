@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Modules\Barber\Models\BarberModel;
+use Modules\Chair\Enums\ChairStatus;
 use Modules\Chair\Models\ChairModel;
 use Modules\Client\Models\ClientModel;
 
@@ -65,7 +66,7 @@ describe('update chair', function () {
 
         $response->assertOk();
         expect($response->json('data.status'))->toBe('occupied');
-        expect($chair->fresh()->status)->toBe('occupied');
+        expect($chair->fresh()->status)->toBe(ChairStatus::Occupied);
     });
 
     it('updates chair label', function () {
