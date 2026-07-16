@@ -33,6 +33,17 @@ composer analyze        # phpstan level 9 via larastan
 - PSR-4: `Modules\\` → `modules/`, `Database\\Seeders\\` → `database/seeders/`, `Tests\\` → `tests/`
 - Test config uses sqlite `:memory:`, array cache/session/mail, sync queue
 
+## Remaining Gaps (from `docs/12_implementation-prd.md`)
+
+| Prio | Module | Missing |
+|------|--------|---------|
+| Med  | Application | `GET /applications`, `PUT /applications/{id}/status` |
+| Low  | OfferedService | `GET /barbers/{id}/services` |
+| Low  | Ban | `GET /clients/{id}/bans/check` |
+| Low  | Social Login | `POST /auth/social/{provider}` |
+
+See `docs/feature-index.md` → "Remaining Backend Gaps" for details.
+
 ## Framework
 
 - Laravel ^13.8, PHP ^8.3

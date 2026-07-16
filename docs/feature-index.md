@@ -109,5 +109,91 @@
 - `ApiEndpoints.dart` (dorak_core) updated with all three module endpoints
 - Translations added for all three features
 
+### Strict Enums (Phase 4-7 of master plan)
+- 9 Backed Enum files across 5 modules: ChairStatus, BookingStatus, ApplicationStatus, AffiliationStatus, AffiliableType, ChairShape, Locale, Universe, ActivationStatusEnum
+- Model casts on ChairModel.status, BookingModel.status, ApplicationModel.status, BarberAffiliationModel.status+affiliable_type, ClientModel.preferred_universe
+- Validation `in:` → `Rule::enum` in UpdateChairRequest, GetMarketingPageRequest, UpdateApplicationStatusRequest, CreateAffiliationRequest
+- 6 actions fixed: strict enum comparisons instead of string
+- Factories/seeders use enum values
+- 12StrictEnums/SKILL.md — pattern guide
+
+### Brand CRUD API
+- `CreateBrandAction` [POST /api/v1/brands] — create brand. Auth:client
+- `UpdateBrandAction` [PUT /api/v1/brands/{brand}] — update brand. Auth:client
+- Routes in brands.php under `auth:client` middleware group
+
+### Activation API (Admin)
+- `ActivateAction` [POST /api/v1/admin/{entity}/{id}/activate] — activate barber/branch. Auth:admin
+- `DeactivateAction` [POST /api/v1/admin/{entity}/{id}/deactivate] — deactivate barber/branch. Auth:admin
+- `ToggleActivationAction` — Filament action for admin panel toggle
+- Filament pages: EditActivationLogPage, ListActivationLogsPage, ViewActivationLogPage
+
+### Chair API
+- `ListChairsAction` [GET /api/v1/chairs] — list chairs. Auth:barber
+- `ShowChairAction` [GET /api/v1/chairs/{chair}] — single chair detail. Auth:barber
+- `UpdateChairAction` [PUT /api/v1/chairs/{chair}] — update chair. Auth:barber
+- Filament pages: Create/Edit/List/View Chair
+
+### Currency API
+- `ListCurrenciesAction` [GET /api/v1/currencies] — list currencies. No auth.
+- `ListExchangeRatesAction` [GET /api/v1/exchange-rates] — list exchange rates. Auth:admin
+- `ConvertCurrencyAction` [POST /api/v1/currency/convert] — convert amount. Auth:admin
+- Filament pages: Create/Edit/List/View Currency + ExchangeRate
+
+### Test Backfill (PRD 13 Phase 1)
+- Booking concurrency: 3 tests — different chairs same slot, same slot different chairs, race condition via direct insert
+- BarberAffiliation multi-shop constraint: CreateAffiliationAction + test for conflict
+- Brand Filament list page: load test
+- `ErrorCodeEnum::CONFLICT` (HTTP 409) added for conflict responses
+
+### Admin Filament Pages (PRD 13 Phase 2)
+- Booking CreatePage — already existed
+- Review CreatePage + EditPage — already existed
+- Application CreatePage (JobPosting) — already existed
+- All admin Filament pages verified present in all modules
+
+### Phase 5 — API Contract Tests (PRD 13)
+- `tests/Feature/Contract/ApiResponseContractTest.php` — 40 tests covering all 30+ endpoints
+- Verifies: API envelope structure, HTTP status codes, JSON field presence, data types (string/int/array/bool)
+- Covers previously untested Client module (6 endpoints: login, register, logout, refresh-token, profile, universe preference)
+- Covers previously untested GetBarberDetailAction
+- Contract tests pass: 236 total, 1212 assertions
+
+### Bugs Fixed During Contract Tests
+- ClientModel: added missing `HasApiTokens` trait (Sanctum) — login/register/refresh-token were broken at runtime
+- Universe enum: added missing `Neutral` case — migration default `'neutral'` caused enum cast failure on every client read
+- Created Sanctum `personal_access_tokens` migration in Core module — table was missing from test migrations
+
 ### Skills
 - `10StrictBackendArchitecture/SKILL.md` — FormRequest enforcement, Command objects, strict imports, Resource composition
+- `12StrictEnums/SKILL.md` — Backed Enum patterns, model casts, Rule::enum, comparison rules, AND Flutter `@JsonSerializable`/`@JsonKey`/`@JsonEnum` mandate
+
+### JobPostingDto Full Alignment
+- Migration `2026_07_16_000001_add_fields_to_job_postings_table` — adds `requirements` (json), `location` (string), `type` (string)
+- `JobPostingModel` — updated fillable + `array` cast for `requirements`
+- `JobPostingResource` — exposes `requirements`, `location`, `type` in API response
+- `JobPostingFactory` — seeds new fields
+- `ApiResponseContractTest` — asserts `location` + `type` presence
+- Frontend: `JobPostingEntity` `title`/`description` → `Map<String, dynamic>` with locale getters, `status` replaces `isActive`, `requirementsList`
+- Frontend: `JobPostingDto` parses new shape, 3 widgets use locale extraction
+
+---
+
+## Remaining Backend Gaps (from `12_implementation-prd.md`)
+
+### Medium Priority
+- **Application API** — `GET /applications` (list + filter by status), `PUT /applications/{id}/status` (accept/reject)
+  - Needs: `ListApplicationsAction`, `UpdateApplicationStatusAction`, `ApplicationResource`, `UpdateApplicationStatusRequest`
+  - Frontend needs: ApplicationListScreen, status update UI
+
+### Lower Priority
+- **OfferedService API** — `GET /barbers/{id}/services` (list barber's offered services with prices)
+  - Needs: `ListBarberServicesAction`, `ServiceResource`
+- **Ban API** — `GET /clients/{id}/bans/check` (return active ban status)
+  - Needs: `CheckBanAction`, `BanResource`
+- **Social Login** — `POST /auth/social/{provider}` (Socialite → Sanctum token)
+  - Needs: `SocialLoginAction`, Socialite provider routing
+
+### Test Gaps
+- Frontend widget tests: only 8 exist (BrandFormScreenBody, AffiliationInviteScreenBody, ChairListScreenBody)
+- Frontend contract tests: no equivalent of `ApiResponseContractTest` for Flutter DTO parsing

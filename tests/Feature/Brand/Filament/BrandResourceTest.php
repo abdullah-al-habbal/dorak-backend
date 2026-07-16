@@ -25,3 +25,11 @@ it('loads edit page', function () {
 
     $this->get("/admin/brands/{$brand->id}/edit")->assertStatus(200);
 });
+
+it('loads list page', function () {
+    BrandModel::factory()->count(3)->create();
+
+    $this->get('/admin/brands')->assertStatus(200);
+});
+
+

@@ -20,6 +20,7 @@ final class UpdateProfileAction extends BaseApiAction
             'name' => $data['name'] ?? null,
             'email' => $data['email'] ?? null,
             'password' => isset($data['password']) ? Hash::make($data['password']) : null,
+            'phone' => $data['phone'] ?? null,
         ]);
 
         if ($update !== []) {
@@ -30,6 +31,7 @@ final class UpdateProfileAction extends BaseApiAction
             'id' => $client->id,
             'name' => $client->name,
             'email' => $client->email,
+            'phone' => $client->phone,
             'preferred_universe' => $client->preferred_universe,
         ]);
     }

@@ -34,6 +34,7 @@ final class LoginAction extends BaseApiAction
                 'id' => $client->id,
                 'name' => $client->name,
                 'email' => $client->email,
+                'phone' => $client->phone,
                 'preferred_universe' => $client->preferred_universe,
             ],
         ]);

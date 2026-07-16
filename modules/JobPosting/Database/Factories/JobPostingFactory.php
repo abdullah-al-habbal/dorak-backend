@@ -26,6 +26,12 @@ class JobPostingFactory extends Factory
                 'ar' => fake('ar_SA')->paragraph(),
             ],
             'status' => 'open',
+            'requirements' => [
+                'en' => fake()->sentence(),
+                'ar' => fake('ar_SA')->sentence(),
+            ],
+            'location' => fake()->city(),
+            'type' => fake()->randomElement(['full-time', 'part-time', 'contract']),
         ];
     }
 }

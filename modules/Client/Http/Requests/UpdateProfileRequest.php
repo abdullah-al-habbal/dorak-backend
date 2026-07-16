@@ -15,6 +15,7 @@ final class UpdateProfileRequest extends BaseApiFormRequest
             'name' => ['nullable', 'string', 'max:255'],
             'email' => ['nullable', 'email', Rule::unique('clients', 'email')->ignore($this->user()->id)],
             'password' => ['nullable', 'string', 'min:8'],
+            'phone' => ['nullable', 'string', 'max:20'],
         ];
     }
 }

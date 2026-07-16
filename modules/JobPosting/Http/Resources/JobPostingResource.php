@@ -16,6 +16,9 @@ final class JobPostingResource extends JsonResource
             'description' => $this->getTranslations('description'),
             'status' => $this->status,
             'branch_id' => $this->branch_id,
+            'requirements' => $this->requirements,
+            'location' => $this->location,
+            'type' => $this->type,
             'applications_count' => $this->whenCounted('applications'),
             'created_at' => $this->created_at->toIso8601String(),
         ];

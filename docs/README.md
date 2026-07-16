@@ -34,6 +34,7 @@ The documents move from **"What problem are we solving?"** → **"Who does what?
 | 10 | [`10_c4-containers.md`](./10_c4-containers.md) | C4 Level 2 — the major moving parts inside the system | Eng |
 | 11 | [`11_backend-architecture.md`](./11_backend-architecture.md) | C4 Level 3 — module layout + the **Action → Handler → EloquentResolver** pattern + coding conventions | Eng |
 | — | [`feature-index.md`](./feature-index.md) | **Chronological map of built features** — append after each new feature | AI Agents |
+| — | [`marketing/`](./marketing/) | Marketing strategy & brand docs (Arabic/English) | Marketing, Product, Stakeholders |
 
 The **PRD (02)** is the master. Everything else supports and expands it.
 
@@ -49,6 +50,23 @@ These appear throughout the docs. If you read nothing else, read these.
 2. **Barber is standalone** — a barber is an **independent entity**, not a child of a salon. A barber can be a freelancer (including **at‑home** service), and can be linked to one *or many* brands/branches through a flexible affiliation layer.
 3. **Backend‑driven UI** — the visual shop floor (clickable chairs, green = free now) is **described by the backend** and simply *drawn* by the app. The look is good, but it is generated, not hand‑built per shop.
 4. **Two universes** — the consumer experience is split into **Men's Grooming** and **Women's Beauty**, with **unisex** shops appearing in both where relevant.
+
+---
+
+## Marketing documentation
+
+The `marketing/` subfolder contains brand strategy, platform setup, content strategy, and launch plans. These documents mirror the same rigor as the backend docs — they are the single source of truth for Dorak's market-facing identity.
+
+| # | File | Purpose |
+|---|------|---------|
+| 01 | [`01_brand-dna.md`](./marketing/01_brand-dna.md) | Brand DNA — Elevator Pitch, Founder Story, Audience, Tone, Competitive Edge (Bilingual EN/AR) |
+| 02 | [`02_platform-setup.md`](./marketing/02_platform-setup.md) | Platform Setup — Naming, Bios, Visual Identity, Link Routing, SEO Keywords (Bilingual EN/AR) |
+| 03 | [`03_content-strategy.md`](./marketing/03_content-strategy.md) | Content Strategy — Pillars, B2B/B2C Tactics, Cadence & Distribution (Bilingual EN/AR) |
+| 04 | [`04_launch-campaign.md`](./marketing/04_launch-campaign.md) | Launch Campaign — Teaser, Soft Launch, Hard Launch, Retention & Referral (Bilingual EN/AR) |
+| 05 | [`05_metadata-and-seo.md`](./marketing/05_metadata-and-seo.md) | Metadata & SEO — Global Keywords, Platform Meta Descriptions (Bilingual EN/AR) |
+| 06 | [`06_teaser-content-plan.md`](./marketing/06_teaser-content-plan.md) | Teaser Content Plan — Pre-Launch Themes & Content Calendar (Bilingual EN/AR) |
+| 07 | [`07_conversion-assets.md`](./marketing/07_conversion-assets.md) | Conversion Assets — Landing Page Copy, CTAs, Lead Capture (Bilingual EN/AR) |
+| 08 | [`08_visual-assets-inventory.md`](./marketing/08_visual-assets-inventory.md) | Visual Assets — Logo, Color Palette, Typography, Generation Prompt (Bilingual EN/AR) |
 
 ---
 

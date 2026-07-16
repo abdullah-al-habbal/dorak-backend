@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Modules\Barber\Models\BarberModel;
+use Modules\BarberAffiliation\Enums\AffiliationStatus;
 use Modules\BarberAffiliation\Models\BarberAffiliationModel;
 use Modules\Branch\Models\BranchModel;
 
@@ -110,6 +111,25 @@ it('requires barber authentication for create', function () {
     ]);
 
     $response->assertUnauthorized();
+});
+
+it('enforces multi-shop constraint: barber cannot affiliate to multiple branches', function () {
+    $branchA = BranchModel::factory()->create();
+    $branchB = BranchModel::factory()->create();
+
+    BarberAffiliationModel::factory()->create([
+        'barber_id' => $this->barber->id,
+        'status' => AffiliationStatus::Accepted,
+        'affiliable_id' => $branchA->id,
+        'affiliable_type' => 'branch',
+    ]);
+
+    $response = $this->postJson("/api/v1/barbers/{$this->barber->id}/affiliate", [
+        'affiliable_id' => $branchB->id,
+        'affiliable_type' => 'branch',
+    ]);
+
+    $response->assertStatus(409);
 });
 
 it('requires barber authentication for accept', function () {

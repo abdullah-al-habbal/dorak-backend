@@ -8,13 +8,18 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 final class ServiceResource extends JsonResource
 {
-    /** @return array<string, mixed> */
     public function toArray($request): array
     {
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'price' => $this->price,
+            'description' => $this->description,
+            'price' => (float) $this->price,
+            'currency_id' => $this->currency_id,
+            'duration' => $this->duration,
+            'at_home' => (bool) $this->at_home,
+            'active' => (bool) $this->active,
+            'created_at' => $this->created_at?->toIso8601String(),
         ];
     }
 }

@@ -136,6 +136,43 @@ it('allows booking after a cancelled booking on same chair+slot', function () {
     ])->assertCreated();
 });
 
+it('allows different chairs for same time_slot', function () {
+    $chairA = ChairModel::factory()->create();
+    $chairB = ChairModel::factory()->create();
+    $timeSlot = Carbon::now()->addDay()->format('Y-m-d H:i:s');
+
+    $this->postJson('/api/v1/bookings', [
+        'chair_id' => $chairA->id,
+        'time_slot' => $timeSlot,
+    ])->assertCreated();
+
+    $this->postJson('/api/v1/bookings', [
+        'chair_id' => $chairB->id,
+        'time_slot' => $timeSlot,
+    ])->assertCreated();
+
+    expect(BookingModel::where('time_slot', $timeSlot)->count())->toBe(2);
+});
+
+it('prevents race condition: concurrent booking for same chair+slot', function () {
+    $chair = ChairModel::factory()->create();
+    $timeSlot = Carbon::now()->addDay()->format('Y-m-d H:i:s');
+
+    // Simulate concurrent request: insert a booking directly (bypassing check)
+    // then verify API rejects a second one
+    BookingModel::create([
+        'client_id' => $this->client->id,
+        'chair_id' => $chair->id,
+        'time_slot' => $timeSlot,
+        'status' => 'confirmed',
+    ]);
+
+    $this->postJson('/api/v1/bookings', [
+        'chair_id' => $chair->id,
+        'time_slot' => $timeSlot,
+    ])->assertStatus(409);
+});
+
 it('requires authentication', function () {
     $this->app->get('auth')->forgetGuards();
 

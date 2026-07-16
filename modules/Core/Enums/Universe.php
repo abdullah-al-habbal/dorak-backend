@@ -9,6 +9,7 @@ enum Universe: string
     case All = 'all';
     case Men = 'men';
     case Women = 'women';
+    case Neutral = 'neutral';
 
     public function label(): string
     {

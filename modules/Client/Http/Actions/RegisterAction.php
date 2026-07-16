@@ -17,12 +17,14 @@ final class RegisterAction extends BaseApiAction
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:clients,email',
             'password' => 'required|string|min:8',
+            'phone' => 'nullable|string|max:20',
         ]);
 
         $client = ClientModel::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'phone' => $data['phone'] ?? null,
         ]);
 
         $token = $client->createToken('client-app')->plainTextToken;
@@ -33,6 +35,7 @@ final class RegisterAction extends BaseApiAction
                 'id' => $client->id,
                 'name' => $client->name,
                 'email' => $client->email,
+                'phone' => $client->phone,
                 'preferred_universe' => $client->preferred_universe,
             ],
         ]);

@@ -22,7 +22,7 @@ class JobPostingModel extends Model
     protected $table = 'job_postings';
 
     protected $fillable = [
-        'branch_id', 'title', 'description', 'status',
+        'branch_id', 'title', 'description', 'status', 'requirements', 'location', 'type',
     ];
 
     /** @phpstan-ignore-next-line */
@@ -33,6 +33,7 @@ class JobPostingModel extends Model
         return [
             'title' => 'array',
             'description' => 'array',
+            'requirements' => 'array',
         ];
     }
 
