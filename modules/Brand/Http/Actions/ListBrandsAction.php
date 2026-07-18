@@ -5,20 +5,24 @@ declare(strict_types=1);
 namespace Modules\Brand\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use Modules\Brand\Handlers\ListBrandsHandler;
+use Modules\Brand\Http\Requests\ListBrandsRequest;
 use Modules\Brand\Http\Resources\BrandResource;
-use Modules\Brand\Models\BrandModel;
 use Modules\Core\Http\Actions\BaseApiAction;
 
 final class ListBrandsAction extends BaseApiAction
 {
-    public function __invoke(Request $request): JsonResponse
+    public function __construct(
+        private readonly ListBrandsHandler $handler,
+    ) {}
+
+    public function __invoke(ListBrandsRequest $request): JsonResponse
     {
-        $perPage = (int) $request->query('per_page', 20);
-        $brands = BrandModel::with(['owner', 'baseCurrency'])->paginate(min($perPage, 100));
+        $query = $request->toQuery();
+        $result = $this->handler->handle($query);
 
         return $this->paginated(
-            paginator: $brands,
+            paginator: $result,
             resourceClass: BrandResource::class,
         );
     }

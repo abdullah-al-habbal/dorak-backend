@@ -2,20 +2,21 @@
 
 declare(strict_types=1);
 
-namespace Modules\Review\Repositories;
+namespace Modules\Review\Eloquent\Resolvers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Modules\Branch\Models\BranchModel;
+use Modules\Review\CQRS\Query\GetBranchReviewsQuery;
 use Modules\Review\Models\ReviewModel;
 
 final class GetBranchReviewsEloquentResolver
 {
-    public function getBranchReviews(string $branchId, int $perPage): LengthAwarePaginator
+    public function resolve(GetBranchReviewsQuery $payload): LengthAwarePaginator
     {
-        return ReviewModel::where('subject_id', $branchId)
+        return ReviewModel::where('subject_id', $payload->branchId)
             ->where('subject_type', BranchModel::class)
             ->with('author')
             ->orderByDesc('created_at')
-            ->paginate(min($perPage, 100));
+            ->paginate($payload->perPage);
     }
 }

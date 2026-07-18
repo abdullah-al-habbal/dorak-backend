@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Modules\ServiceCatalog\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Modules\Core\Http\Actions\BaseApiAction;
-use Modules\ServiceCatalog\CQRS\Query\ListCatalogItemsQuery;
 use Modules\ServiceCatalog\Handlers\ListCatalogItemsHandler;
+use Modules\ServiceCatalog\Http\Requests\ListCatalogItemsRequest;
 use Modules\ServiceCatalog\Http\Resources\ServiceCatalogItemResource;
 
 final class ListCatalogItemsAction extends BaseApiAction
@@ -17,14 +16,9 @@ final class ListCatalogItemsAction extends BaseApiAction
         private readonly ListCatalogItemsHandler $handler,
     ) {}
 
-    public function __invoke(Request $request): JsonResponse
+    public function __invoke(ListCatalogItemsRequest $request): JsonResponse
     {
-        $query = new ListCatalogItemsQuery(
-            categoryId: $request->query('category_id') ? (int) $request->query('category_id') : null,
-            search: $request->query('search'),
-            perPage: (int) $request->query('per_page', 20),
-        );
-
+        $query = $request->toQuery();
         $items = $this->handler->handle($query);
 
         return $this->paginated(

@@ -11,5 +11,6 @@ final readonly class ListUserBookingsQuery
     public function __construct(
         public string $clientId,
         public ?BookingFilterStatus $filterStatus,
+        public int $perPage,
     ) {}
 }

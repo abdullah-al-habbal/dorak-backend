@@ -6,7 +6,8 @@ namespace Modules\Review\Handlers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Modules\Branch\Models\BranchModel;
-use Modules\Review\Repositories\GetBranchReviewsEloquentResolver;
+use Modules\Review\CQRS\Query\GetBranchReviewsQuery;
+use Modules\Review\Eloquent\Resolvers\GetBranchReviewsEloquentResolver;
 
 final class GetBranchReviewsHandler
 {
@@ -14,10 +15,10 @@ final class GetBranchReviewsHandler
         private readonly GetBranchReviewsEloquentResolver $resolver,
     ) {}
 
-    public function handle(string $branchId, int $perPage): LengthAwarePaginator
+    public function handle(GetBranchReviewsQuery $payload): LengthAwarePaginator
     {
-        BranchModel::findOrFail($branchId);
+        BranchModel::findOrFail($payload->branchId);
 
-        return $this->resolver->getBranchReviews($branchId, $perPage);
+        return $this->resolver->resolve($payload);
     }
 }

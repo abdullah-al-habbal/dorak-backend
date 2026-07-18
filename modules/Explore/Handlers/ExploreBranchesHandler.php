@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Modules\Explore\Handlers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Modules\Explore\Repositories\ExploreBranchesEloquentResolver;
+use Modules\Explore\CQRS\Query\ExploreBranchesQuery;
+use Modules\Explore\Eloquent\Resolvers\ExploreBranchesEloquentResolver;
 
 final class ExploreBranchesHandler
 {
@@ -13,8 +14,8 @@ final class ExploreBranchesHandler
         private readonly ExploreBranchesEloquentResolver $resolver,
     ) {}
 
-    public function handle(float $lat, float $lng, float $radius, ?string $universe, int $perPage): LengthAwarePaginator
+    public function handle(ExploreBranchesQuery $payload): LengthAwarePaginator
     {
-        return $this->resolver->search($lat, $lng, $radius, $universe, $perPage);
+        return $this->resolver->resolve($payload);
     }
 }

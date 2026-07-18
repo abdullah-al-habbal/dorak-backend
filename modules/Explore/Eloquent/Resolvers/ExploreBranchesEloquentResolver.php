@@ -2,18 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Modules\Explore\Repositories;
+namespace Modules\Explore\Eloquent\Resolvers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Modules\Branch\Models\BranchModel;
+use Modules\Explore\CQRS\Query\ExploreBranchesQuery;
 
 final class ExploreBranchesEloquentResolver
 {
-    public function search(float $lat, float $lng, float $radius, ?string $universe, int $perPage): LengthAwarePaginator
+    public function resolve(ExploreBranchesQuery $payload): LengthAwarePaginator
     {
         $haversine = sprintf(
             '(6371 * acos(cos(radians(%f)) * cos(radians(latitude)) * cos(radians(longitude) - radians(%f)) + sin(radians(%f)) * sin(radians(latitude))))',
-            $lat, $lng, $lat
+            $payload->lat, $payload->lng, $payload->lat
         );
 
         $subQuery = BranchModel::query()
@@ -22,14 +23,14 @@ final class ExploreBranchesEloquentResolver
             ->whereNotNull('latitude')
             ->whereNotNull('longitude');
 
-        if ($universe !== null) {
-            $subQuery->whereHas('brand', fn ($q) => $q->where('universe', $universe));
+        if ($payload->universe !== null) {
+            $subQuery->whereHas('brand', fn ($q) => $q->where('universe', $payload->universe));
         }
 
         $query = BranchModel::query()->fromSub($subQuery, 'branches_sub')
-            ->where('distance', '<', $radius)
+            ->where('distance', '<', $payload->radius)
             ->orderBy('distance');
 
-        return $query->paginate(min($perPage, 100));
+        return $query->paginate($payload->perPage);
     }
 }

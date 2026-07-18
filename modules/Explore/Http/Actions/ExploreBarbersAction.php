@@ -18,12 +18,8 @@ final class ExploreBarbersAction extends BaseApiAction
 
     public function __invoke(ExploreBarbersRequest $request): JsonResponse
     {
-        $lat = (float) $request->query('lat', 0);
-        $lng = (float) $request->query('lng', 0);
-        $radius = (float) $request->query('radius', 10);
-        $perPage = (int) $request->query('per_page', 20);
-
-        $barbers = $this->handler->handle($lat, $lng, $radius, $perPage);
+        $query = $request->toQuery();
+        $barbers = $this->handler->handle($query);
 
         return $this->paginated(paginator: $barbers, resourceClass: BarberResource::class);
     }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Brand\Http\Requests;
 
+use Modules\Brand\CQRS\Command\UpdateBrandCommand;
 use Modules\Core\Http\Requests\BaseApiFormRequest;
 
 final class UpdateBrandRequest extends BaseApiFormRequest
@@ -19,5 +20,21 @@ final class UpdateBrandRequest extends BaseApiFormRequest
             'description.en' => ['nullable', 'string', 'max:5000'],
             'description.ar' => ['nullable', 'string', 'max:5000'],
         ];
+    }
+
+    public function toCommand(string $brandId): UpdateBrandCommand
+    {
+        $data = $this->validated();
+
+        return new UpdateBrandCommand(
+            brandId: $brandId,
+            nameEn: $data['name']['en'] ?? null,
+            nameAr: $data['name']['ar'] ?? null,
+            ownerId: $data['owner_id'] ?? null,
+            baseCurrencyId: $data['base_currency_id'] ?? null,
+            logo: $data['logo'] ?? null,
+            descriptionEn: $data['description']['en'] ?? null,
+            descriptionAr: $data['description']['ar'] ?? null,
+        );
     }
 }

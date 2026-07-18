@@ -2,18 +2,19 @@
 
 declare(strict_types=1);
 
-namespace Modules\Explore\Repositories;
+namespace Modules\Explore\Eloquent\Resolvers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
 use Modules\Barber\Models\BarberModel;
+use Modules\Explore\CQRS\Query\ExploreBarbersQuery;
 
 final class ExploreBarbersEloquentResolver
 {
-    public function search(float $lat, float $lng, float $radius, int $perPage): LengthAwarePaginator
+    public function resolve(ExploreBarbersQuery $payload): LengthAwarePaginator
     {
         $haversine = sprintf(
             '(6371 * acos(cos(radians(%f)) * cos(radians(latitude)) * cos(radians(longitude) - radians(%f)) + sin(radians(%f)) * sin(radians(latitude))))',
-            $lat, $lng, $lat
+            $payload->lat, $payload->lng, $payload->lat
         );
 
         $subQuery = BarberModel::query()
@@ -24,9 +25,9 @@ final class ExploreBarbersEloquentResolver
             ->whereNotNull('longitude');
 
         $query = BarberModel::query()->fromSub($subQuery, 'barbers_sub')
-            ->where('distance', '<', $radius)
+            ->where('distance', '<', $payload->radius)
             ->orderBy('distance');
 
-        return $query->paginate(min($perPage, 100));
+        return $query->paginate($payload->perPage);
     }
 }

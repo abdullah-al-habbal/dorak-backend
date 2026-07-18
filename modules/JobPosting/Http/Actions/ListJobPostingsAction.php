@@ -6,20 +6,23 @@ namespace Modules\JobPosting\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
 use Modules\Core\Http\Actions\BaseApiAction;
+use Modules\JobPosting\Handlers\ListJobPostingsHandler;
+use Modules\JobPosting\Http\Requests\ListJobPostingsRequest;
 use Modules\JobPosting\Http\Resources\JobPostingResource;
-use Modules\JobPosting\Models\JobPostingModel;
 
 final class ListJobPostingsAction extends BaseApiAction
 {
-    public function __invoke(): JsonResponse
+    public function __construct(
+        private readonly ListJobPostingsHandler $handler,
+    ) {}
+
+    public function __invoke(ListJobPostingsRequest $request): JsonResponse
     {
-        $jobs = JobPostingModel::withCount('applications')
-            ->where('status', 'open')
-            ->orderByDesc('created_at')
-            ->paginate(20);
+        $query = $request->toQuery();
+        $result = $this->handler->handle($query);
 
         return $this->paginated(
-            paginator: $jobs,
+            paginator: $result,
             resourceClass: JobPostingResource::class,
         );
     }

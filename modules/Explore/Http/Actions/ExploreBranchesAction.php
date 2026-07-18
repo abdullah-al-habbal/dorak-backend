@@ -18,13 +18,8 @@ final class ExploreBranchesAction extends BaseApiAction
 
     public function __invoke(ExploreBranchesRequest $request): JsonResponse
     {
-        $lat = (float) $request->query('lat', 0);
-        $lng = (float) $request->query('lng', 0);
-        $radius = (float) $request->query('radius', 10);
-        $universe = $request->query('universe');
-        $perPage = (int) $request->query('per_page', 20);
-
-        $branches = $this->handler->handle($lat, $lng, $radius, $universe, $perPage);
+        $query = $request->toQuery();
+        $branches = $this->handler->handle($query);
 
         return $this->paginated(paginator: $branches, resourceClass: BranchResource::class);
     }

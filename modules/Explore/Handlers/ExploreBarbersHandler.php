@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Modules\Explore\Handlers;
 
 use Illuminate\Pagination\LengthAwarePaginator;
-use Modules\Explore\Repositories\ExploreBarbersEloquentResolver;
+use Modules\Explore\CQRS\Query\ExploreBarbersQuery;
+use Modules\Explore\Eloquent\Resolvers\ExploreBarbersEloquentResolver;
 
 final class ExploreBarbersHandler
 {
@@ -13,8 +14,8 @@ final class ExploreBarbersHandler
         private readonly ExploreBarbersEloquentResolver $resolver,
     ) {}
 
-    public function handle(float $lat, float $lng, float $radius, int $perPage): LengthAwarePaginator
+    public function handle(ExploreBarbersQuery $payload): LengthAwarePaginator
     {
-        return $this->resolver->search($lat, $lng, $radius, $perPage);
+        return $this->resolver->resolve($payload);
     }
 }

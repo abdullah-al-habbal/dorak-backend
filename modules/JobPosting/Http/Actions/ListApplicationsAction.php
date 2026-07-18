@@ -5,29 +5,24 @@ declare(strict_types=1);
 namespace Modules\JobPosting\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Modules\Core\Http\Actions\BaseApiAction;
+use Modules\JobPosting\Handlers\ListApplicationsHandler;
+use Modules\JobPosting\Http\Requests\ListApplicationsRequest;
 use Modules\JobPosting\Http\Resources\ApplicationResource;
-use Modules\JobPosting\Models\ApplicationModel;
 
 final class ListApplicationsAction extends BaseApiAction
 {
-    public function __invoke(Request $request): JsonResponse
+    public function __construct(
+        private readonly ListApplicationsHandler $handler,
+    ) {}
+
+    public function __invoke(ListApplicationsRequest $request): JsonResponse
     {
-        $query = ApplicationModel::with('jobPosting');
-
-        if ($request->has('barber_id')) {
-            $query->where('barber_id', $request->query('barber_id'));
-        }
-
-        if ($request->has('status')) {
-            $query->where('status', $request->query('status'));
-        }
-
-        $applications = $query->orderByDesc('created_at')->paginate(20);
+        $query = $request->toQuery();
+        $result = $this->handler->handle($query);
 
         return $this->paginated(
-            paginator: $applications,
+            paginator: $result,
             resourceClass: ApplicationResource::class,
         );
     }

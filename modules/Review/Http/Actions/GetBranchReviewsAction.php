@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Modules\Review\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use Modules\Core\Http\Actions\BaseApiAction;
 use Modules\Review\Handlers\GetBranchReviewsHandler;
+use Modules\Review\Http\Requests\GetBranchReviewsRequest;
 use Modules\Review\Http\Resources\ReviewResource;
 
 final class GetBranchReviewsAction extends BaseApiAction
@@ -16,11 +16,10 @@ final class GetBranchReviewsAction extends BaseApiAction
         private readonly GetBranchReviewsHandler $handler,
     ) {}
 
-    public function __invoke(string $branch, Request $request): JsonResponse
+    public function __invoke(string $branch, GetBranchReviewsRequest $request): JsonResponse
     {
-        $perPage = (int) $request->query('per_page', 20);
-
-        $reviews = $this->handler->handle($branch, $perPage);
+        $query = $request->toQuery();
+        $reviews = $this->handler->handle($query);
 
         return $this->paginated(paginator: $reviews, resourceClass: ReviewResource::class);
     }

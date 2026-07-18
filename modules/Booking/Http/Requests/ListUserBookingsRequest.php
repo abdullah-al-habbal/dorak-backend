@@ -24,8 +24,9 @@ final class ListUserBookingsRequest extends BaseApiFormRequest
         $status = $this->query('status');
 
         return new ListUserBookingsQuery(
-            clientId: $this->user()->id,
-            filterStatus: $status !== null ? BookingFilterStatus::from($status) : null,
+            $this->user()->id,
+            $status !== null ? BookingFilterStatus::from($status) : null,
+            (int) ($this->validated('per_page') ?? 20),
         );
     }
 }

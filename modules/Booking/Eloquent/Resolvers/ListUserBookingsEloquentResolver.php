@@ -20,7 +20,7 @@ final class ListUserBookingsEloquentResolver
             ->with(['chair.barber', 'barber', 'services']);
 
         if ($query->filterStatus === null) {
-            return $queryBuilder->orderBy('time_slot', 'desc')->paginate(20);
+            return $queryBuilder->orderBy('time_slot', 'desc')->paginate($query->perPage);
         }
 
         match ($query->filterStatus) {
@@ -37,6 +37,6 @@ final class ListUserBookingsEloquentResolver
                 }),
         };
 
-        return $queryBuilder->orderBy('time_slot', 'desc')->paginate(20);
+        return $queryBuilder->orderBy('time_slot', 'desc')->paginate($query->perPage);
     }
 }
