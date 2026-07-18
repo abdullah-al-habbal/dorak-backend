@@ -3,10 +3,10 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use Modules\Booking\Http\Actions\CancelBookingAction;
-use Modules\Booking\Http\Actions\CreateBookingAction;
-use Modules\Booking\Http\Actions\ListUserBookingsAction;
-use Modules\Booking\Http\Actions\ShowBookingAction;
+use Modules\Booking\Http\Actions\Client\CancelBookingAction;
+use Modules\Booking\Http\Actions\Client\CreateBookingAction;
+use Modules\Booking\Http\Actions\Client\ListUserBookingsAction;
+use Modules\Booking\Http\Actions\Client\ShowBookingAction;
 
 Route::middleware('auth:client')->group(function (): void {
     Route::post('/bookings', CreateBookingAction::class)->name('bookings.create');

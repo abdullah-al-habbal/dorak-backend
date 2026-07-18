@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Modules\Website\Http\Actions;
 
 use Illuminate\Contracts\View\View;
-use Modules\Marketing\Handlers\GetMarketingPageHandler;
+use Modules\Marketing\Handlers\Shared\GetMarketingPageHandler;
 
 final class ShowFeaturesPageAction
 {
