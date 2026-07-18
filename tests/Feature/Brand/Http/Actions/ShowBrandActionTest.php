@@ -18,7 +18,7 @@ it('shows a brand', function () {
 });
 
 it('returns 404 for non-existent brand', function () {
-    $response = $this->getJson('/api/v1/brands/non-existent-id');
+    $response = $this->getJson('/api/v1/brands/00000000-0000-0000-0000-000000000000');
 
     $response->assertNotFound();
 });

@@ -18,7 +18,7 @@ it('shows a chair', function () {
 });
 
 it('returns 404 for non-existent chair', function () {
-    $response = $this->getJson('/api/v1/chairs/non-existent-id');
+    $response = $this->getJson('/api/v1/chairs/00000000-0000-0000-0000-000000000000');
 
     $response->assertNotFound();
 });

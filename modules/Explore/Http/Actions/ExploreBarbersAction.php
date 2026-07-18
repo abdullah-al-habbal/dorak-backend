@@ -22,13 +22,15 @@ final class ExploreBarbersAction extends BaseApiAction
             $lat, $lng, $lat
         );
 
-        $query = BarberModel::query()
+        $subQuery = BarberModel::query()
             ->select('barbers.*')
             ->selectRaw("{$haversine} AS distance")
             ->where('is_freelancer', true)
             ->whereNotNull('latitude')
-            ->whereNotNull('longitude')
-            ->havingRaw('distance < ?', [$radius])
+            ->whereNotNull('longitude');
+
+        $query = BarberModel::query()->fromSub($subQuery, 'barbers_sub')
+            ->where('distance', '<', $radius)
             ->orderBy('distance');
 
         $perPage = (int) request()->query('per_page', 20);

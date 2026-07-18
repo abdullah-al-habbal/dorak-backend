@@ -47,7 +47,7 @@ it('paginates reviews for branch', function () {
 });
 
 it('returns 404 for non-existent branch reviews', function () {
-    $response = $this->getJson('/api/v1/branches/non-existent-id/reviews');
+    $response = $this->getJson('/api/v1/branches/00000000-0000-0000-0000-000000000000/reviews');
 
     $response->assertNotFound();
 });

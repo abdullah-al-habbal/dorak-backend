@@ -30,7 +30,7 @@ it('returns 403 for other users booking', function () {
 });
 
 it('returns 404 for non-existent booking', function () {
-    $response = $this->getJson('/api/v1/bookings/non-existent-id');
+    $response = $this->getJson('/api/v1/bookings/00000000-0000-0000-0000-000000000000');
 
     $response->assertNotFound();
 });

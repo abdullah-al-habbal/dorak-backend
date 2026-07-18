@@ -57,7 +57,7 @@ it('updates brand', function () {
 it('rejects create with missing name', function () {
     $response = $this->postJson('/api/v1/brands', [
         'owner_id' => $this->client->id,
-        'base_currency_id' => 'some-id',
+        'base_currency_id' => '00000000-0000-0000-0000-000000000000',
     ]);
 
     $response->assertStatus(422);

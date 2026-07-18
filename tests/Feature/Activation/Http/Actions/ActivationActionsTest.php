@@ -37,13 +37,13 @@ it('activates without reason', function () {
 });
 
 it('returns 404 for non-existent barber activation', function () {
-    $response = $this->postJson('/api/v1/barbers/non-existent-id/activate');
+    $response = $this->postJson('/api/v1/barbers/00000000-0000-0000-0000-000000000000/activate');
 
     $response->assertNotFound();
 });
 
 it('returns 404 for non-existent barber deactivation', function () {
-    $response = $this->postJson('/api/v1/barbers/non-existent-id/deactivate');
+    $response = $this->postJson('/api/v1/barbers/00000000-0000-0000-0000-000000000000/deactivate');
 
     $response->assertNotFound();
 });

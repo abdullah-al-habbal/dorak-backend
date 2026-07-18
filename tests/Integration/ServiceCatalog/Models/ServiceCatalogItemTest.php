@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use Modules\ServiceCatalog\Models\ServiceCatalogCategoryModel;
 use Modules\ServiceCatalog\Models\ServiceCatalogItemModel;
+use Modules\ServiceCatalog\Models\ServiceCatalogItemTagModel;
+use Modules\ServiceCatalog\ValuesObjects\PriceRangeValueObject;
 
 it('creates item with category', function () {
     $category = ServiceCatalogCategoryModel::factory()->create();
@@ -31,7 +33,7 @@ it('stores and retrieves price range as value object', function () {
         'price_range' => ['min' => 10.0, 'max' => 50.0, 'currency' => 'SAR'],
     ]);
 
-    expect($item->price_range)->toBeInstanceOf(\Modules\ServiceCatalog\ValuesObjects\PriceRangeValueObject::class);
+    expect($item->price_range)->toBeInstanceOf(PriceRangeValueObject::class);
     expect($item->price_range->min())->toBe(10.0);
     expect($item->price_range->max())->toBe(50.0);
     expect($item->price_range->currency())->toBe('SAR');
@@ -39,7 +41,7 @@ it('stores and retrieves price range as value object', function () {
 
 it('tags can be attached to item', function () {
     $item = ServiceCatalogItemModel::factory()->create();
-    $tag = \Modules\ServiceCatalog\Models\ServiceCatalogItemTagModel::factory()->create();
+    $tag = ServiceCatalogItemTagModel::factory()->create();
 
     $item->tags()->attach($tag);
 

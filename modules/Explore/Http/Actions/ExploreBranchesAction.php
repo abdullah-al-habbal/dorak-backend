@@ -23,17 +23,19 @@ final class ExploreBranchesAction extends BaseApiAction
             $lat, $lng, $lat
         );
 
-        $query = BranchModel::query()
+        $subQuery = BranchModel::query()
             ->select('branches.*')
             ->selectRaw("{$haversine} AS distance")
             ->whereNotNull('latitude')
-            ->whereNotNull('longitude')
-            ->havingRaw('distance < ?', [$radius])
-            ->orderBy('distance');
+            ->whereNotNull('longitude');
 
         if ($universe !== null && in_array($universe, ['men', 'women', 'neutral'], true)) {
-            $query->whereHas('brand', fn ($q) => $q->where('universe', $universe));
+            $subQuery->whereHas('brand', fn ($q) => $q->where('universe', $universe));
         }
+
+        $query = BranchModel::query()->fromSub($subQuery, 'branches_sub')
+            ->where('distance', '<', $radius)
+            ->orderBy('distance');
 
         $perPage = (int) request()->query('per_page', 20);
         $branches = $query->paginate(min($perPage, 100));

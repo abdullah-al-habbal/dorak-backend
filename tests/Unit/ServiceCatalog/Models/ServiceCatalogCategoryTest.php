@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Illuminate\Database\QueryException;
 use Modules\ServiceCatalog\Models\ServiceCatalogCategoryModel;
 
 it('creates a category with translatable name', function () {
@@ -28,5 +29,5 @@ it('has unique slug', function () {
     ServiceCatalogCategoryModel::factory()->create(['slug' => 'haircuts']);
 
     expect(fn () => ServiceCatalogCategoryModel::factory()->create(['slug' => 'haircuts']))
-        ->toThrow(\Illuminate\Database\QueryException::class);
+        ->toThrow(QueryException::class);
 });

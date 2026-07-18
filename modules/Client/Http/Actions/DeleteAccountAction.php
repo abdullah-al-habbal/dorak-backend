@@ -32,7 +32,7 @@ final class DeleteAccountAction extends BaseApiAction
 
         if ($activeBookings) {
             return $this->businessError(
-                code: \Modules\Core\Enums\ErrorCodeEnum::UNPROCESSABLE_ENTITY,
+                code: ErrorCodeEnum::UNPROCESSABLE_ENTITY,
                 message: $this->trans('core::messages.active_bookings_block_deletion'),
             );
         }

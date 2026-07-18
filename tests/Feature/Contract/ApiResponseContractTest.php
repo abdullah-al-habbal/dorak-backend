@@ -3,14 +3,14 @@
 declare(strict_types=1);
 
 use Carbon\Carbon;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use Modules\Activation\Models\ActivationLogModel;
-use Modules\Admin\Models\AdminModel;
 use Modules\Ban\Models\BanModel;
 use Modules\Barber\Models\BarberModel;
 use Modules\BarberAffiliation\Models\BarberAffiliationModel;
+use Modules\Booking\Enums\BookingStatus;
 use Modules\Booking\Models\BookingModel;
 use Modules\Branch\Models\BranchModel;
 use Modules\Brand\Models\BrandModel;
@@ -190,7 +190,7 @@ describe('Client API', function () {
 
             $response = $this->withToken($token)
                 ->postJson('/api/v1/client/avatar', [
-                    'avatar' => \Illuminate\Http\UploadedFile::fake()->image('avatar.jpg'),
+                    'avatar' => UploadedFile::fake()->image('avatar.jpg'),
                 ]);
 
             assertApiEnvelope($response, 200);
@@ -209,7 +209,7 @@ describe('Client API', function () {
 
         it('returns 401 without auth', function () {
             $response = $this->postJson('/api/v1/client/avatar', [
-                'avatar' => \Illuminate\Http\UploadedFile::fake()->image('avatar.jpg'),
+                'avatar' => UploadedFile::fake()->image('avatar.jpg'),
             ]);
 
             $response->assertStatus(401);
@@ -267,7 +267,7 @@ describe('DELETE /api/v1/client/account', function () {
 
         BookingModel::factory()->create([
             'client_id' => $client->id,
-            'status' => \Modules\Booking\Enums\BookingStatus::Confirmed,
+            'status' => BookingStatus::Confirmed,
         ]);
 
         $response = $this->withToken($token)
@@ -285,7 +285,7 @@ describe('DELETE /api/v1/client/account', function () {
 
         BookingModel::factory()->create([
             'client_id' => $client->id,
-            'status' => \Modules\Booking\Enums\BookingStatus::Canceled,
+            'status' => BookingStatus::Canceled,
         ]);
 
         $response = $this->withToken($token)
@@ -533,11 +533,11 @@ describe('Explore API', function () {
             assertApiEnvelope($response, 200);
             $data = $response->json('data');
             expect($data)->toHaveKeys(['id', 'name', 'email', 'is_freelancer', 'status', 'created_at']);
-            expect($data['is_freelancer'] === 0 || $data['is_freelancer'] === 1)->toBeTrue();
+            expect($data['is_freelancer'])->toBeBool();
         });
 
         it('returns 404 for non-existent barber', function () {
-            $response = $this->getJson('/api/v1/explore/barbers/non-existent');
+            $response = $this->getJson('/api/v1/explore/barbers/00000000-0000-0000-0000-000000000000');
             $response->assertNotFound();
         });
     });
@@ -576,7 +576,7 @@ describe('OfferedService API', function () {
         });
 
         it('returns 404 for non-existent barber', function () {
-            $response = $this->getJson('/api/v1/barbers/non-existent/services');
+            $response = $this->getJson('/api/v1/barbers/00000000-0000-0000-0000-000000000000/services');
             $response->assertNotFound();
         });
     });
@@ -629,7 +629,7 @@ describe('Ban API', function () {
         });
 
         it('returns 404 for non-existent client', function () {
-            $response = $this->getJson('/api/v1/clients/non-existent/bans/check');
+            $response = $this->getJson('/api/v1/clients/00000000-0000-0000-0000-000000000000/bans/check');
             $response->assertNotFound();
         });
     });

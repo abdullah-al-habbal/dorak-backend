@@ -18,7 +18,7 @@ it('shows branch detail with chairs and barbers', function () {
 });
 
 it('returns 404 for non-existent branch', function () {
-    $response = $this->getJson('/api/v1/explore/branches/non-existent-id');
+    $response = $this->getJson('/api/v1/explore/branches/00000000-0000-0000-0000-000000000000');
 
     $response->assertNotFound();
 });
