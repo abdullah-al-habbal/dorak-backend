@@ -11,24 +11,22 @@ use Modules\ServiceCatalog\Models\ServiceCatalogItemModel;
 
 final class ListCatalogItemsHandler
 {
-    public function handle(object $payload): LengthAwarePaginator
+    public function handle(ListCatalogItemsQuery $query): LengthAwarePaginator
     {
-        assert($payload instanceof ListCatalogItemsQuery);
-
         $query = ServiceCatalogItemModel::with(['category', 'tags']);
 
-        if ($payload->categoryId !== null) {
-            $query->where('category_id', $payload->categoryId);
+        if ($query->categoryId !== null) {
+            $query->where('category_id', $query->categoryId);
         }
 
-        if ($payload->search !== null) {
-            $query->where(function ($q) use ($payload): void {
-                $q->where('name->en', 'like', "%{$payload->search}%")
-                    ->orWhere('name->ar', 'like', "%{$payload->search}%")
-                    ->orWhere('slug', 'like', "%{$payload->search}%");
+        if ($query->search !== null) {
+            $query->where(function ($q) use ($query): void {
+                $q->where('name->en', 'like', "%{$query->search}%")
+                    ->orWhere('name->ar', 'like', "%{$query->search}%")
+                    ->orWhere('slug', 'like', "%{$query->search}%");
             });
         }
 
-        return $query->paginate(min($payload->perPage, 100));
+        return $query->paginate(min($query->perPage, 100));
     }
 }

@@ -45,7 +45,7 @@ final class FloorPlanDemoEloquentResolver
         ];
     }
 
-    public function resolve(object $payload): Model|Collection|array|null
+    public function resolve(): Model|Collection|array|null
     {
         return $this->getDemoFloorPlan();
     }

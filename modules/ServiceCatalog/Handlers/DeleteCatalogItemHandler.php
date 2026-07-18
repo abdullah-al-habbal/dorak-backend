@@ -10,11 +10,9 @@ use Modules\ServiceCatalog\Models\ServiceCatalogItemModel;
 
 final class DeleteCatalogItemHandler
 {
-    public function handle(object $payload): bool
+    public function handle(DeleteCatalogItemCommand $command): bool
     {
-        assert($payload instanceof DeleteCatalogItemCommand);
-
-        $item = ServiceCatalogItemModel::findOrFail($payload->id);
+        $item = ServiceCatalogItemModel::findOrFail($command->id);
 
         return (bool) $item->delete();
     }

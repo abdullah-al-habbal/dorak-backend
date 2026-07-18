@@ -10,24 +10,22 @@ use Modules\ServiceCatalog\Models\ServiceCatalogItemModel;
 
 final class CreateCatalogItemHandler
 {
-    public function handle(object $payload): ServiceCatalogItemModel
+    public function handle(CreateCatalogItemCommand $command): ServiceCatalogItemModel
     {
-        assert($payload instanceof CreateCatalogItemCommand);
-
         return ServiceCatalogItemModel::create([
-            'category_id' => $payload->categoryId,
-            'name' => $payload->name,
-            'description' => $payload->description,
-            'slug' => $payload->slug,
-            'sku' => $payload->sku,
-            'price_range' => $payload->priceRange,
-            'maintenance_level' => $payload->maintenanceLevel,
-            'style_period' => $payload->stylePeriod,
-            'formality' => $payload->formality,
-            'face_shapes' => $payload->faceShapes,
-            'hair_textures' => $payload->hairTextures,
-            'metadata' => $payload->metadata,
-            'is_active' => $payload->isActive,
+            'category_id' => $command->categoryId,
+            'name' => $command->name,
+            'description' => $command->description,
+            'slug' => $command->slug,
+            'sku' => $command->sku,
+            'price_range' => $command->priceRange,
+            'maintenance_level' => $command->maintenanceLevel,
+            'style_period' => $command->stylePeriod,
+            'formality' => $command->formality,
+            'face_shapes' => $command->faceShapes,
+            'hair_textures' => $command->hairTextures,
+            'metadata' => $command->metadata,
+            'is_active' => $command->isActive,
         ]);
     }
 }

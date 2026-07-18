@@ -5,13 +5,11 @@ declare(strict_types=1);
 namespace Modules\Marketing\Eloquent\Resolvers;
 
 use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 
 use Modules\Marketing\Models\SectionModel;
 
 final class SectionEloquentResolver
 {
-    // use __construct
     public function findByPageId(string $pageId): Collection
     {
         return SectionModel::query()
@@ -36,10 +34,5 @@ final class SectionEloquentResolver
             ->where('page_id', $pageId)
             ->orderBy('sort_order')
             ->get();
-    }
-
-    public function resolve(object $payload): Model|Collection|array|null
-    {
-        return $this->findByPageId($payload->pageId ?? '');
     }
 }

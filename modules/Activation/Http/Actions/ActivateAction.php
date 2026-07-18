@@ -5,25 +5,27 @@ declare(strict_types=1);
 namespace Modules\Activation\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
+use Modules\Activation\CQRS\Command\ToggleActivationCommand;
+use Modules\Activation\Handlers\ToggleActivationHandler;
 use Modules\Activation\Http\Requests\ToggleActivationRequest;
 use Modules\Activation\Http\Resources\ActivationLogResource;
-use Modules\Activation\Models\ActivationLogModel;
-use Modules\Barber\Models\BarberModel;
 use Modules\Core\Http\Actions\BaseApiAction;
 
 final class ActivateAction extends BaseApiAction
 {
+    public function __construct(
+        private readonly ToggleActivationHandler $handler,
+    ) {}
+
     public function __invoke(ToggleActivationRequest $request, string $barber): JsonResponse
     {
-        $barber = BarberModel::findOrFail($barber);
+        $command = new ToggleActivationCommand(
+            barberId: $barber,
+            activate: true,
+            reason: $request->validated('reason'),
+        );
 
-        $log = ActivationLogModel::create([
-            'activable_id' => $barber->id,
-            'activable_type' => $barber->getMorphClass(),
-            'status' => 'enabled',
-            'reason' => $request->validated('reason'),
-            'activated_at' => now(),
-        ]);
+        $log = $this->handler->handle($command);
 
         return $this->created(
             data: new ActivationLogResource($log),

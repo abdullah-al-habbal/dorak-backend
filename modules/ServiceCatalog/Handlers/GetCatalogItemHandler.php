@@ -10,11 +10,9 @@ use Modules\ServiceCatalog\Models\ServiceCatalogItemModel;
 
 final class GetCatalogItemHandler
 {
-    public function handle(object $payload): ?ServiceCatalogItemModel
+    public function handle(GetCatalogItemQuery $queyr): ?ServiceCatalogItemModel
     {
-        assert($payload instanceof GetCatalogItemQuery);
-
         return ServiceCatalogItemModel::with(['category', 'tags', 'media'])
-            ->find($payload->id);
+            ->find($queyr->id);
     }
 }
