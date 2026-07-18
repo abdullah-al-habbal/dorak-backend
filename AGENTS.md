@@ -35,12 +35,7 @@ composer analyze        # phpstan level 9 via larastan
 
 ## Remaining Gaps (from `docs/12_implementation-prd.md`)
 
-| Prio | Module | Missing |
-|------|--------|---------|
-| Med  | Application | `GET /applications`, `PUT /applications/{id}/status` |
-| Low  | OfferedService | `GET /barbers/{id}/services` |
-| Low  | Ban | `GET /clients/{id}/bans/check` |
-| Low  | Social Login | `POST /auth/social/{provider}` |
+All original backend gaps resolved — Application, OfferedService, Ban, Social Login APIs all built and contract-tested.
 
 See `docs/feature-index.md` → "Remaining Backend Gaps" for details.
 

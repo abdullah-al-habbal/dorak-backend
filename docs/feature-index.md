@@ -177,23 +177,51 @@
 - Frontend: `JobPostingEntity` `title`/`description` → `Map<String, dynamic>` with locale getters, `status` replaces `isActive`, `requirementsList`
 - Frontend: `JobPostingDto` parses new shape, 3 widgets use locale extraction
 
+### Profile Expand (Phone, Avatar, Soft Delete)
+- `ClientModel` — added `phone`, `avatar`, `status`, `SoftDeletes` trait; fillable + casts updated
+- `UpdateProfileAction` [PATCH /api/v1/client/profile] — now accepts/returns `phone` field
+- `UploadAvatarAction` [POST /api/v1/client/avatar] — multipart upload, stores in `public/avatars`, returns URL. Auth:client
+- `DeleteAccountAction` [DELETE /api/v1/client/account] — requires password confirmation, blocks if active bookings exist. Auth:client
+- 5 contract tests for account deletion
+
+### Email Verification
+- `SendEmailVerificationAction` [POST /api/v1/client/email/verify/send] — sends 6-digit code to client email, 10-min TTL cache. Auth:client
+- `VerifyEmailAction` [POST /api/v1/client/email/verify] — validates cached code, sets `email_verified_at`. Auth:client
+- `SendEmailVerificationCode` — mailable with Blade template
+- 4 contract tests
+
+### Forgot / Reset Password
+- `ForgotPasswordAction` [POST /api/v1/client/forgot-password] — sends 6-digit reset code to email, 10-min TTL. No auth.
+- `ResetPasswordAction` [POST /api/v1/client/reset-password] — validates code + new password, resets password, revokes all tokens. No auth.
+- `SendPasswordResetCode` — mailable with Blade template
+- 4 contract tests
+
+### Password Change
+- `ChangePasswordAction` [PATCH /api/v1/client/password] — validates `current_password` + new password, updates, revokes all tokens. Auth:client
+- `ChangePasswordRequest` — `current_password` validated via `current_password:client` rule
+- 3 contract tests
+
+### Translation Keys Added
+- `core::messages.email_verification_sent`, `core::messages.email_verified`, `core::messages.invalid_verification_code`, `core::messages.verification_code_expired`, `core::messages.verification_code_required`
+- `core::messages.password_reset_sent`, `core::messages.password_reset_success`, `core::messages.invalid_reset_code`, `core::messages.reset_code_expired`, `core::messages.current_password_incorrect`, `core::messages.password_changed`
+- `core::exceptions.email_already_verified`, `core::exceptions.account_deleted_with_active_bookings`
+- All keys in both `en/core.php` + `ar/core.php`
+
+### Contract Tests Updated
+- `ApiResponseContractTest` — 267 passing tests (was 236), 1482 assertions (was 1212)
+- New tests cover: upload avatar, delete account, send email verification, verify email, forgot password, reset password, change password
+- Client module: 13 endpoints now covered (was 6)
+
+### Application Resource Enriched
+- `ApplicationResource` — added `job_posting_title` (bilingual map) via `whenLoaded('jobPosting')` so frontend can display job title in application list
+
 ---
 
-## Remaining Backend Gaps (from `12_implementation-prd.md`)
+## Remaining Backend Gaps
 
-### Medium Priority
-- **Application API** — `GET /applications` (list + filter by status), `PUT /applications/{id}/status` (accept/reject)
-  - Needs: `ListApplicationsAction`, `UpdateApplicationStatusAction`, `ApplicationResource`, `UpdateApplicationStatusRequest`
-  - Frontend needs: ApplicationListScreen, status update UI
-
-### Lower Priority
-- **OfferedService API** — `GET /barbers/{id}/services` (list barber's offered services with prices)
-  - Needs: `ListBarberServicesAction`, `ServiceResource`
-- **Ban API** — `GET /clients/{id}/bans/check` (return active ban status)
-  - Needs: `CheckBanAction`, `BanResource`
-- **Social Login** — `POST /auth/social/{provider}` (Socialite → Sanctum token)
-  - Needs: `SocialLoginAction`, Socialite provider routing
+All originally planned backend APIs (Application, OfferedService, Ban, Social Login) are built and contract-tested. No remaining backend gaps.
 
 ### Test Gaps
-- Frontend widget tests: only 8 exist (BrandFormScreenBody, AffiliationInviteScreenBody, ChairListScreenBody)
+- No dedicated feature tests for OfferedService, Ban, SocialLogin modules (only contract tests in `ApiResponseContractTest`)
+- Frontend widget tests: only 8 exist
 - Frontend contract tests: no equivalent of `ApiResponseContractTest` for Flutter DTO parsing

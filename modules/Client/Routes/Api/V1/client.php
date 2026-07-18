@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Modules\Client\Http\Actions\ChangePasswordAction;
 use Modules\Client\Http\Actions\DeleteAccountAction;
 use Modules\Client\Http\Actions\ForgotPasswordAction;
 use Modules\Client\Http\Actions\LoginAction;
@@ -33,5 +34,6 @@ Route::prefix('client')->name('client.')->group(function (): void {
         Route::delete('/account', DeleteAccountAction::class)->name('account.delete');
         Route::post('/email/verify', VerifyEmailAction::class)->name('email.verify');
         Route::post('/email/verify/send', SendEmailVerificationAction::class)->name('email.verify.send');
+        Route::patch('/password', ChangePasswordAction::class)->name('password.change');
     });
 });

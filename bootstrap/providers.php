@@ -28,6 +28,7 @@ use Modules\Marketing\Providers\MarketingServiceProvider;
 use Modules\OfferedService\Providers\OfferedServiceServiceProvider;
 use Modules\Preference\Providers\PreferenceServiceProvider;
 use Modules\Review\Providers\ReviewServiceProvider;
+use Modules\ServiceCatalog\Providers\ServiceCatalogServiceProvider;
 use Modules\Website\Providers\WebsiteServiceProvider;
 
 return [
@@ -53,6 +54,7 @@ return [
     ChairServiceProvider::class,
     BookingServiceProvider::class,
     ReviewServiceProvider::class,
+    ServiceCatalogServiceProvider::class,
     JobPostingServiceProvider::class,
     MarketingServiceProvider::class,
     WebsiteServiceProvider::class,

@@ -307,6 +307,50 @@ describe('DELETE /api/v1/client/account', function () {
 });
 
 // ─────────────────────────────────────────────
+// CHANGE PASSWORD
+// ─────────────────────────────────────────────
+
+describe('Change Password', function () {
+    it('changes password with valid current password', function () {
+        $client = ClientModel::factory()->create();
+        $token = $client->createToken('test')->plainTextToken;
+        $oldHash = $client->password;
+
+        $response = $this->withToken($token)
+            ->patchJson('/api/v1/client/password', [
+                'current_password' => 'password',
+                'password' => 'NewPassword123',
+            ]);
+
+        assertApiEnvelope($response, 200, false);
+        $this->assertNotEquals($oldHash, $client->fresh()->password);
+        $this->assertCount(0, $client->fresh()->tokens);
+    });
+
+    it('returns 422 with wrong current password', function () {
+        $client = ClientModel::factory()->create();
+        $token = $client->createToken('test')->plainTextToken;
+
+        $response = $this->withToken($token)
+            ->patchJson('/api/v1/client/password', [
+                'current_password' => 'wrongpassword',
+                'password' => 'NewPassword123',
+            ]);
+
+        $response->assertStatus(422);
+    });
+
+    it('returns 401 without auth', function () {
+        $response = $this->patchJson('/api/v1/client/password', [
+            'current_password' => 'password',
+            'password' => 'NewPassword123',
+        ]);
+
+        $response->assertStatus(401);
+    });
+});
+
+// ─────────────────────────────────────────────
 // EMAIL VERIFICATION
 // ─────────────────────────────────────────────
 

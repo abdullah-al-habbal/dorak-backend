@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Modules\Currency\Models\CurrencyModel;
+use Modules\ServiceCatalog\Models\ServiceCatalogItemModel;
 use Spatie\Translatable\HasTranslations;
 
 class OfferedServiceModel extends Model
@@ -31,6 +32,7 @@ class OfferedServiceModel extends Model
         'duration',
         'at_home',
         'active',
+        'catalog_item_id',
     ];
 
     /** @phpstan-ignore-next-line */
@@ -56,5 +58,10 @@ class OfferedServiceModel extends Model
     public function currency(): BelongsTo
     {
         return $this->belongsTo(CurrencyModel::class, 'currency_id');
+    }
+
+    public function catalogItem(): BelongsTo
+    {
+        return $this->belongsTo(ServiceCatalogItemModel::class, 'catalog_item_id');
     }
 }

@@ -27,5 +27,6 @@ return [
         'reset_code_sent' => 'Password reset code sent to your email',
         'invalid_reset_code' => 'Invalid reset code',
         'password_reset' => 'Password reset successfully',
+        'password_changed' => 'Password changed successfully',
     ],
 ];
