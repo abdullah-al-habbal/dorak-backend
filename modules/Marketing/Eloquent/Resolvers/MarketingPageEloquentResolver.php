@@ -6,10 +6,10 @@ namespace Modules\Marketing\Eloquent\Resolvers;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Core\Eloquent\Resolvers\BaseEloquentResolver;
+
 use Modules\Marketing\Models\MarketingPageModel;
 
-final class MarketingPageEloquentResolver extends BaseEloquentResolver
+final class MarketingPageEloquentResolver
 {
     // use __construct
     public function findBySlug(string $slug): ?MarketingPageModel

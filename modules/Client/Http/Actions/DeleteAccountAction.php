@@ -5,41 +5,37 @@ declare(strict_types=1);
 namespace Modules\Client\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Hash;
-use Modules\Booking\Enums\BookingStatus;
+use Modules\Client\Handlers\DeleteAccountHandler;
+use Modules\Client\Http\Requests\DeleteAccountRequest;
 use Modules\Core\Enums\ErrorCodeEnum;
 use Modules\Core\Http\Actions\BaseApiAction;
 
 final class DeleteAccountAction extends BaseApiAction
 {
-    public function __invoke(): JsonResponse
-    {
-        $data = request()->validate([
-            'password' => 'required|string',
-        ]);
+    public function __construct(
+        private readonly DeleteAccountHandler $handler,
+    ) {}
 
-        $client = request()->user();
+    public function __invoke(
+        DeleteAccountRequest $request,
+    ): JsonResponse {
+        $client = $request->user();
+        $password = $request->validated('password');
 
-        if (! Hash::check($data['password'], $client->password)) {
+        $result = $this->handler->handle($client, $password);
+
+        if ($result->isInvalidCredentials()) {
             return $this->unauthorized(
                 message: $this->trans('core::messages.invalid_credentials'),
             );
         }
 
-        $activeBookings = $client->bookings()
-            ->whereIn('status', [BookingStatus::Confirmed])
-            ->exists();
-
-        if ($activeBookings) {
+        if ($result->hasActiveBookings()) {
             return $this->businessError(
                 code: ErrorCodeEnum::UNPROCESSABLE_ENTITY,
                 message: $this->trans('core::messages.active_bookings_block_deletion'),
             );
         }
-
-        $client->tokens()->delete();
-
-        $client->delete();
 
         return $this->noContent();
     }

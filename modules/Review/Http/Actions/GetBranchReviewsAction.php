@@ -5,26 +5,23 @@ declare(strict_types=1);
 namespace Modules\Review\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
-use Modules\Branch\Models\BranchModel;
+use Illuminate\Http\Request;
 use Modules\Core\Http\Actions\BaseApiAction;
+use Modules\Review\Handlers\GetBranchReviewsHandler;
 use Modules\Review\Http\Resources\ReviewResource;
-use Modules\Review\Models\ReviewModel;
 
 final class GetBranchReviewsAction extends BaseApiAction
 {
-    public function __invoke(string $branch): JsonResponse
+    public function __construct(
+        private readonly GetBranchReviewsHandler $handler,
+    ) {}
+
+    public function __invoke(string $branch, Request $request): JsonResponse
     {
-        BranchModel::findOrFail($branch);
+        $perPage = (int) $request->query('per_page', 20);
 
-        $reviews = ReviewModel::where('subject_id', $branch)
-            ->where('subject_type', BranchModel::class)
-            ->with('author')
-            ->orderByDesc('created_at')
-            ->paginate(min((int) request()->query('per_page', 20), 100));
+        $reviews = $this->handler->handle($branch, $perPage);
 
-        return $this->paginated(
-            paginator: $reviews,
-            resourceClass: ReviewResource::class,
-        );
+        return $this->paginated(paginator: $reviews, resourceClass: ReviewResource::class);
     }
 }

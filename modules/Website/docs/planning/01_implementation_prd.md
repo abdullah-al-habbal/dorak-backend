@@ -355,6 +355,6 @@ return [
 ## 10. Dependencies
 
 - **New:** Spatie Translatable (already in composer.json per AGENTS.md)
-- **Existing:** Core module's `BaseApiAction`, `BaseHandler`, `BaseEloquentResolver`, `ApiResponseTrait`, `ApiResponseBodyValueObject`
+- **Existing:** Core module's `BaseApiAction`, `BaseHandler`, `ApiResponseTrait`, `ApiResponseBodyValueObject`
 - **Existing:** Chair module's `ChairModel` + `BranchModel` (for floor plan demo query)
 - **Frontend:** Alpine.js (already via Vite/Tailwind setup), `@tailwindcss/vite` plugin

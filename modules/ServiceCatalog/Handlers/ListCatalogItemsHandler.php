@@ -5,11 +5,11 @@ declare(strict_types=1);
 namespace Modules\ServiceCatalog\Handlers;
 
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
-use Modules\Core\Handlers\BaseHandler;
+
 use Modules\ServiceCatalog\CQRS\Query\ListCatalogItemsQuery;
 use Modules\ServiceCatalog\Models\ServiceCatalogItemModel;
 
-final class ListCatalogItemsHandler extends BaseHandler
+final class ListCatalogItemsHandler
 {
     public function handle(object $payload): LengthAwarePaginator
     {

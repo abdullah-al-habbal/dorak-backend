@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Booking\Http\Requests;
 
+use Carbon\Carbon;
+use Modules\Booking\CQRS\Command\CreateBookingCommand;
 use Modules\Core\Http\Requests\BaseApiFormRequest;
 
 final class CreateBookingRequest extends BaseApiFormRequest
@@ -20,5 +22,17 @@ final class CreateBookingRequest extends BaseApiFormRequest
             'at_home_location.lat' => ['required_with:at_home_location', 'numeric', 'between:-90,90'],
             'at_home_location.lng' => ['required_with:at_home_location', 'numeric', 'between:-180,180'],
         ];
+    }
+
+    public function toCommand(): CreateBookingCommand
+    {
+        return new CreateBookingCommand(
+            chairId: $this->validated('chair_id'),
+            barberId: $this->validated('barber_id'),
+            clientId: $this->user()->id,
+            timeSlot: Carbon::parse($this->validated('time_slot')),
+            serviceIds: $this->validated('service_ids', []),
+            atHomeLocation: $this->validated('at_home_location'),
+        );
     }
 }

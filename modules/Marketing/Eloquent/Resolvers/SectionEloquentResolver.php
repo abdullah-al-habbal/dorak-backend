@@ -6,10 +6,10 @@ namespace Modules\Marketing\Eloquent\Resolvers;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Core\Eloquent\Resolvers\BaseEloquentResolver;
+
 use Modules\Marketing\Models\SectionModel;
 
-final class SectionEloquentResolver extends BaseEloquentResolver
+final class SectionEloquentResolver
 {
     // use __construct
     public function findByPageId(string $pageId): Collection

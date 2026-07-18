@@ -22,6 +22,7 @@ final class UpdateCatalogItemRequest extends BaseApiFormRequest
             'price_range.min' => ['required_with:price_range', 'numeric', 'min:0'],
             'price_range.max' => ['required_with:price_range', 'numeric', 'min:0'],
             'price_range.currency' => ['required_with:price_range', 'string', 'size:3'],
+            // todo: use Enum instead of "in"
             'maintenance_level' => ['nullable', 'string', 'in:low,medium,high'],
             'style_period' => ['nullable', 'string', 'in:classic,modern'],
             'formality' => ['nullable', 'string', 'in:casual,formal,both'],

@@ -6,10 +6,10 @@ namespace Modules\Marketing\Eloquent\Resolvers;
 
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
-use Modules\Core\Eloquent\Resolvers\BaseEloquentResolver;
+
 use Modules\Marketing\Models\TestimonialModel;
 
-final class TestimonialEloquentResolver extends BaseEloquentResolver
+final class TestimonialEloquentResolver
 {
     public function findBySectionId(string $sectionId): Collection
     {

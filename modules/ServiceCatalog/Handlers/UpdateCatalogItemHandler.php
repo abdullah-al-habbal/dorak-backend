@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Modules\ServiceCatalog\Handlers;
 
-use Modules\Core\Handlers\BaseHandler;
+
 use Modules\ServiceCatalog\CQRS\Command\UpdateCatalogItemCommand;
 use Modules\ServiceCatalog\Models\ServiceCatalogItemModel;
 
-final class UpdateCatalogItemHandler extends BaseHandler
+final class UpdateCatalogItemHandler
 {
     public function handle(object $payload): ServiceCatalogItemModel
     {

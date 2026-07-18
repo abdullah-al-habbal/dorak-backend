@@ -8,9 +8,9 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Branch\Models\BranchModel;
 use Modules\Chair\Models\ChairModel;
-use Modules\Core\Eloquent\Resolvers\BaseEloquentResolver;
 
-final class FloorPlanDemoEloquentResolver extends BaseEloquentResolver
+
+final class FloorPlanDemoEloquentResolver
 {
     private const DEMO_BRANCH_EMAIL = 'demo@dorak.sy';
 

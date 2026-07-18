@@ -5,26 +5,23 @@ declare(strict_types=1);
 namespace Modules\Client\Http\Actions;
 
 use Illuminate\Http\JsonResponse;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Mail;
-use Modules\Client\Mail\SendEmailVerificationCode;
+use Illuminate\Http\Request;
+use Modules\Client\Handlers\SendEmailVerificationHandler;
 use Modules\Core\Http\Actions\BaseApiAction;
 
 final class SendEmailVerificationAction extends BaseApiAction
 {
-    public function __invoke(): JsonResponse
-    {
-        $client = request()->user();
+    public function __construct(
+        private readonly SendEmailVerificationHandler $handler,
+    ) {}
 
-        if ($client->email_verified_at !== null) {
+    public function __invoke(Request $request): JsonResponse
+    {
+        $result = $this->handler->handle(client: $request->user());
+
+        if ($result->isAlreadyVerified()) {
             return $this->success(message: $this->trans('core::messages.email_already_verified'));
         }
-
-        $code = (string) random_int(100000, 999999);
-
-        Cache::put("email_verify_{$client->id}", $code, now()->addMinutes(10));
-
-        Mail::to($client->email)->send(new SendEmailVerificationCode($code));
 
         return $this->success(message: $this->trans('core::messages.verification_code_sent'));
     }

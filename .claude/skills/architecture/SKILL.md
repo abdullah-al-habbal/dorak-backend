@@ -21,10 +21,8 @@ modules/Core/
 │   ├── Migrations/
 │   └── Seeders/
 ├── Eloquent/Resolvers/      # Data access layer
-│   └── BaseEloquentResolver.php
 ├── Enums/                   # ErrorCodeEnum, SuccessCodeEnum
 ├── Handlers/                # Business logic
-│   └── BaseHandler.php
 ├── Helpers/
 │   └── ApiResponseTrait.php
 ├── Http/

@@ -11,7 +11,7 @@ description: CQRS pattern implementation with Command/Query objects flowing thro
 Request (validates input)
   → builds Command (mutation) or Query (read) object
     → Action (invokable, extends BaseApiAction)
-      → Handler (extends BaseHandler, contains business logic)
+      → Handler (contains business logic)
         → EloquentResolver (single query/mutation method)
       → Response via ApiResponseTrait
 ```
@@ -48,15 +48,14 @@ namespace Modules\Booking\Eloquent\Resolvers;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Model;
 use Modules\Booking\Models\Booking;
-use Modules\Core\Eloquent\Resolvers\BaseEloquentResolver;
 
-final class ListAllBookingsEloquentResolver extends BaseEloquentResolver
+final class ListAllBookingsEloquentResolver
 {
-    public function resolve(object $payload): Model|Collection|array|null
+    public function resolve(place the command or the query class based on the api in this case ListAllBookingsQuery $query): Model|Collection|array|null
     {
         return Booking::query()
-            ->when($payload->status, fn ($q) => $q->where('status', $payload->status))
-            ->paginate($payload->perPage);
+            ->when($query->status, fn ($q) => $q->where('status', $query->status))
+            ->paginate($query->perPage);
     }
 }
 ```
@@ -71,17 +70,16 @@ namespace Modules\Booking\Handlers;
 
 use Modules\Booking\CQRS\Query\ListAllBookingsQuery;
 use Modules\Booking\Eloquent\Resolvers\ListAllBookingsEloquentResolver;
-use Modules\Core\Handlers\BaseHandler;
 
-final class ListAllBookingsHandler extends BaseHandler
+final class ListAllBookingsHandler
 {
     public function __construct(
         private readonly ListAllBookingsEloquentResolver $resolver,
     ) {}
 
-    public function handle(object $payload): mixed
+    public function handle(place the command or the query class based on the api in this case ListAllBookingsQuery $query): mixed
     {
-        return $this->resolver->resolve($payload);
+        return $this->resolver->resolve($query);
     }
 }
 ```

@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Modules\ServiceCatalog\Handlers;
 
-use Modules\Core\Handlers\BaseHandler;
+
 use Modules\ServiceCatalog\CQRS\Command\CreateCatalogItemCommand;
 use Modules\ServiceCatalog\Models\ServiceCatalogItemModel;
 
-final class CreateCatalogItemHandler extends BaseHandler
+final class CreateCatalogItemHandler
 {
     public function handle(object $payload): ServiceCatalogItemModel
     {
