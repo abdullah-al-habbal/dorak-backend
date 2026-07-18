@@ -15,11 +15,11 @@
 ## Execution Loop (Module by Module)
 - [x] `Marketing` module
 - [x] `Activation` module
-- [ ] `Booking` module
-- [ ] `Brand` module
-- [ ] `BarberAffiliation` module
-- [ ] `Chair` module
-- [ ] `Review` module
+- [x] `Booking` module
+- [x] `Brand` module
+- [x] `BarberAffiliation` module
+- [x] `Chair` module
+- [x] `Review` module
 - [ ] `Explore` module
 - [ ] `JobPosting` module
 - [ ] `ServiceCatalog` module

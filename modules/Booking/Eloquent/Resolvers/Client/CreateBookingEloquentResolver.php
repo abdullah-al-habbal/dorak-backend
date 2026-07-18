@@ -9,7 +9,8 @@ use Modules\Booking\Enums\BookingStatus;
 use Modules\Booking\Models\BookingModel;
 use Modules\Chair\Enums\ChairStatus;
 use Modules\Chair\Models\ChairModel;
-
+use Modules\Booking\Eloquent\Resolvers\Shared\ChairNotAvailableException;
+use Modules\Booking\Eloquent\Resolvers\Shared\DoubleBookingException;
 
 final class CreateBookingEloquentResolver
 {
