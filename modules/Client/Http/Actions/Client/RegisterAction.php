@@ -17,7 +17,7 @@ final class RegisterAction extends BaseApiAction
 
     public function __invoke(RegisterRequest $request): JsonResponse
     {
-        $result = $this->handler->handle($request->validated());
+        $result = $this->handler->handle($request->toCommand());
 
         return $this->created(data: [
             'token' => $result->token,

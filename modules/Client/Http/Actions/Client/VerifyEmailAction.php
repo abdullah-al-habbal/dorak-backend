@@ -15,6 +15,7 @@ final class VerifyEmailAction extends BaseApiAction
         private readonly VerifyEmailHandler $handler,
     ) {}
 
+    // todo: we need to make the Command/Query based on the Api
     public function __invoke(VerifyEmailRequest $request): JsonResponse
     {
         $result = $this->handler->handle(

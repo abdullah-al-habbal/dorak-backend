@@ -15,6 +15,7 @@ final class SocialLoginAction extends BaseApiAction
         private readonly SocialLoginHandler $handler,
     ) {}
 
+    // todo: move into the Command/Query 
     public function __invoke(string $provider, SocialLoginRequest $request): JsonResponse
     {
         $result = $this->handler->handle(

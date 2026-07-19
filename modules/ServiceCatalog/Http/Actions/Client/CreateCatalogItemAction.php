@@ -19,6 +19,7 @@ final class CreateCatalogItemAction extends BaseApiAction
 
     public function __invoke(CreateCatalogItemRequest $request): JsonResponse
     {
+        // todo: we must have the toCommand method
         $command = new CreateCatalogItemCommand(
             categoryId: (int) $request->validated('category_id'),
             name: $request->validated('name'),

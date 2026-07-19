@@ -15,6 +15,7 @@ final class ResetPasswordAction extends BaseApiAction
         private readonly ResetPasswordHandler $handler,
     ) {}
 
+    // todo: we need to refacor to use the Command and the toCommand()
     public function __invoke(ResetPasswordRequest $request): JsonResponse
     {
         $result = $this->handler->handle(

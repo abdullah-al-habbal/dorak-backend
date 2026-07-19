@@ -15,6 +15,7 @@ use Modules\Review\Models\ReviewModel;
 
 final class SubmitReviewAction extends BaseApiAction
 {
+    // todo: we must have the resolver and the hanlder, and we must have the command/query based on the api
     public function __invoke(SubmitReviewRequest $request, string $booking): JsonResponse
     {
         $booking = BookingModel::with('chair.branch')->findOrFail($booking);

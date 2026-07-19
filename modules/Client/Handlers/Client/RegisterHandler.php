@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\Client\Handlers\Client;
 
-use Modules\Client\Repositories\RegisterEloquentResolver;
+use Modules\Client\CQRS\Command\Client\RegisterCommand;
+use Modules\Client\Eloquent\Resolvers\Client\RegisterEloquentResolver;
 use Modules\Client\ValuesObjects\RegisterResult;
 
 final class RegisterHandler
@@ -13,15 +14,15 @@ final class RegisterHandler
         private readonly RegisterEloquentResolver $resolver,
     ) {}
 
-    public function handle(array $data): RegisterResult
+    public function handle(RegisterCommand $command): RegisterResult
     {
-        $client = $this->resolver->create($data);
+        $client = $this->resolver->resolve($command);
 
         $token = $client->createToken('client-app')->plainTextToken;
 
         return RegisterResult::success(
-            token: $token,
-            clientData: [
+            $token,
+            [
                 'id' => $client->id,
                 'name' => $client->name,
                 'email' => $client->email,

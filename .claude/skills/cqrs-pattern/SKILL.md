@@ -104,18 +104,12 @@ final class ListAllBookingsAction extends BaseApiAction
 
     public function __invoke(ListAllBookingsRequest $request): mixed
     {
-        $query = new ListAllBookingsQuery(
-            status: $request->validated('status'),
-            perPage: (int) $request->validated('per_page', 15),
-        );
-
-        $result = $this->handler->handle($query);
-
+        $result = $this->handler->handle($request->toQuery());
         return $this->paginated($result, BookingResource::class);
     }
 }
 ```
-
+note: the ListAllBookingsRequest must have the toQuery() method that returns a ListAllBookingsQuery for type safety. The Action never calls the resolver directly, only the handler does.
 ## Write example: Create booking
 
 ### Command

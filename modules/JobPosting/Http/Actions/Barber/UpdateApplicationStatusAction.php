@@ -16,6 +16,7 @@ final class UpdateApplicationStatusAction extends BaseApiAction
     {
         $application = ApplicationModel::findOrFail($application);
 
+        // todo: we must have the command/Query based on the api and also the resolver and the hanlder
         $application->update([
             'status' => $request->validated('status'),
         ]);

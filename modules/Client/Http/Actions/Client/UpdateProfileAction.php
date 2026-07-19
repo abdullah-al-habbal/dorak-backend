@@ -11,6 +11,7 @@ use Modules\Core\Http\Actions\BaseApiAction;
 
 final class UpdateProfileAction extends BaseApiAction
 {
+    // todo: we need resolver, hanlder and make the Command/Query based on the api
     public function __invoke(UpdateProfileRequest $request): JsonResponse
     {
         $client = $request->user();
