@@ -10,8 +10,10 @@ final class RemoveFavoriteEloquentResolver
 {
     public function resolve(string $favoriteId, string $clientId): void
     {
-        ClientFavoriteModel::where('id', $favoriteId)
+        $favorite = ClientFavoriteModel::where('id', $favoriteId)
             ->where('client_id', $clientId)
-            ->delete();
+            ->firstOrFail();
+
+        $favorite->delete();
     }
 }

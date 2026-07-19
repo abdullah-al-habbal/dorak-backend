@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\ClientRecommendation\Providers;
 
+use Illuminate\Console\Scheduling\Schedule;
 use Modules\Booking\Models\BookingModel;
 use Modules\ClientInteraction\Models\ClientFavoriteModel;
 use Modules\ClientRecommendation\Console\Commands\RecomputeClientVectorsCommand;
@@ -32,5 +33,12 @@ final class ClientRecommendationServiceProvider extends BaseModuleServiceProvide
     {
         ClientFavoriteModel::observe(ClientFavoriteObserver::class);
         BookingModel::observe(BookingCompletedObserver::class);
+
+        $this->app->afterResolving(Schedule::class, function (Schedule $schedule) {
+            $schedule->command('recommend:recompute-vectors')
+                ->dailyAt('02:00')
+                ->withoutOverlapping()
+                ->runInBackground();
+        });
     }
 }

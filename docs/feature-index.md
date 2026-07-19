@@ -255,32 +255,33 @@
 - `BookingCompletedObserver` — auto-creates history record when BookingModel status transitions to `completed`
 - Registered in `bootstrap/providers.php`
 
-### PRD Phase 3 — ClientFaceProfile Module (Not started)
-- Models needed: `ClientFaceProfileModel`, `ClientFaceAnalysisResultModel`
-- ValueObjects needed: `FaceAnalysisFeaturesValueObject`, `RecommendedCatalogItemIdsValueObject`
-- Enum needed: `DetectedFaceShapeEnum`
-- Upload endpoints (min 0, max 5, primary flag)
-- Async AI analysis queue (Laravel job)
-- Recommendation preview based on face shape
-- ServiceProvider needed in `bootstrap/providers.php`
+### PRD Phase 3 — ClientFaceProfile Module (Complete)
+- `ClientFaceProfileModel` + `ClientFaceAnalysisResultModel` with migrations (photos up to 5, primary flag, async AI results)
+- `FaceAnalysisFeaturesValueObject`, `RecommendedCatalogItemIdsValueObject`, `DetectedFaceShapeEnum`, `AnalysisSourceEnum`
+- Casts: `FaceAnalysisFeaturesCast`, `RecommendedCatalogItemIdsCast`
+- `UploadFaceProfilePhotoAction` [POST /api/v1/client/face-profile] (auth:client) — stores photo, sets primary flag, dispatches `AnalyzeFacePhotoJob`
+- `GetFaceBasedRecommendationsAction` [GET /api/v1/client/face-profile/recommendations] (auth:client) — returns analysis results with recommended catalog items
+- `AnalyzeFacePhotoJob` — async queue job for AI analysis (subclass Laravel job, placeholder pipeline)
+- 7 contract tests in `ApiResponseContractTest`
+- Registered in `bootstrap/providers.php`
 
-### PRD Phase 4 — ClientInteraction Module (Not started)
-- Models needed: `ClientInteractionLogModel`, `ClientFavoriteModel`, `ClientSavedFilterModel`, `ClientDiscoveryPreferenceModel`
-- ValueObjects needed: `InteractionContextValueObject`, `FilterConfigurationValueObject`
-- Enum needed: `InteractionTypeEnum`
-- Instrument all discovery touchpoints (view, search, favorite)
-- Favorite/unfavorite APIs (polymorphic, strictly private)
-- Saved filter CRUD
-- ServiceProvider needed in `bootstrap/providers.php`
+### PRD Phase 4 — ClientInteraction Module (Complete)
+- `ClientFavoriteModel` — polymorphic favorites (brand/branch/barber), toggle + list + delete APIs
+- `ClientSavedFilterModel` — full CRUD (create/list/show/update/delete)
+- `ClientDiscoveryPreferenceModel` — get/update discovery preferences
+- `InteractionTypeEnum`, `FilterConfigurationValueObject`, `InteractionContextValueObject`
+- 15 contract tests in `ApiResponseContractTest`
+- `ClientInteractionServiceProvider` registered in `bootstrap/providers.php`
 
-### PRD Phase 5 — Recommendation Module (Not started)
-- Models needed: `ClientPreferenceVectorModel`, `RecommendationEdgeModel`
-- ValueObjects needed: `ClientPreferenceVectorDataValueObject`, `RecommendationFactorWeightsValueObject`, `RecommendationEdgeContextValueObject`
-- Enum needed: `EdgeTypeEnum`
-- Console command: `RecomputeRecommendationVectorsCommand` (nightly batch)
-- Composite ranking in `ExploreBranchesAction` / `ExploreBarbersAction`
-- New Explore filters: `catalog_item_ids`, `available_now`, `price_range`, `rating_min`, `face_shape_compatible`
-- ServiceProvider needed in `bootstrap/providers.php`
+### PRD Phase 5 — Recommendation Module (Complete)
+- `RecommendationEdgeModel` — polymorphic edges with `EdgeTypeEnum`, weight, context, expiry
+- `ClientPreferenceVectorModel` — embedding storage with json fallback when pgvector absent
+- `ClientRecommendationServiceProvider` — registers observers + recompute command
+- `ClientFavoriteObserver` + `BookingCompletedObserver` — sync edges on events
+- `RecomputeClientVectorsCommand` (`recommend:recompute-vectors`) — nightly batch, chunks 100, gathers signals, calls OpenAI embeddings
+- New Explore filters: `catalog_item_ids[]`, `available_now`, `price_range[min/max]`, `rating_min`, `face_shape_compatible`
+- Composite ranking: `geo*0.35 + edge_boost*0.55 + face_match*0.1` with `compatibility_score` + `rank` on response
+- 8 contract tests extending explore endpoint assertions
 
 ---
 
@@ -289,6 +290,6 @@
 All originally planned backend APIs (Application, OfferedService, Ban, Social Login) are built and contract-tested. No remaining backend gaps.
 
 ### Test Gaps
-- No dedicated feature tests for OfferedService, Ban, SocialLogin modules (only contract tests in `ApiResponseContractTest`)
+- No dedicated feature tests for OfferedService, Ban, SocialLogin, ClientFaceProfile, ClientInteraction, ClientRecommendation modules (only contract tests in `ApiResponseContractTest`)
 - Frontend widget tests: only 8 exist
 - Frontend contract tests: no equivalent of `ApiResponseContractTest` for Flutter DTO parsing
