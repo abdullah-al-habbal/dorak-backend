@@ -6,8 +6,8 @@ namespace Modules\Booking\Http\Resources\Client;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 use Modules\Barber\Http\Resources\BarberResource;
-use Modules\Branch\Http\Resources\ChairResource;
-use Modules\OfferedService\Http\Resources\ServiceResource;
+use Modules\Branch\Http\Resources\Shared\ChairResource;
+use Modules\OfferedService\Http\Resources\Shared\ServiceResource;
 
 final class BookingResource extends JsonResource
 {

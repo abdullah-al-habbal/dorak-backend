@@ -4,8 +4,8 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Cache;
-use Modules\Core\Eloquent\Resolvers\HealthCheckResolver;
-use Modules\Core\Handlers\HealthCheck\HealthCheckHandler;
+use Modules\Core\Eloquent\Resolvers\Shared\HealthCheckResolver;
+use Modules\Core\Handlers\Shared\HealthCheckHandler;
 
 beforeEach(function () {
     $this->resolver = Mockery::mock(HealthCheckResolver::class);

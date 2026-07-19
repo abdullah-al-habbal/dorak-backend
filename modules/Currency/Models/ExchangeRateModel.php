@@ -5,21 +5,19 @@ declare(strict_types=1);
 
 namespace Modules\Currency\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+#[Fillable(['from_currency_id', 'to_currency_id', 'rate', 'effective_at'])]
 class ExchangeRateModel extends Model
 {
     use HasFactory;
     use HasUuids;
 
     protected $table = 'exchange_rates';
-
-    protected $fillable = [
-        'from_currency_id', 'to_currency_id', 'rate', 'effective_at',
-    ];
 
     protected function casts(): array
     {

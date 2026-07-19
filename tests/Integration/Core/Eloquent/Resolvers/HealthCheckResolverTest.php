@@ -3,7 +3,7 @@
 // tests/Integration/Core/Eloquent/Resolvers/HealthCheckResolverTest.php
 declare(strict_types=1);
 
-use Modules\Core\Eloquent\Resolvers\HealthCheckResolver;
+use Modules\Core\Eloquent\Resolvers\Shared\HealthCheckResolver;
 
 it('returns ok with driver and latency when database is reachable', function () {
     $resolver = new HealthCheckResolver;

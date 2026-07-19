@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Modules\OfferedService\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,6 +15,18 @@ use Modules\Currency\Models\CurrencyModel;
 use Modules\ServiceCatalog\Models\ServiceCatalogItemModel;
 use Spatie\Translatable\HasTranslations;
 
+#[Fillable([
+    'serviceable_id',
+    'serviceable_type',
+    'name',
+    'description',
+    'price',
+    'currency_id',
+    'duration',
+    'at_home',
+    'active',
+    'catalog_item_id',
+])]
 class OfferedServiceModel extends Model
 {
     use HasFactory;
@@ -21,19 +34,6 @@ class OfferedServiceModel extends Model
     use HasUuids;
 
     protected $table = 'offered_services';
-
-    protected $fillable = [
-        'serviceable_id',
-        'serviceable_type',
-        'name',
-        'description',
-        'price',
-        'currency_id',
-        'duration',
-        'at_home',
-        'active',
-        'catalog_item_id',
-    ];
 
     /** @phpstan-ignore-next-line */
     public array $translatable = ['name', 'description'];

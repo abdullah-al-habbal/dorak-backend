@@ -4,9 +4,9 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use Modules\Website\Http\Actions\ShowFeaturesPageAction;
-use Modules\Website\Http\Actions\ShowHomePageAction;
-use Modules\Website\Http\Actions\ShowPricingPageAction;
+use Modules\Website\Http\Actions\Shared\ShowFeaturesPageAction;
+use Modules\Website\Http\Actions\Shared\ShowHomePageAction;
+use Modules\Website\Http\Actions\Shared\ShowPricingPageAction;
 use Modules\Website\Http\Middleware\SetLocaleMiddleware;
 
 Route::withoutMiddleware([SetLocaleMiddleware::class])

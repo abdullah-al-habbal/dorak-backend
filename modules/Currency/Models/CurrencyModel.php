@@ -5,21 +5,19 @@ declare(strict_types=1);
 
 namespace Modules\Currency\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+#[Fillable(['code', 'name', 'symbol', 'is_default'])]
 class CurrencyModel extends Model
 {
     use HasFactory;
     use HasUuids;
 
     protected $table = 'currencies';
-
-    protected $fillable = [
-        'code', 'name', 'symbol', 'is_default',
-    ];
 
     protected function casts(): array
     {

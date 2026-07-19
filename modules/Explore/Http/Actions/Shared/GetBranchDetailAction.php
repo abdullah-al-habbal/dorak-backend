@@ -6,10 +6,10 @@ namespace Modules\Explore\Http\Actions\Shared;
 
 use Illuminate\Http\JsonResponse;
 use Modules\Barber\Http\Resources\BarberResource;
-use Modules\Branch\Http\Resources\BranchResource;
+use Modules\Branch\Http\Resources\Shared\BranchResource;
 use Modules\Branch\Models\BranchModel;
 use Modules\Core\Http\Actions\BaseApiAction;
-use Modules\OfferedService\Http\Resources\ServiceResource;
+use Modules\OfferedService\Http\Resources\Shared\ServiceResource;
 
 final class GetBranchDetailAction extends BaseApiAction
 {

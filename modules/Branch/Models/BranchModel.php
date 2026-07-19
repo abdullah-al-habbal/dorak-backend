@@ -21,6 +21,7 @@ use Modules\Activation\Models\ActivationLogModel;
 use Modules\Barber\Models\BarberModel;
 use Modules\Brand\Models\BrandModel;
 use Modules\Chair\Models\ChairModel;
+use Modules\OfferedService\Models\OfferedServiceModel;
 use Modules\Review\Models\ReviewModel;
 use Spatie\Translatable\HasTranslations;
 
@@ -61,6 +62,11 @@ class BranchModel extends Authenticatable implements FilamentUser
     public function barbers(): HasManyThrough
     {
         return $this->hasManyThrough(BarberModel::class, ChairModel::class, 'branch_id', 'id', 'id', 'barber_id');
+    }
+
+    public function offeredServices(): MorphMany
+    {
+        return $this->morphMany(OfferedServiceModel::class, 'serviceable');
     }
 
     public function reviews(): MorphMany

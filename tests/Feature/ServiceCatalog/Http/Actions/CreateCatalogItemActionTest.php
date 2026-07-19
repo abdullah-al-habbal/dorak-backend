@@ -45,6 +45,7 @@ it('requires unique slug', function () {
         'category_id' => $this->category->id,
         'name' => ['en' => 'First', 'ar' => 'الأول'],
         'slug' => 'duplicate',
+        'is_active' => true,
     ];
     $this->postJson('/api/v1/service-catalog/items', $payload);
 

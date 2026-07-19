@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\Marketing\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,6 +13,16 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Marketing\Database\Factories\SectionFactory;
 use Spatie\Translatable\HasTranslations;
 
+#[Fillable([
+    'page_id',
+    'type',
+    'title',
+    'subtitle',
+    'content',
+    'media_url',
+    'sort_order',
+    'universe_visibility',
+])]
 final class SectionModel extends Model
 {
     use HasFactory;
@@ -19,17 +30,6 @@ final class SectionModel extends Model
     use HasUuids;
 
     protected $table = 'sections';
-
-    protected $fillable = [
-        'page_id',
-        'type',
-        'title',
-        'subtitle',
-        'content',
-        'media_url',
-        'sort_order',
-        'universe_visibility',
-    ];
 
     /** @phpstan-ignore-next-line */
     public array $translatable = ['content', 'title', 'subtitle'];

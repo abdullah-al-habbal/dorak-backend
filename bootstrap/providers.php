@@ -16,6 +16,10 @@ use Modules\Branch\Providers\BranchServiceProvider;
 use Modules\Brand\Providers\BrandServiceProvider;
 use Modules\Chair\Providers\ChairServiceProvider;
 use Modules\Client\Providers\ClientServiceProvider;
+use Modules\ClientFaceProfile\Providers\ClientFaceProfileServiceProvider;
+use Modules\ClientHistory\Providers\ClientHistoryServiceProvider;
+use Modules\ClientInteraction\Providers\ClientInteractionServiceProvider;
+use Modules\ClientRecommendation\Providers\ClientRecommendationServiceProvider;
 use Modules\Core\Providers\ApplicationServiceProvider;
 use Modules\Core\Providers\Filament\AdminPanelProvider;
 use Modules\Core\Providers\Filament\BarberPanelProvider;
@@ -47,6 +51,10 @@ return [
     BarberServiceProvider::class,
     BranchServiceProvider::class,
     ClientServiceProvider::class,
+    ClientFaceProfileServiceProvider::class,
+    ClientHistoryServiceProvider::class,
+    ClientInteractionServiceProvider::class,
+    ClientRecommendationServiceProvider::class,
     BrandServiceProvider::class,
     PreferenceServiceProvider::class,
     BarberAffiliationServiceProvider::class,

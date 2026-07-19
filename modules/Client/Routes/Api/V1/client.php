@@ -3,20 +3,20 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
-use Modules\Client\Http\Actions\ChangePasswordAction;
-use Modules\Client\Http\Actions\DeleteAccountAction;
-use Modules\Client\Http\Actions\ForgotPasswordAction;
-use Modules\Client\Http\Actions\LoginAction;
-use Modules\Client\Http\Actions\LogoutAction;
-use Modules\Client\Http\Actions\RefreshTokenAction;
-use Modules\Client\Http\Actions\RegisterAction;
-use Modules\Client\Http\Actions\ResetPasswordAction;
-use Modules\Client\Http\Actions\SendEmailVerificationAction;
-use Modules\Client\Http\Actions\SocialLoginAction;
-use Modules\Client\Http\Actions\UpdateProfileAction;
-use Modules\Client\Http\Actions\UpdateUniversePreferenceAction;
-use Modules\Client\Http\Actions\UploadAvatarAction;
-use Modules\Client\Http\Actions\VerifyEmailAction;
+use Modules\Client\Http\Actions\Client\ChangePasswordAction;
+use Modules\Client\Http\Actions\Client\DeleteAccountAction;
+use Modules\Client\Http\Actions\Client\ForgotPasswordAction;
+use Modules\Client\Http\Actions\Client\LoginAction;
+use Modules\Client\Http\Actions\Client\LogoutAction;
+use Modules\Client\Http\Actions\Client\RefreshTokenAction;
+use Modules\Client\Http\Actions\Client\RegisterAction;
+use Modules\Client\Http\Actions\Client\ResetPasswordAction;
+use Modules\Client\Http\Actions\Client\SendEmailVerificationAction;
+use Modules\Client\Http\Actions\Client\SocialLoginAction;
+use Modules\Client\Http\Actions\Client\UpdateProfileAction;
+use Modules\Client\Http\Actions\Client\UpdateUniversePreferenceAction;
+use Modules\Client\Http\Actions\Client\UploadAvatarAction;
+use Modules\Client\Http\Actions\Client\VerifyEmailAction;
 
 Route::prefix('client')->name('client.')->group(function (): void {
     Route::post('/login', LoginAction::class)->name('login');

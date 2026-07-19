@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\ServiceCatalog\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
+#[Fillable(['name', 'description', 'slug', 'parent_id', 'is_active', 'sort_order'])]
 class ServiceCatalogCategoryModel extends Model
 {
     use HasFactory, HasTranslations, SoftDeletes;
@@ -20,15 +22,6 @@ class ServiceCatalogCategoryModel extends Model
     protected array $translatable = [
         'name',
         'description',
-    ];
-
-    protected $fillable = [
-        'name',
-        'description',
-        'slug',
-        'parent_id',
-        'is_active',
-        'sort_order',
     ];
 
     protected function casts(): array

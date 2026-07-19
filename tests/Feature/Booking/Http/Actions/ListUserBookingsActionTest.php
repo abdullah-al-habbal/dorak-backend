@@ -15,7 +15,7 @@ it('lists user bookings', function () {
         'client_id' => $this->client->id,
     ]);
 
-    $response = $this->getJson('/api/v1/bookings');
+    $response = $this->getJson('/api/v1/bookings?per_page=10');
 
     $response->assertOk();
     $response->assertJsonStructure([
@@ -32,7 +32,7 @@ it('does not list other users bookings', function () {
         'client_id' => $this->client->id,
     ]);
 
-    $response = $this->getJson('/api/v1/bookings');
+    $response = $this->getJson('/api/v1/bookings?per_page=10');
 
     expect($response->json('data'))->toHaveCount(2);
 });
@@ -48,7 +48,7 @@ it('filters upcoming bookings', function () {
         'time_slot' => now()->subWeek(),
     ]);
 
-    $response = $this->getJson('/api/v1/bookings?status=upcoming');
+    $response = $this->getJson('/api/v1/bookings?status=upcoming&per_page=10');
 
     expect($response->json('data'))->toHaveCount(1);
     expect($response->json('data.0.status'))->toBe('confirmed');
@@ -65,7 +65,7 @@ it('filters past bookings', function () {
         'time_slot' => now()->addWeek(),
     ]);
 
-    $response = $this->getJson('/api/v1/bookings?status=past');
+    $response = $this->getJson('/api/v1/bookings?status=past&per_page=10');
 
     expect($response->json('data'))->toHaveCount(1);
 });

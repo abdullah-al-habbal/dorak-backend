@@ -217,6 +217,73 @@
 
 ---
 
+### Context-Driven Namespacing
+- All HTTP-layer files (Actions, Handlers, Resolvers, CQRS, Requests, Resources) moved into `{Client|Barber|Business|Shared}/` subdirs across all 17 modules
+- `Api/V1/` prefix dropped from file paths (versioning at route layer)
+- `scripts/migrate_context.php` — migration tool (note: does NOT auto-update `tests/`)
+- 282 tests pass, full cleanup verified
+- See `docs/refactor/context-namespacing/RESULT.md` for full details
+
+### AI SDK & PostgreSQL Setup
+- **Database**: PostgreSQL + pgvector — `DB_CONNECTION=pgsql` active, HNSW indexes supported
+- **AI SDK**: `laravel/ai` v0.9.1 installed via composer; `config/ai.php` published with 15 providers (OpenAI, Anthropic, Gemini, etc.)
+- **Migrations**: `agent_conversations` + `agent_conversation_messages` tables published & migrated
+- **Artisan commands**: `make:agent`, `make:tool`, `make:agent-middleware` available
+
+### ServiceCatalog Module (PRD Phase 1 — Complete)
+- 5 Models: `ServiceCatalogCategoryModel`, `ServiceCatalogItemModel`, `ServiceCatalogItemTagModel`, `ServiceCatalogItemTagAssignmentModel`, `ServiceCatalogMediumModel`
+- 5 Enums: `FaceShapeEnum`, `HairTextureEnum`, `MaintenanceLevelEnum`, `StylePeriodEnum`, `FormalityEnum`
+- 2 ValueObjects: `PriceRangeValueObject`, `ServiceCatalogItemMetadataValueObject`
+- 2 Casts: `PriceRangeCast`, `ServiceCatalogItemMetadataCast`
+- CQRS: Create/Update/Delete/List/Get commands+queries, handlers, resolvers
+- Filament Admin CRUD: Categories, Items, Tags (list/create/edit/view)
+- `OfferedServiceModel.catalog_item_id` FK + migration
+- Registered in `bootstrap/providers.php`
+
+### PRD Phase 2 — ClientHistory Module (Complete)
+- 2 Models: `ClientServiceHistoryModel`, `ClientServiceHistoryMediaModel`
+- 1 Enum: `HistoryMediaType` (before/after/reference)
+- 1 ValueObject: `ServiceHistoryMetadataValueObject` (productsUsed, lengthSettings, colorCodes)
+- 1 Cast: `ServiceHistoryMetadataCast`
+- 3 Commands: `CreateClientServiceHistoryCommand`, `AttachHistoryMediaCommand`, `RebookFromHistoryCommand`
+- 1 Query: `ListClientServiceHistoryQuery`
+- 4 Resolvers + 4 Handlers following Action→Handler→EloquentResolver pattern
+- 3 Client API endpoints:
+  - `GET /api/v1/client/history` — paginated timeline with barber/branch/catalogItem/media relations
+  - `POST /api/v1/client/history/{history}/media` — attach before/after/reference photo
+  - `POST /api/v1/client/history/{history}/rebook` — rebook with same barber+service
+- `BookingCompletedObserver` — auto-creates history record when BookingModel status transitions to `completed`
+- Registered in `bootstrap/providers.php`
+
+### PRD Phase 3 — ClientFaceProfile Module (Not started)
+- Models needed: `ClientFaceProfileModel`, `ClientFaceAnalysisResultModel`
+- ValueObjects needed: `FaceAnalysisFeaturesValueObject`, `RecommendedCatalogItemIdsValueObject`
+- Enum needed: `DetectedFaceShapeEnum`
+- Upload endpoints (min 0, max 5, primary flag)
+- Async AI analysis queue (Laravel job)
+- Recommendation preview based on face shape
+- ServiceProvider needed in `bootstrap/providers.php`
+
+### PRD Phase 4 — ClientInteraction Module (Not started)
+- Models needed: `ClientInteractionLogModel`, `ClientFavoriteModel`, `ClientSavedFilterModel`, `ClientDiscoveryPreferenceModel`
+- ValueObjects needed: `InteractionContextValueObject`, `FilterConfigurationValueObject`
+- Enum needed: `InteractionTypeEnum`
+- Instrument all discovery touchpoints (view, search, favorite)
+- Favorite/unfavorite APIs (polymorphic, strictly private)
+- Saved filter CRUD
+- ServiceProvider needed in `bootstrap/providers.php`
+
+### PRD Phase 5 — Recommendation Module (Not started)
+- Models needed: `ClientPreferenceVectorModel`, `RecommendationEdgeModel`
+- ValueObjects needed: `ClientPreferenceVectorDataValueObject`, `RecommendationFactorWeightsValueObject`, `RecommendationEdgeContextValueObject`
+- Enum needed: `EdgeTypeEnum`
+- Console command: `RecomputeRecommendationVectorsCommand` (nightly batch)
+- Composite ranking in `ExploreBranchesAction` / `ExploreBarbersAction`
+- New Explore filters: `catalog_item_ids`, `available_now`, `price_range`, `rating_min`, `face_shape_compatible`
+- ServiceProvider needed in `bootstrap/providers.php`
+
+---
+
 ## Remaining Backend Gaps
 
 All originally planned backend APIs (Application, OfferedService, Ban, Social Login) are built and contract-tested. No remaining backend gaps.

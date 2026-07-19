@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Modules\JobPosting\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,16 +13,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Barber\Models\BarberModel;
 use Modules\JobPosting\Enums\ApplicationStatus;
 
+#[Fillable(['job_posting_id', 'barber_id', 'profile_snapshot', 'status'])]
 class ApplicationModel extends Model
 {
     use HasFactory;
     use HasUuids;
 
     protected $table = 'job_applications';
-
-    protected $fillable = [
-        'job_posting_id', 'barber_id', 'profile_snapshot', 'status',
-    ];
 
     protected function casts(): array
     {

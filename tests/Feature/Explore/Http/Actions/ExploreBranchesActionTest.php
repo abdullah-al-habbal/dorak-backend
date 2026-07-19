@@ -16,7 +16,7 @@ it('lists branches within radius with distance', function () {
         'brand_id' => $this->brand->id,
     ]);
 
-    $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=1000');
+    $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=1000&universe=men&per_page=10');
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(1);
@@ -31,7 +31,7 @@ it('excludes branches outside radius', function () {
         'brand_id' => $this->brand->id,
     ]);
 
-    $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=10');
+    $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=10&universe=men&per_page=10');
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(0);
@@ -44,7 +44,7 @@ it('excludes branches with null coordinates', function () {
         'brand_id' => $this->brand->id,
     ]);
 
-    $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=1000');
+    $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=1000&universe=men&per_page=10');
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(0);
@@ -62,7 +62,7 @@ it('orders branches by distance ascending', function () {
         'brand_id' => $this->brand->id,
     ]);
 
-    $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=1000');
+    $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=1000&universe=men&per_page=10');
 
     expect($response->json('data.0.id'))->toBe($close->id);
     expect($response->json('data.1.id'))->toBe($far->id);
@@ -77,7 +77,7 @@ it('filters branches by universe', function () {
         'brand_id' => $women->id,
     ]);
 
-    $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=1000&universe=men');
+    $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=1000&universe=men&per_page=10');
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(0);
@@ -90,7 +90,7 @@ it('paginates branch results', function () {
         'brand_id' => $this->brand->id,
     ]);
 
-    $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=1000&per_page=10');
+    $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=1000&universe=men&per_page=10');
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(10);
@@ -105,7 +105,7 @@ it('returns empty when no branches nearby', function () {
         'brand_id' => $this->brand->id,
     ]);
 
-    $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=1');
+    $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=1&universe=men&per_page=10');
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(0);

@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Modules\Brand\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +21,7 @@ use Modules\OfferedService\Models\OfferedServiceModel;
 use Modules\Preference\Models\PreferenceModel;
 use Spatie\Translatable\HasTranslations;
 
+#[Fillable(['owner_id', 'name', 'description', 'logo', 'base_currency_id'])]
 class BrandModel extends Model
 {
     use HasFactory;
@@ -27,10 +29,6 @@ class BrandModel extends Model
     use HasUuids;
 
     protected $table = 'brands';
-
-    protected $fillable = [
-        'owner_id', 'name', 'description', 'logo', 'base_currency_id',
-    ];
 
     /** @phpstan-ignore-next-line */
     public array $translatable = ['name', 'description'];

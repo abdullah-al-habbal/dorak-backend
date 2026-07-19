@@ -482,7 +482,7 @@ describe('Explore API', function () {
                 'latitude' => 33.5, 'longitude' => 36.3, 'brand_id' => $brand->id,
             ]);
 
-            $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=1000');
+            $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=1000&universe=men&per_page=10');
 
             assertApiEnvelope($response, 200);
             assertPaginationMeta($response);
@@ -779,7 +779,7 @@ describe('Booking API', function () {
                 'client_id' => $this->client->id,
             ]);
 
-            $response = $this->getJson('/api/v1/bookings');
+            $response = $this->getJson('/api/v1/bookings?per_page=10');
 
             assertApiEnvelope($response, 200);
             assertPaginationMeta($response);
@@ -1240,6 +1240,350 @@ describe('Activation API', function () {
             $data = $response->json('data');
             expect($data['status'])->toBe('disabled');
             expect($data['reason'])->toBe('Violation of terms');
+        });
+    });
+});
+
+// ─────────────────────────────────────────────
+// CLIENT HISTORY MODULE (Phase 2)
+// ─────────────────────────────────────────────
+
+describe('ClientHistory API', function () {
+
+    function createHistoryEntry(): array
+    {
+        $client = ClientModel::factory()->create();
+        $barber = BarberModel::factory()->create();
+        $booking = BookingModel::factory()->create([
+            'client_id' => $client->id,
+            'barber_id' => $barber->id,
+            'status' => BookingStatus::Confirmed,
+        ]);
+
+        $booking->update(['status' => BookingStatus::Completed]);
+
+        return ['client' => $client, 'barber' => $barber, 'booking' => $booking];
+    }
+
+    describe('GET /api/v1/client/history', function () {
+        it('returns paginated history timeline', function () {
+            $ctx = createHistoryEntry();
+
+            $response = $this->actingAs($ctx['client'], 'client')
+                ->getJson('/api/v1/client/history');
+
+            assertApiEnvelope($response, 200);
+            assertPaginationMeta($response);
+            $data = $response->json('data');
+            expect($data)->toBeArray();
+            expect($data)->not->toBeEmpty();
+        });
+
+        it('returns 401 without auth', function () {
+            $response = $this->getJson('/api/v1/client/history');
+            expect($response->status())->toBe(401);
+        });
+    });
+
+    describe('POST /api/v1/client/history/{history}/media', function () {
+        it('attaches media to history entry', function () {
+            $ctx = createHistoryEntry();
+
+            $response = $this->actingAs($ctx['client'], 'client')
+                ->getJson('/api/v1/client/history');
+
+            $historyId = $response->json('data.0.id');
+
+            $mediaResponse = $this->actingAs($ctx['client'], 'client')
+                ->postJson("/api/v1/client/history/{$historyId}/media", [
+                    'photo_url' => 'https://example.com/photo.jpg',
+                    'photo_type' => 'after',
+                ]);
+
+            assertApiEnvelope($mediaResponse, 201);
+            $data = $mediaResponse->json('data');
+            expect($data)->toHaveKeys(['id', 'photo_url', 'photo_type', 'uploaded_at']);
+            expect($data['photo_type'])->toBe('after');
+        });
+
+        it('returns 401 without auth', function () {
+            $response = $this->postJson('/api/v1/client/history/some-id/media', [
+                'photo_url' => 'https://example.com/photo.jpg',
+                'photo_type' => 'after',
+            ]);
+            expect($response->status())->toBe(401);
+        });
+    });
+
+    describe('POST /api/v1/client/history/{history}/rebook', function () {
+        it('creates booking from history entry', function () {
+            $ctx = createHistoryEntry();
+
+            $response = $this->actingAs($ctx['client'], 'client')
+                ->getJson('/api/v1/client/history');
+
+            $historyId = $response->json('data.0.id');
+            $futureSlot = Carbon::now()->addDay()->toIso8601String();
+
+            $rebookResponse = $this->actingAs($ctx['client'], 'client')
+                ->postJson("/api/v1/client/history/{$historyId}/rebook", [
+                    'time_slot' => $futureSlot,
+                ]);
+
+            assertApiEnvelope($rebookResponse, 201);
+            $data = $rebookResponse->json('data');
+            expect($data)->toHaveKeys(['id', 'time_slot', 'status', 'barber_id']);
+            expect($data['status'])->toBe('confirmed');
+        });
+
+        it('returns 401 without auth', function () {
+            $response = $this->postJson('/api/v1/client/history/some-id/rebook', [
+                'time_slot' => Carbon::now()->addDay()->toIso8601String(),
+            ]);
+            expect($response->status())->toBe(401);
+        });
+    });
+});
+
+// ─────────────────────────────────────────────
+// CLIENT FACE PROFILE MODULE (Phase 3)
+// ─────────────────────────────────────────────
+
+describe('ClientFaceProfile API', function () {
+
+    describe('POST /api/v1/client/face-profile', function () {
+        it('uploads face photo and returns profile', function () {
+            $client = ClientModel::factory()->create();
+            $file = UploadedFile::fake()->image('face.jpg', 400, 400);
+
+            $response = $this->actingAs($client, 'client')
+                ->postJson('/api/v1/client/face-profile', [
+                    'photo' => $file,
+                    'is_primary' => true,
+                ]);
+
+            assertApiEnvelope($response, 201);
+            $data = $response->json('data');
+            expect($data)->toHaveKeys(['id', 'image_url', 'is_primary', 'uploaded_at']);
+            expect($data['is_primary'])->toBeTrue();
+        });
+
+        it('returns 422 without photo', function () {
+            $client = ClientModel::factory()->create();
+
+            $response = $this->actingAs($client, 'client')
+                ->postJson('/api/v1/client/face-profile', []);
+
+            expect($response->status())->toBe(422);
+        });
+
+        it('returns 401 without auth', function () {
+            $response = $this->postJson('/api/v1/client/face-profile', []);
+            expect($response->status())->toBe(401);
+        });
+    });
+
+    describe('GET /api/v1/client/face-profile/recommendations', function () {
+        it('returns analysis results', function () {
+            $client = ClientModel::factory()->create();
+
+            $response = $this->actingAs($client, 'client')
+                ->getJson('/api/v1/client/face-profile/recommendations');
+
+            assertApiEnvelope($response, 200);
+            $data = $response->json('data');
+            expect($data)->toBeArray();
+        });
+
+        it('returns 401 without auth', function () {
+            $response = $this->getJson('/api/v1/client/face-profile/recommendations');
+            expect($response->status())->toBe(401);
+        });
+    });
+});
+
+// ─────────────────────────────────────────────
+// CLIENT INTERACTION MODULE (Phase 4)
+// ─────────────────────────────────────────────
+
+describe('ClientInteraction API', function () {
+
+    describe('Favorites', function () {
+        it('lists empty favorites', function () {
+            $client = ClientModel::factory()->create();
+
+            $response = $this->actingAs($client, 'client')
+                ->getJson('/api/v1/client/favorites');
+
+            assertApiEnvelope($response, 200);
+            assertPaginationMeta($response);
+            expect($response->json('data'))->toBeArray();
+        });
+
+        it('adds a favorite', function () {
+            $client = ClientModel::factory()->create();
+            $brand = BrandModel::factory()->create();
+
+            $response = $this->actingAs($client, 'client')
+                ->postJson('/api/v1/client/favorites', [
+                    'favorable_id' => $brand->id,
+                    'favorable_type' => 'brand',
+                ]);
+
+            expect($response->status())->toBe(201);
+            $data = $response->json('data');
+            expect($data)->toHaveKeys(['id', 'favorable_id', 'favorable_type', 'created_at']);
+            expect($data['favorable_type'])->toBe('brand');
+        });
+
+        it('returns 422 for invalid favorable_type', function () {
+            $client = ClientModel::factory()->create();
+
+            $response = $this->actingAs($client, 'client')
+                ->postJson('/api/v1/client/favorites', [
+                    'favorable_id' => 'some-id',
+                    'favorable_type' => 'invalid_type',
+                ]);
+
+            expect($response->status())->toBe(422);
+        });
+
+        it('removes a favorite', function () {
+            $client = ClientModel::factory()->create();
+            $brand = BrandModel::factory()->create();
+            $fav = $this->actingAs($client, 'client')
+                ->postJson('/api/v1/client/favorites', [
+                    'favorable_id' => $brand->id,
+                    'favorable_type' => 'brand',
+                ])->json('data');
+
+            $response = $this->actingAs($client, 'client')
+                ->deleteJson("/api/v1/client/favorites/{$fav['id']}");
+
+            assertApiEnvelope($response, 200);
+        });
+
+        it('returns 401 without auth', function () {
+            $response = $this->getJson('/api/v1/client/favorites');
+            expect($response->status())->toBe(401);
+        });
+    });
+
+    describe('Saved Filters', function () {
+        it('creates and lists saved filters', function () {
+            $client = ClientModel::factory()->create();
+
+            $createResponse = $this->actingAs($client, 'client')
+                ->postJson('/api/v1/client/saved-filters', [
+                    'name' => 'Nearby Men',
+                    'filter_config' => ['universe' => 'men', 'radius' => 10],
+                ]);
+
+            expect($createResponse->status())->toBe(201);
+            expect($createResponse->json('data'))->toHaveKeys(['id', 'name', 'filter_config']);
+
+            $listResponse = $this->actingAs($client, 'client')
+                ->getJson('/api/v1/client/saved-filters');
+
+            assertApiEnvelope($listResponse, 200);
+            expect($listResponse->json('data'))->toBeArray();
+        });
+
+        it('shows a saved filter', function () {
+            $client = ClientModel::factory()->create();
+            $created = $this->actingAs($client, 'client')
+                ->postJson('/api/v1/client/saved-filters', [
+                    'name' => 'Test Filter',
+                    'filter_config' => ['universe' => 'women'],
+                ])->json('data');
+
+            $response = $this->actingAs($client, 'client')
+                ->getJson("/api/v1/client/saved-filters/{$created['id']}");
+
+            assertApiEnvelope($response, 200);
+            expect($response->json('data.name'))->toBe('Test Filter');
+        });
+
+        it('updates a saved filter', function () {
+            $client = ClientModel::factory()->create();
+            $created = $this->actingAs($client, 'client')
+                ->postJson('/api/v1/client/saved-filters', [
+                    'name' => 'Original',
+                    'filter_config' => ['universe' => 'men'],
+                ])->json('data');
+
+            $response = $this->actingAs($client, 'client')
+                ->putJson("/api/v1/client/saved-filters/{$created['id']}", [
+                    'name' => 'Updated',
+                    'filter_config' => ['universe' => 'women'],
+                ]);
+
+            assertApiEnvelope($response, 200);
+            expect($response->json('data.name'))->toBe('Updated');
+        });
+
+        it('deletes a saved filter', function () {
+            $client = ClientModel::factory()->create();
+            $created = $this->actingAs($client, 'client')
+                ->postJson('/api/v1/client/saved-filters', [
+                    'name' => 'Delete Me',
+                    'filter_config' => ['universe' => 'neutral'],
+                ])->json('data');
+
+            $response = $this->actingAs($client, 'client')
+                ->deleteJson("/api/v1/client/saved-filters/{$created['id']}");
+
+            assertApiEnvelope($response, 200);
+        });
+
+        it('returns 422 without name', function () {
+            $client = ClientModel::factory()->create();
+
+            $response = $this->actingAs($client, 'client')
+                ->postJson('/api/v1/client/saved-filters', [
+                    'filter_config' => ['universe' => 'men'],
+                ]);
+
+            expect($response->status())->toBe(422);
+        });
+
+        it('returns 401 without auth', function () {
+            $response = $this->getJson('/api/v1/client/saved-filters');
+            expect($response->status())->toBe(401);
+        });
+    });
+
+    describe('Discovery Preferences', function () {
+        it('returns default preferences', function () {
+            $client = ClientModel::factory()->create();
+
+            $response = $this->actingAs($client, 'client')
+                ->getJson('/api/v1/client/discovery-preferences');
+
+            assertApiEnvelope($response, 200);
+            $data = $response->json('data');
+            expect($data)->toHaveKeys(['id', 'preferred_universe', 'default_radius', 'hidden_brand_ids', 'show_unavailable']);
+            expect($data['default_radius'])->toBe(50);
+            expect($data['show_unavailable'])->toBeTrue();
+        });
+
+        it('updates discovery preferences', function () {
+            $client = ClientModel::factory()->create();
+
+            $response = $this->actingAs($client, 'client')
+                ->patchJson('/api/v1/client/discovery-preferences', [
+                    'default_radius' => 25,
+                    'show_unavailable' => false,
+                ]);
+
+            assertApiEnvelope($response, 200);
+            expect($response->json('data.default_radius'))->toEqual(25.0);
+            expect($response->json('data.show_unavailable'))->toBeFalse();
+        });
+
+        it('returns 401 without auth', function () {
+            $response = $this->getJson('/api/v1/client/discovery-preferences');
+            expect($response->status())->toBe(401);
         });
     });
 });

@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Modules\Review\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -12,16 +13,13 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Modules\Booking\Models\BookingModel;
 
+#[Fillable(['booking_id', 'author_id', 'author_type', 'subject_id', 'subject_type', 'rating', 'comment'])]
 class ReviewModel extends Model
 {
     use HasFactory;
     use HasUuids;
 
     protected $table = 'reviews';
-
-    protected $fillable = [
-        'booking_id', 'author_id', 'author_type', 'subject_id', 'subject_type', 'rating', 'comment',
-    ];
 
     protected function casts(): array
     {

@@ -11,5 +11,12 @@ final readonly class ExploreBarbersQuery
         public float $lng,
         public float $radius,
         public int $perPage,
+        public ?array $catalogItemIds = null,
+        public ?bool $availableNow = null,
+        public ?float $priceRangeMin = null,
+        public ?float $priceRangeMax = null,
+        public ?float $ratingMin = null,
+        public ?string $faceShapeCompatible = null,
+        public ?string $clientId = null,
     ) {}
 }

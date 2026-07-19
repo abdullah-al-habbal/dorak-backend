@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace Modules\ServiceCatalog\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Spatie\Translatable\HasTranslations;
 
+#[Fillable(['name', 'slug', 'group', 'is_active'])]
 class ServiceCatalogItemTagModel extends Model
 {
     use HasFactory, HasTranslations, SoftDeletes;
@@ -18,13 +20,6 @@ class ServiceCatalogItemTagModel extends Model
 
     protected array $translatable = [
         'name',
-    ];
-
-    protected $fillable = [
-        'name',
-        'slug',
-        'group',
-        'is_active',
     ];
 
     protected function casts(): array

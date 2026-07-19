@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Modules\BarberAffiliation\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -14,23 +15,22 @@ use Modules\Barber\Models\BarberModel;
 use Modules\BarberAffiliation\Enums\AffiliableType;
 use Modules\BarberAffiliation\Enums\AffiliationStatus;
 
+#[Fillable([
+    'barber_id',
+    'affiliable_id',
+    'affiliable_type',
+    'status',
+    'commission_rate',
+    'invited_at',
+    'accepted_at',
+    'terminated_at',
+])]
 class BarberAffiliationModel extends Model
 {
     use HasFactory;
     use HasUuids;
 
     protected $table = 'barber_affiliations';
-
-    protected $fillable = [
-        'barber_id',
-        'affiliable_id',
-        'affiliable_type',
-        'status',
-        'commission_rate',
-        'invited_at',
-        'accepted_at',
-        'terminated_at',
-    ];
 
     protected function casts(): array
     {

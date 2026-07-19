@@ -3,8 +3,8 @@
 // tests/Unit/Core/Http/Actions/HealthCheck/HealthCheckActionTest.php
 declare(strict_types=1);
 
-use Modules\Core\Handlers\HealthCheck\HealthCheckHandler;
-use Modules\Core\Http\Actions\HealthCheck\HealthCheckAction;
+use Modules\Core\Handlers\Shared\HealthCheckHandler;
+use Modules\Core\Http\Actions\Shared\HealthCheckAction;
 
 beforeEach(function () {
     $this->handler = Mockery::mock(HealthCheckHandler::class);

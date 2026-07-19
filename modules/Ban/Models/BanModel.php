@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Modules\Ban\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,21 +14,20 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Modules\Admin\Models\AdminModel;
 
+#[Fillable([
+    'bannable_id',
+    'bannable_type',
+    'reason',
+    'banned_from',
+    'banned_until',
+    'admin_id',
+])]
 class BanModel extends Model
 {
     use HasFactory;
     use HasUuids;
 
     protected $table = 'bans';
-
-    protected $fillable = [
-        'bannable_id',
-        'bannable_type',
-        'reason',
-        'banned_from',
-        'banned_until',
-        'admin_id',
-    ];
 
     protected function casts(): array
     {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 
 namespace Modules\JobPosting\Models;
 
+use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Branch\Models\BranchModel;
 use Spatie\Translatable\HasTranslations;
 
+#[Fillable(['branch_id', 'title', 'description', 'status', 'requirements', 'location', 'type'])]
 class JobPostingModel extends Model
 {
     use HasFactory;
@@ -20,10 +22,6 @@ class JobPostingModel extends Model
     use HasUuids;
 
     protected $table = 'job_postings';
-
-    protected $fillable = [
-        'branch_id', 'title', 'description', 'status', 'requirements', 'location', 'type',
-    ];
 
     /** @phpstan-ignore-next-line */
     public array $translatable = ['title', 'description'];

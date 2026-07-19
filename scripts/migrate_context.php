@@ -19,7 +19,11 @@ declare(strict_types=1);
  * What it does:
  *   1. Creates target directory and moves the file
  *   2. Updates the namespace inside the moved file
- *   3. Updates all `use` import statements in modules/ and routes/
+ *   3. Updates all `use` import statements in modules/, bootstrap/, config/
+ *
+ * LIMITATION: Does NOT update use-statements in tests/ (out of scope).
+ * After all migrations, grep tests/ for old namespace references and fix manually:
+ *   grep -rn "use Modules\\" tests/ | grep -E "(Actions|Handlers|Resolvers|CQRS|Requests|Resources)\\\"
  */
 
 $oldFile = $argv[1] ?? null;

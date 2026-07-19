@@ -1,0 +1,24 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Modules\Branch\Http\Actions\Shared;
+
+use Illuminate\Http\JsonResponse;
+use Modules\Branch\Http\Resources\Shared\ChairResource;
+use Modules\Branch\Models\BranchModel;
+use Modules\Core\Http\Actions\BaseApiAction;
+
+final class GetFloorPlanAction extends BaseApiAction
+{
+    public function __invoke(BranchModel $branch): JsonResponse
+    {
+        $branch->load('chairs.barber');
+
+        return $this->ok([
+            'branch_id' => $branch->id,
+            'branch_name' => $branch->name,
+            'chairs' => ChairResource::collection($branch->chairs),
+        ]);
+    }
+}
