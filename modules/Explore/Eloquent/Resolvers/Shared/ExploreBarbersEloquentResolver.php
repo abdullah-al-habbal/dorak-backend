@@ -7,6 +7,8 @@ namespace Modules\Explore\Eloquent\Resolvers\Shared;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Modules\Barber\Models\BarberModel;
+use Modules\ClientRecommendation\Models\ClientPreferenceVectorModel;
+use Modules\ClientRecommendation\Models\RecommendationEdgeModel;
 use Modules\Explore\CQRS\Query\Shared\ExploreBarbersQuery;
 
 final class ExploreBarbersEloquentResolver
@@ -31,7 +33,48 @@ final class ExploreBarbersEloquentResolver
             ->where('distance', '<', $payload->radius)
             ->orderBy('distance');
 
-        return $query->paginate($payload->perPage);
+        $paginator = $query->paginate($payload->perPage);
+
+        if ($payload->clientId === null) {
+            return $paginator;
+        }
+
+        $barberIds = $paginator->pluck('id')->toArray();
+
+        $edgeWeights = RecommendationEdgeModel::where('source_type', 'client')
+            ->where('source_id', $payload->clientId)
+            ->where('target_type', 'barber')
+            ->whereIn('target_id', $barberIds)
+            ->pluck('weight', 'target_id');
+
+        $faceMatchIds = [];
+        if ($payload->faceShapeCompatible !== null) {
+            $faceMatchIds = BarberModel::query()
+                ->whereIn('id', $barberIds)
+                ->whereHas('services', fn ($q) =>
+                    $q->whereHas('catalogItem', fn ($q) =>
+                        $q->whereJsonContains('face_shapes', $payload->faceShapeCompatible)
+                    )
+                )
+                ->pluck('id')
+                ->toArray();
+        }
+
+        $scored = $paginator->getCollection()->map(function ($barber) use ($edgeWeights, $faceMatchIds, $payload) {
+            $geographic = 1 / (1 + $barber->distance / $payload->radius);
+            $edgeBoost = (float) $edgeWeights->get($barber->id, 0);
+            $faceMatch = in_array($barber->id, $faceMatchIds) ? 1 : 0;
+
+            $barber->compatibility_score = $geographic * 0.35 + $edgeBoost * 0.55 + $faceMatch * 0.1;
+
+            return $barber;
+        });
+
+        $scored = $scored->sortByDesc('compatibility_score')->values();
+        $scored->each(fn ($barber, $i) => $barber->rank = $i + 1);
+        $paginator->setCollection($scored);
+
+        return $paginator;
     }
 
     private function applyFilters($query, ExploreBarbersQuery $payload)

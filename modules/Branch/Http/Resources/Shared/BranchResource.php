@@ -20,6 +20,8 @@ final class BranchResource extends JsonResource
             'longitude' => $this->longitude,
             'brand_id' => $this->brand_id,
             'distance' => $this->distance ?? null,
+            'compatibility_score' => $this->compatibility_score ?? null,
+            'rank' => $this->rank ?? null,
             'created_at' => $this->created_at,
         ];
     }

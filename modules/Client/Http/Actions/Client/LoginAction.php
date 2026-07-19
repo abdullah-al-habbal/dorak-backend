@@ -17,10 +17,7 @@ final class LoginAction extends BaseApiAction
 
     public function __invoke(LoginRequest $request): JsonResponse
     {
-        $result = $this->handler->handle(
-            email: $request->validated('email'),
-            password: $request->validated('password'),
-        );
+        $result = $this->handler->handle($request->toCommand());
 
         if ($result->isInvalidCredentials()) {
             return $this->unauthorized(message: $this->trans('core::messages.invalid_credentials'));

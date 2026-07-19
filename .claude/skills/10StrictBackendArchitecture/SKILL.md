@@ -19,7 +19,11 @@ description: Enforces FormRequest usage, strongly-typed Command/Query objects, s
 
 ## 3. Strict PHP Imports
 
-- **I1.** NEVER use inline Fully Qualified Class Names (FQCN) like `new \Modules\Booking\Http\Resources\BookingResource(...)`.
+- **I1.** NEVER use inline Fully Qualified Class Names (FQCN) like
+```
+use Modules\Booking\Http\Resources\BookingResource;
+new BookingResource(...)
+```
 - **I2.** ALL classes MUST be imported at the top of the file using the `use` statement.
 
 ## 4. Resource Composition (No Inline Mapping)

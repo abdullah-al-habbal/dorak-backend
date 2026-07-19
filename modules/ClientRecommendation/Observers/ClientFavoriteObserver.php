@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Modules\ClientRecommendation\Observers;
 
-use Modules\Client\Models\ClientModel;
 use Modules\ClientInteraction\Models\ClientFavoriteModel;
 use Modules\ClientRecommendation\Enums\EdgeTypeEnum;
 use Modules\ClientRecommendation\Models\RecommendationEdgeModel;
@@ -14,7 +13,7 @@ final class ClientFavoriteObserver
     public function created(ClientFavoriteModel $favorite): void
     {
         RecommendationEdgeModel::create([
-            'source_type' => ClientModel::class,
+            'source_type' => 'client',
             'source_id' => $favorite->client_id,
             'target_type' => $favorite->favorable_type,
             'target_id' => $favorite->favorable_id,
@@ -25,7 +24,7 @@ final class ClientFavoriteObserver
 
     public function deleted(ClientFavoriteModel $favorite): void
     {
-        RecommendationEdgeModel::where('source_type', ClientModel::class)
+        RecommendationEdgeModel::where('source_type', 'client')
             ->where('source_id', $favorite->client_id)
             ->where('target_type', $favorite->favorable_type)
             ->where('target_id', $favorite->favorable_id)

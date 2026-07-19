@@ -6,6 +6,7 @@ namespace Modules\Client\Handlers\Client;
 
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
+use Modules\Client\CQRS\Command\Client\ForgotPasswordCommand;
 use Modules\Client\Mail\SendPasswordResetCode;
 use Modules\Client\Repositories\ForgotPasswordEloquentResolver;
 use Modules\Client\ValuesObjects\ForgotPasswordResult;
@@ -16,9 +17,13 @@ final class ForgotPasswordHandler
         private readonly ForgotPasswordEloquentResolver $resolver,
     ) {}
 
-    public function handle(string $email): ForgotPasswordResult
+    public function handle(ForgotPasswordCommand $command): ForgotPasswordResult
     {
-        $client = $this->resolver->findByEmail($email);
+        $client = $this->resolver->findByEmail($command->email);
+
+        if ($client === null) {
+            return ForgotPasswordResult::success();
+        }
 
         $code = (string) random_int(100000, 999999);
 

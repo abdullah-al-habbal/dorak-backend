@@ -16,13 +16,9 @@ final class DeleteAccountAction extends BaseApiAction
         private readonly DeleteAccountHandler $handler,
     ) {}
 
-    public function __invoke(
-        DeleteAccountRequest $request,
-    ): JsonResponse {
-        $client = $request->user();
-        $password = $request->validated('password');
-
-        $result = $this->handler->handle($client, $password);
+    public function __invoke(DeleteAccountRequest $request): JsonResponse
+    {
+        $result = $this->handler->handle($request->toCommand());
 
         if ($result->isInvalidCredentials()) {
             return $this->unauthorized(

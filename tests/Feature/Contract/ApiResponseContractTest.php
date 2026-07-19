@@ -320,6 +320,7 @@ describe('Change Password', function () {
             ->patchJson('/api/v1/client/password', [
                 'current_password' => 'password',
                 'password' => 'NewPassword123',
+                'password_confirmation' => 'NewPassword123',
             ]);
 
         assertApiEnvelope($response, 200, false);
@@ -489,8 +490,21 @@ describe('Explore API', function () {
             $data = $response->json('data');
             expect($data)->toBeArray();
             if (count($data) > 0) {
-                expect($data[0])->toHaveKeys(['id', 'name', 'email', 'status', 'latitude', 'longitude', 'brand_id', 'distance', 'created_at']);
+                expect($data[0])->toHaveKeys(['id', 'name', 'email', 'status', 'latitude', 'longitude', 'brand_id', 'distance', 'compatibility_score', 'rank', 'created_at']);
             }
+        });
+
+        it('accepts new filter params and returns correct shape', function () {
+            $brand = BrandModel::factory()->create();
+            BranchModel::factory()->create([
+                'latitude' => 33.5, 'longitude' => 36.3, 'brand_id' => $brand->id,
+            ]);
+
+            $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=1000&universe=men&available_now=1&rating_min=3&price_range[min]=10&price_range[max]=100');
+
+            assertApiEnvelope($response, 200);
+            assertPaginationMeta($response);
+            expect($response->json('data'))->toBeArray();
         });
     });
 
@@ -521,6 +535,18 @@ describe('Explore API', function () {
             assertPaginationMeta($response);
             $data = $response->json('data');
             expect($data)->toBeArray();
+        });
+
+        it('accepts barber filter params', function () {
+            BarberModel::factory()->create([
+                'is_freelancer' => true, 'latitude' => 33.5, 'longitude' => 36.3,
+            ]);
+
+            $response = $this->getJson('/api/v1/explore/barbers?lat=33.5&lng=36.3&radius=1000&available_now=1&rating_min=3');
+
+            assertApiEnvelope($response, 200);
+            assertPaginationMeta($response);
+            expect($response->json('data'))->toBeArray();
         });
     });
 
@@ -1413,7 +1439,7 @@ describe('ClientInteraction API', function () {
             $client = ClientModel::factory()->create();
 
             $response = $this->actingAs($client, 'client')
-                ->getJson('/api/v1/client/favorites');
+                ->getJson('/api/v1/client/favorites?per_page=20');
 
             assertApiEnvelope($response, 200);
             assertPaginationMeta($response);

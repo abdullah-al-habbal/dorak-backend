@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Client\Handlers\Client;
 
 use Illuminate\Support\Facades\Hash;
+use Modules\Client\CQRS\Command\Client\LoginCommand;
 use Modules\Client\Repositories\LoginEloquentResolver;
 use Modules\Client\ValuesObjects\LoginResult;
 
@@ -14,11 +15,11 @@ final class LoginHandler
         private readonly LoginEloquentResolver $resolver,
     ) {}
 
-    public function handle(string $email, string $password): LoginResult
+    public function handle(LoginCommand $command): LoginResult
     {
-        $client = $this->resolver->findByEmail($email);
+        $client = $this->resolver->findByEmail($command->email);
 
-        if ($client === null || !Hash::check($password, $client->password)) {
+        if ($client === null || ! Hash::check($command->password, $client->password)) {
             return LoginResult::invalidCredentials();
         }
 

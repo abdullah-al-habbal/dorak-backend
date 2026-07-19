@@ -12,8 +12,8 @@ return new class extends Migration
     {
         Schema::create('recommendation_edges', function (Blueprint $table) {
             $table->uuid('id')->primary();
-            $table->ulidMorphs('source');
-            $table->ulidMorphs('target');
+            $table->uuidMorphs('source');
+            $table->uuidMorphs('target');
             $table->string('edge_type');
             $table->float('weight')->default(0.5);
             $table->json('context')->nullable();

@@ -37,11 +37,12 @@ final class ExploreBarbersRequest extends BaseApiFormRequest
             radius: (float) $this->validated('radius'),
             perPage: (int) ($this->validated('per_page') ?? 20),
             catalogItemIds: $this->validated('catalog_item_ids'),
-            availableNow: $this->validated('available_now'),
+            availableNow: $this->boolean('available_now'),
             priceRangeMin: isset($priceRange['min']) ? (float) $priceRange['min'] : null,
             priceRangeMax: isset($priceRange['max']) ? (float) $priceRange['max'] : null,
             ratingMin: $this->validated('rating_min') !== null ? (float) $this->validated('rating_min') : null,
             faceShapeCompatible: $this->validated('face_shape_compatible'),
+            clientId: $this->user()?->id,
         );
     }
 }

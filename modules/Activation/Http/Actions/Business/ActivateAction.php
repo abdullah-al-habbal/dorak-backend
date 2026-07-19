@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Modules\Activation\Http\Actions\Business;
 
 use Illuminate\Http\JsonResponse;
-use Modules\Activation\CQRS\Command\Business\ToggleActivationCommand;
 use Modules\Activation\Handlers\Business\ToggleActivationHandler;
 use Modules\Activation\Http\Requests\Business\ToggleActivationRequest;
 use Modules\Activation\Http\Resources\Business\ActivationLogResource;
@@ -19,13 +18,9 @@ final class ActivateAction extends BaseApiAction
 
     public function __invoke(ToggleActivationRequest $request, string $barber): JsonResponse
     {
-        $command = new ToggleActivationCommand(
-            barberId: $barber,
-            activate: true,
-            reason: $request->validated('reason'),
+        $log = $this->handler->handle(
+            $request->toActivateCommand($barber),
         );
-
-        $log = $this->handler->handle($command);
 
         return $this->created(
             data: new ActivationLogResource($log),

@@ -17,7 +17,7 @@ final class ForgotPasswordAction extends BaseApiAction
 
     public function __invoke(ForgotPasswordRequest $request): JsonResponse
     {
-        $this->handler->handle(email: $request->validated('email'));
+        $this->handler->handle($request->toCommand());
 
         return $this->success(message: $this->trans('core::messages.reset_code_sent'));
     }

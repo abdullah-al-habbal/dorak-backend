@@ -20,6 +20,8 @@ final class BarberResource extends JsonResource
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'distance' => $this->distance ?? null,
+            'compatibility_score' => $this->compatibility_score ?? null,
+            'rank' => $this->rank ?? null,
             'created_at' => $this->created_at,
         ];
     }
