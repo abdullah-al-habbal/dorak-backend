@@ -19,10 +19,10 @@ it('returns 422 with empty access_token', function () {
     $response->assertStatus(422);
 });
 
-it('returns 401 with invalid access_token', function () {
+it('returns 401/500 with invalid access_token', function () {
     $response = $this->postJson('/api/v1/client/social/google', [
         'access_token' => 'invalid-token-value',
     ]);
 
-    expect(in_array($response->status(), [401, 500]))->toBeTrue();
+    expect($response->status())->toBeIn([401, 500]);
 });

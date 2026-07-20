@@ -15,14 +15,9 @@ final class ResetPasswordAction extends BaseApiAction
         private readonly ResetPasswordHandler $handler,
     ) {}
 
-    // todo: we need to refacor to use the Command and the toCommand()
     public function __invoke(ResetPasswordRequest $request): JsonResponse
     {
-        $result = $this->handler->handle(
-            email: $request->validated('email'),
-            code: $request->validated('code'),
-            password: $request->validated('password'),
-        );
+        $result = $this->handler->handle($request->toCommand());
 
         if ($result->isInvalidCode()) {
             return $this->unprocessable(message: $this->trans('core::messages.invalid_reset_code'));

@@ -5,34 +5,19 @@ declare(strict_types=1);
 namespace Modules\Explore\Http\Actions\Shared;
 
 use Illuminate\Http\JsonResponse;
-use Modules\Barber\Http\Resources\BarberResource;
-use Modules\Branch\Http\Resources\Shared\BranchResource;
-use Modules\Branch\Models\BranchModel;
 use Modules\Core\Http\Actions\BaseApiAction;
-use Modules\OfferedService\Http\Resources\Shared\ServiceResource;
+use Modules\Explore\Handlers\Shared\GetBranchDetailHandler;
+use Modules\Explore\Http\Requests\Shared\GetBranchDetailRequest;
 
 final class GetBranchDetailAction extends BaseApiAction
 {
-    public function __invoke(string $branch): JsonResponse
+    public function __construct(
+        private readonly GetBranchDetailHandler $handler,
+    ) {}
+
+    public function __invoke(GetBranchDetailRequest $request, string $branch): JsonResponse
     {
-        $branch = BranchModel::with(['chairs.barber.services'])->findOrFail($branch);
-
-        $barbers = $branch->chairs
-            ->pluck('barber')
-            ->filter()
-            ->unique('id')
-            ->values();
-
-        $services = $barbers->flatMap->services->unique('id')->values();
-
-        $data = array_merge(
-            (new BranchResource($branch))->toArray(request()),
-            [
-                'chairs_count' => $branch->chairs->count(),
-                'barbers' => BarberResource::collection($barbers),
-                'services' => ServiceResource::collection($services),
-            ],
-        );
+        $data = $this->handler->handle($request->toQuery($branch));
 
         return $this->ok(data: $data);
     }

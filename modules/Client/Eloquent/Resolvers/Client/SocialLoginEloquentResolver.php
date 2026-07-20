@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Modules\Client\Repositories;
+namespace Modules\Client\Eloquent\Resolvers\Client;
 
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -23,11 +23,11 @@ final class SocialLoginEloquentResolver
         return ClientModel::where('email', $email)->first();
     }
 
-    public function createClient(array $data): ClientModel
+    public function createClient(string $name, string $email): ClientModel
     {
         return ClientModel::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
+            'name' => $name,
+            'email' => $email,
             'password' => Hash::make(Str::random(32)),
         ]);
     }

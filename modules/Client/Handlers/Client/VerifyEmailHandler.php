@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Modules\Client\Handlers\Client;
 
 use Illuminate\Support\Facades\Cache;
-use Modules\Client\Models\ClientModel;
-use Modules\Client\Repositories\VerifyEmailEloquentResolver;
+use Modules\Client\CQRS\Command\Client\VerifyEmailCommand;
+use Modules\Client\Eloquent\Resolvers\Client\VerifyEmailEloquentResolver;
 use Modules\Client\ValuesObjects\VerifyEmailResult;
 
 final class VerifyEmailHandler
@@ -15,15 +15,17 @@ final class VerifyEmailHandler
         private readonly VerifyEmailEloquentResolver $resolver,
     ) {}
 
-    public function handle(ClientModel $client, string $code): VerifyEmailResult
+    public function handle(VerifyEmailCommand $command): VerifyEmailResult
     {
-        if ($client->email_verified_at !== null) {
+        $client = $this->resolver->findById($command->clientId);
+
+        if ($client === null || $client->email_verified_at !== null) {
             return VerifyEmailResult::alreadyVerified();
         }
 
         $cached = Cache::get("email_verify_{$client->id}");
 
-        if ($cached !== $code) {
+        if ($cached !== $command->code) {
             return VerifyEmailResult::invalidCode();
         }
 

@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Modules\ClientHistory\Http\Actions\Client;
 
-use Carbon\Carbon;
 use Illuminate\Http\JsonResponse;
-use Modules\ClientHistory\CQRS\Command\RebookFromHistoryCommand;
 use Modules\ClientHistory\Handlers\RebookFromHistoryHandler;
 use Modules\ClientHistory\Http\Requests\Client\RebookFromHistoryRequest;
 use Modules\Core\Http\Actions\BaseApiAction;
@@ -19,13 +17,7 @@ final class RebookFromHistoryAction extends BaseApiAction
 
     public function __invoke(RebookFromHistoryRequest $request, string $history): JsonResponse
     {
-        $command = new RebookFromHistoryCommand(
-            historyId: $history,
-            clientId: $request->user()->id,
-            timeSlot: new Carbon((string) $request->input('time_slot')),
-        );
-
-        $booking = $this->handler->handle($command);
+        $booking = $this->handler->handle($request->toCommand($history));
 
         return $this->created(data: [
             'id' => $booking->id,

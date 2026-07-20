@@ -5,7 +5,8 @@ declare(strict_types=1);
 namespace Modules\Client\Handlers\Client;
 
 use Laravel\Socialite\Facades\Socialite;
-use Modules\Client\Repositories\SocialLoginEloquentResolver;
+use Modules\Client\CQRS\Command\Client\SocialLoginCommand;
+use Modules\Client\Eloquent\Resolvers\Client\SocialLoginEloquentResolver;
 use Modules\Client\ValuesObjects\SocialLoginResult;
 
 final class SocialLoginHandler
@@ -14,10 +15,10 @@ final class SocialLoginHandler
         private readonly SocialLoginEloquentResolver $resolver,
     ) {}
 
-    public function handle(string $provider, string $accessToken): SocialLoginResult
+    public function handle(SocialLoginCommand $command): SocialLoginResult
     {
         try {
-            $socialUser = Socialite::driver($provider)->stateless()->userFromToken($accessToken);
+            $socialUser = Socialite::driver($command->provider)->stateless()->userFromToken($command->accessToken);
         } catch (\Exception) {
             return SocialLoginResult::invalidToken();
         }
@@ -27,7 +28,7 @@ final class SocialLoginHandler
         $name = $socialUser->getName();
         $avatar = $socialUser->getAvatar();
 
-        $socialAccount = $this->resolver->findSocialAccount($provider, $providerId);
+        $socialAccount = $this->resolver->findSocialAccount($command->provider, $providerId);
 
         if ($socialAccount !== null) {
             $client = $socialAccount->client;
@@ -36,13 +37,10 @@ final class SocialLoginHandler
             $client = $this->resolver->findClientByEmail($email);
 
             if ($client === null) {
-                $client = $this->resolver->createClient([
-                    'name' => $name,
-                    'email' => $email,
-                ]);
+                $client = $this->resolver->createClient($name, $email);
             }
 
-            $this->resolver->createSocialAccount($client, $provider, $providerId, $avatar);
+            $this->resolver->createSocialAccount($client, $command->provider, $providerId, $avatar);
             $isNew = true;
         }
 

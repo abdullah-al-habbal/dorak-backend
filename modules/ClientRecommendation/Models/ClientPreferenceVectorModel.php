@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Client\Models\ClientModel;
 use Modules\ClientRecommendation\Eloquent\Casts\EmbeddingCast;
-// todo: where the fillable?
+
 final class ClientPreferenceVectorModel extends Model
 {
     use HasUuids;

@@ -20,7 +20,7 @@ it('returns is_banned true when client has active ban', function () {
     BanModel::factory()->create([
         'bannable_id' => $client->id,
         'bannable_type' => 'client',
-        'banned_at' => now()->subDay(),
+        'banned_from' => now()->subDay(),
         'banned_until' => now()->addDay(),
     ]);
 
@@ -36,7 +36,7 @@ it('returns is_banned false when ban has expired', function () {
     BanModel::factory()->create([
         'bannable_id' => $client->id,
         'bannable_type' => 'client',
-        'banned_at' => now()->subDays(10),
+        'banned_from' => now()->subDays(10),
         'banned_until' => now()->subDay(),
     ]);
 

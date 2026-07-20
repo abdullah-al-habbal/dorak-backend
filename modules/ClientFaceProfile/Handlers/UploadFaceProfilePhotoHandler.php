@@ -6,7 +6,6 @@ namespace Modules\ClientFaceProfile\Handlers;
 
 use Modules\ClientFaceProfile\CQRS\Command\UploadFaceProfilePhotoCommand;
 use Modules\ClientFaceProfile\Eloquent\Resolvers\UploadFaceProfilePhotoEloquentResolver;
-use Modules\ClientFaceProfile\Jobs\AnalyzeFacePhotoJob;
 use Modules\ClientFaceProfile\Models\ClientFaceProfileModel;
 
 final class UploadFaceProfilePhotoHandler
@@ -17,13 +16,6 @@ final class UploadFaceProfilePhotoHandler
 
     public function handle(UploadFaceProfilePhotoCommand $command): ClientFaceProfileModel
     {
-        $profile = $this->resolver->resolve($command);
-
-        AnalyzeFacePhotoJob::dispatch(
-            faceProfileId: $profile->id,
-            clientId: $command->clientId,
-        );
-
-        return $profile;
+        return $this->resolver->resolve($command);
     }
 }

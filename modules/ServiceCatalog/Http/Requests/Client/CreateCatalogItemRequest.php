@@ -6,6 +6,7 @@ namespace Modules\ServiceCatalog\Http\Requests\Client;
 
 use Illuminate\Validation\Rule;
 use Modules\Core\Http\Requests\BaseApiFormRequest;
+use Modules\ServiceCatalog\CQRS\Command\Client\CreateCatalogItemCommand;
 use Modules\ServiceCatalog\Enums\FormalityEnum;
 use Modules\ServiceCatalog\Enums\MaintenanceLevelEnum;
 use Modules\ServiceCatalog\Enums\StylePeriodEnum;
@@ -36,5 +37,26 @@ final class CreateCatalogItemRequest extends BaseApiFormRequest
             'metadata' => ['nullable', 'array'],
             'is_active' => ['required', 'boolean'],
         ];
+    }
+
+    public function toCommand(): CreateCatalogItemCommand
+    {
+        $data = $this->validated();
+
+        return new CreateCatalogItemCommand(
+            categoryId: (int) $data['category_id'],
+            name: $data['name'],
+            description: $data['description'] ?? null,
+            slug: $data['slug'],
+            sku: $data['sku'] ?? null,
+            priceRange: $data['price_range'] ?? null,
+            maintenanceLevel: isset($data['maintenance_level']) ? MaintenanceLevelEnum::from($data['maintenance_level']) : null,
+            stylePeriod: isset($data['style_period']) ? StylePeriodEnum::from($data['style_period']) : null,
+            formality: isset($data['formality']) ? FormalityEnum::from($data['formality']) : null,
+            faceShapes: $data['face_shapes'] ?? null,
+            hairTextures: $data['hair_textures'] ?? null,
+            metadata: $data['metadata'] ?? null,
+            isActive: (bool) $data['is_active'],
+        );
     }
 }

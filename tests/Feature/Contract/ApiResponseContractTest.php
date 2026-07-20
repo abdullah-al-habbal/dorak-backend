@@ -447,6 +447,7 @@ describe('Forgot & Reset Password', function () {
             'email' => $client->email,
             'code' => $code,
             'password' => 'NewPassword123',
+            'password_confirmation' => 'NewPassword123',
         ]);
 
         assertApiEnvelope($response, 200, false);
@@ -707,7 +708,7 @@ describe('Social Login API', function () {
         $user->avatar = null;
 
         $stateless = Mockery::mock();
-        $stateless->shouldReceive('userFromToken')->with('token-456')->andReturn($user);
+        $stateless->shouldReceive('userFromToken')->with('token-456-google')->andReturn($user);
 
         $driver = Mockery::mock();
         $driver->shouldReceive('stateless')->andReturn($stateless);
@@ -715,7 +716,7 @@ describe('Social Login API', function () {
         Laravel\Socialite\Facades\Socialite::shouldReceive('driver')->with('google')->andReturn($driver);
 
         $response = $this->postJson('/api/v1/client/social/google', [
-            'access_token' => 'token-456',
+            'access_token' => 'token-456-google',
         ]);
 
         assertApiEnvelope($response, 200);
@@ -732,7 +733,7 @@ describe('Social Login API', function () {
         $user->avatar = null;
 
         $stateless = Mockery::mock();
-        $stateless->shouldReceive('userFromToken')->with('token-789')->andReturn($user);
+        $stateless->shouldReceive('userFromToken')->with('token-789-google')->andReturn($user);
 
         $driver = Mockery::mock();
         $driver->shouldReceive('stateless')->andReturn($stateless);
@@ -740,7 +741,7 @@ describe('Social Login API', function () {
         Laravel\Socialite\Facades\Socialite::shouldReceive('driver')->with('google')->andReturn($driver);
 
         $response = $this->postJson('/api/v1/client/social/google', [
-            'access_token' => 'token-789',
+            'access_token' => 'token-789-google',
         ]);
 
         assertApiEnvelope($response, 200);

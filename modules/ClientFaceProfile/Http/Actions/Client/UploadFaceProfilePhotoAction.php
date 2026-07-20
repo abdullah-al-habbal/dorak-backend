@@ -6,7 +6,6 @@ namespace Modules\ClientFaceProfile\Http\Actions\Client;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
-use Modules\ClientFaceProfile\CQRS\Command\UploadFaceProfilePhotoCommand;
 use Modules\ClientFaceProfile\Handlers\UploadFaceProfilePhotoHandler;
 use Modules\ClientFaceProfile\Http\Requests\Client\UploadFaceProfilePhotoRequest;
 use Modules\Core\Http\Actions\BaseApiAction;
@@ -19,20 +18,16 @@ final class UploadFaceProfilePhotoAction extends BaseApiAction
 
     public function __invoke(UploadFaceProfilePhotoRequest $request): JsonResponse
     {
-        $client = $request->user();
-
         $file = $request->file('photo');
         $path = $file->store('face-profiles', 'public');
         $imageUrl = Storage::disk('public')->url($path);
         $imageHash = md5($file->get());
 
-        $isPrimary = $request->boolean('is_primary', false);
-
-        $command = new UploadFaceProfilePhotoCommand(
-            clientId: $client->id,
+        $command = new \Modules\ClientFaceProfile\CQRS\Command\UploadFaceProfilePhotoCommand(
+            clientId: (string) $request->user()->id,
             imageUrl: $imageUrl,
             imageHash: $imageHash,
-            isPrimary: $isPrimary,
+            isPrimary: $request->boolean('is_primary', false),
         );
 
         $profile = $this->handler->handle($command);

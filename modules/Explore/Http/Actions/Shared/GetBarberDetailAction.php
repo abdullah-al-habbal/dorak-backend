@@ -5,23 +5,19 @@ declare(strict_types=1);
 namespace Modules\Explore\Http\Actions\Shared;
 
 use Illuminate\Http\JsonResponse;
-use Modules\Barber\Http\Resources\BarberResource;
-use Modules\Barber\Models\BarberModel;
 use Modules\Core\Http\Actions\BaseApiAction;
-use Modules\OfferedService\Http\Resources\Shared\ServiceResource;
+use Modules\Explore\Handlers\Shared\GetBarberDetailHandler;
+use Modules\Explore\Http\Requests\Shared\GetBarberDetailRequest;
 
 final class GetBarberDetailAction extends BaseApiAction
 {
-    public function __invoke(string $barber): JsonResponse
-    {
-        $barber = BarberModel::with('services')->findOrFail($barber);
+    public function __construct(
+        private readonly GetBarberDetailHandler $handler,
+    ) {}
 
-        $data = array_merge(
-            (new BarberResource($barber))->toArray(request()),
-            [
-                'services' => ServiceResource::collection($barber->services),
-            ],
-        );
+    public function __invoke(GetBarberDetailRequest $request, string $barber): JsonResponse
+    {
+        $data = $this->handler->handle($request->toQuery($barber));
 
         return $this->ok(data: $data);
     }

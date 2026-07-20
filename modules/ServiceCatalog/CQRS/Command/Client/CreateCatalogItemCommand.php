@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Modules\ServiceCatalog\CQRS\Command\Client;
 
+use Modules\ServiceCatalog\Enums\FormalityEnum;
+use Modules\ServiceCatalog\Enums\MaintenanceLevelEnum;
+use Modules\ServiceCatalog\Enums\StylePeriodEnum;
+
 final readonly class CreateCatalogItemCommand
 {
     public function __construct(
@@ -13,9 +17,9 @@ final readonly class CreateCatalogItemCommand
         public string $slug,
         public ?string $sku,
         public ?array $priceRange,
-        public ?string $maintenanceLevel,
-        public ?string $stylePeriod,
-        public ?string $formality,
+        public ?MaintenanceLevelEnum $maintenanceLevel,
+        public ?StylePeriodEnum $stylePeriod,
+        public ?FormalityEnum $formality,
         public ?array $faceShapes,
         public ?array $hairTextures,
         public ?array $metadata,

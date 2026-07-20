@@ -5,18 +5,23 @@ declare(strict_types=1);
 namespace Modules\OfferedService\Http\Actions\Shared;
 
 use Illuminate\Http\JsonResponse;
-use Modules\Barber\Models\BarberModel;
 use Modules\Core\Http\Actions\BaseApiAction;
+use Modules\OfferedService\Handlers\Shared\ListBarberServicesHandler;
+use Modules\OfferedService\Http\Requests\Shared\ListBarberServicesRequest;
 use Modules\OfferedService\Http\Resources\Shared\ServiceResource;
 
 final class ListBarberServicesAction extends BaseApiAction
 {
-    public function __invoke(string $barber): JsonResponse
+    public function __construct(
+        private readonly ListBarberServicesHandler $handler,
+    ) {}
+
+    public function __invoke(ListBarberServicesRequest $request, string $barber): JsonResponse
     {
-        $barber = BarberModel::with('services.currency')->findOrFail($barber);
+        $services = $this->handler->handle($request->toQuery($barber));
 
         return $this->ok(
-            data: ServiceResource::collection($barber->services),
+            data: ServiceResource::collection($services),
         );
     }
 }

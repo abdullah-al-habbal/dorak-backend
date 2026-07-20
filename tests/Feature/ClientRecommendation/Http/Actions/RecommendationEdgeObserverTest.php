@@ -78,10 +78,8 @@ it('can run recompute command on client with signals', function () {
             'favorable_type' => 'brand',
         ]);
 
-    $exitCode = $this->artisan('recommend:recompute-vectors', [
+    $this->artisan('recommend:recompute-vectors', [
         '--client-id' => $client->id,
         '--force' => true,
-    ]);
-
-    expect($exitCode)->toBe(0);
+    ])->assertExitCode(0);
 });

@@ -276,20 +276,27 @@
 ### PRD Phase 5 — Recommendation Module (Complete)
 - `RecommendationEdgeModel` — polymorphic edges with `EdgeTypeEnum`, weight, context, expiry
 - `ClientPreferenceVectorModel` — embedding storage with json fallback when pgvector absent
-- `ClientRecommendationServiceProvider` — registers observers + recompute command
+- `EntityEmbeddingModel` — polymorphic entity embeddings (branch/barber) for cosine similarity ranking
+- `ClientRecommendationServiceProvider` — registers observers + recompute command + cron schedule
 - `ClientFavoriteObserver` + `BookingCompletedObserver` — sync edges on events
-- `RecomputeClientVectorsCommand` (`recommend:recompute-vectors`) — nightly batch, chunks 100, gathers signals, calls OpenAI embeddings
+- `RecomputeClientVectorsCommand` (`recommend:recompute-vectors`) — nightly batch, chunks 100, gathers signals, calls OpenAI embeddings; recomputes entity embeddings for branches and barbers
 - New Explore filters: `catalog_item_ids[]`, `available_now`, `price_range[min/max]`, `rating_min`, `face_shape_compatible`
-- Composite ranking: `geo*0.35 + edge_boost*0.55 + face_match*0.1` with `compatibility_score` + `rank` on response
+- Composite ranking: `geo*geographic + vector_similarity*α + edge_boost*β + face_match*γ` with `compatibility_score` + `rank` on response. Defaults: α=0.4, β=0.3, γ=0.1, geographic=0.2
 - 8 contract tests extending explore endpoint assertions
+- 34 dedicated feature tests across 6 modules (OfferedService, Ban, Client, ClientFaceProfile, ClientInteraction, ClientRecommendation)
 
 ---
 
-## Remaining Backend Gaps
+## Remaining Gaps
 
-All originally planned backend APIs (Application, OfferedService, Ban, Social Login) are built and contract-tested. No remaining backend gaps.
+### Backend
+All originally planned backend APIs built, tested, and passing (343 tests, 0 failures).
 
-### Test Gaps
-- No dedicated feature tests for OfferedService, Ban, SocialLogin, ClientFaceProfile, ClientInteraction, ClientRecommendation modules (only contract tests in `ApiResponseContractTest`)
-- Frontend widget tests: only 8 exist
-- Frontend contract tests: no equivalent of `ApiResponseContractTest` for Flutter DTO parsing
+### Frontend (Flutter)
+- Widget tests: only 8 exist
+- Contract tests: no Flutter equivalent of `ApiResponseContractTest` for DTO parsing
+- Recommendation UI: not consuming `compatibility_score`/`rank` or vector-similarity ranking
+- Entity embedding display: no admin/Filament view for `entity_embeddings` table
+
+### Future Phases (not started)
+See `docs/12_implementation-prd.md#phase-6--12` for scope

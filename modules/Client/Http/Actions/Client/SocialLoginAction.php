@@ -15,13 +15,9 @@ final class SocialLoginAction extends BaseApiAction
         private readonly SocialLoginHandler $handler,
     ) {}
 
-    // todo: move into the Command/Query 
     public function __invoke(string $provider, SocialLoginRequest $request): JsonResponse
     {
-        $result = $this->handler->handle(
-            provider: $provider,
-            accessToken: $request->validated('access_token'),
-        );
+        $result = $this->handler->handle($request->toCommand($provider));
 
         if ($result->isInvalidToken()) {
             return $this->unauthorized(message: $this->trans('core::messages.invalid_social_token'));

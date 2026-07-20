@@ -6,15 +6,20 @@ namespace Modules\JobPosting\Http\Actions\Shared;
 
 use Illuminate\Http\JsonResponse;
 use Modules\Core\Http\Actions\BaseApiAction;
+use Modules\JobPosting\Handlers\Shared\ShowJobPostingHandler;
+use Modules\JobPosting\Http\Requests\Shared\ShowJobPostingRequest;
 use Modules\JobPosting\Http\Resources\Shared\JobPostingResource;
-use Modules\JobPosting\Models\JobPostingModel;
 
 final class ShowJobPostingAction extends BaseApiAction
 {
-    public function __invoke(string $job): JsonResponse
-    {
-        $job = JobPostingModel::with('branch')->findOrFail($job);
+    public function __construct(
+        private readonly ShowJobPostingHandler $handler,
+    ) {}
 
-        return $this->ok(data: new JobPostingResource($job));
+    public function __invoke(ShowJobPostingRequest $request, string $job): JsonResponse
+    {
+        $jobPosting = $this->handler->handle($request->toQuery($job));
+
+        return $this->ok(data: new JobPostingResource($jobPosting));
     }
 }

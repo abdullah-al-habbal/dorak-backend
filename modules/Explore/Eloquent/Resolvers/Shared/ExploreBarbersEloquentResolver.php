@@ -8,7 +8,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Modules\Barber\Models\BarberModel;
 use Modules\ClientRecommendation\Models\ClientPreferenceVectorModel;
+use Modules\ClientRecommendation\Models\EntityEmbeddingModel;
 use Modules\ClientRecommendation\Models\RecommendationEdgeModel;
+use Modules\ClientRecommendation\ValuesObjects\RecommendationFactorWeightsValueObject;
 use Modules\Explore\CQRS\Query\Shared\ExploreBarbersQuery;
 
 final class ExploreBarbersEloquentResolver
@@ -47,6 +49,15 @@ final class ExploreBarbersEloquentResolver
             ->whereIn('target_id', $barberIds)
             ->pluck('weight', 'target_id');
 
+        $clientEmbedding = ClientPreferenceVectorModel::where('client_id', $payload->clientId)->value('embedding');
+
+        $targetEmbeddings = [];
+        if ($clientEmbedding !== null) {
+            $targetEmbeddings = EntityEmbeddingModel::where('entity_type', 'barber')
+                ->whereIn('entity_id', $barberIds)
+                ->pluck('embedding', 'entity_id');
+        }
+
         $faceMatchIds = [];
         if ($payload->faceShapeCompatible !== null) {
             $faceMatchIds = BarberModel::query()
@@ -60,12 +71,23 @@ final class ExploreBarbersEloquentResolver
                 ->toArray();
         }
 
-        $scored = $paginator->getCollection()->map(function ($barber) use ($edgeWeights, $faceMatchIds, $payload) {
+        $weights = RecommendationFactorWeightsValueObject::defaults();
+
+        $scored = $paginator->getCollection()->map(function ($barber) use ($edgeWeights, $faceMatchIds, $payload, $clientEmbedding, $targetEmbeddings, $weights) {
             $geographic = 1 / (1 + $barber->distance / $payload->radius);
             $edgeBoost = (float) $edgeWeights->get($barber->id, 0);
+
+            $vectorSimilarity = 0.0;
+            if ($clientEmbedding !== null && isset($targetEmbeddings[$barber->id])) {
+                $vectorSimilarity = $this->cosineSimilarity($clientEmbedding, $targetEmbeddings[$barber->id]);
+            }
+
             $faceMatch = in_array($barber->id, $faceMatchIds) ? 1 : 0;
 
-            $barber->compatibility_score = $geographic * 0.35 + $edgeBoost * 0.55 + $faceMatch * 0.1;
+            $barber->compatibility_score = $geographic * $weights->geographic()
+                + $vectorSimilarity * $weights->alpha()
+                + $edgeBoost * $weights->beta()
+                + $faceMatch * $weights->gamma();
 
             return $barber;
         });
@@ -109,5 +131,20 @@ final class ExploreBarbersEloquentResolver
         }
 
         return $query;
+    }
+    private function cosineSimilarity(array $a, array $b): float
+    {
+        $dot = 0.0;
+        $normA = 0.0;
+        $normB = 0.0;
+        foreach ($a as $i => $val) {
+            $dot += $val * ($b[$i] ?? 0.0);
+            $normA += $val * $val;
+        }
+        foreach ($b as $val) {
+            $normB += $val * $val;
+        }
+        $denom = sqrt($normA) * sqrt($normB);
+        return $denom > 0.0 ? $dot / $denom : 0.0;
     }
 }
