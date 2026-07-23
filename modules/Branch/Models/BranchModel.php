@@ -1,6 +1,5 @@
 <?php
 
-// modules/Branch/Models/BranchModel.php
 declare(strict_types=1);
 
 namespace Modules\Branch\Models;
@@ -20,12 +19,13 @@ use Illuminate\Notifications\Notifiable;
 use Modules\Activation\Models\ActivationLogModel;
 use Modules\Barber\Models\BarberModel;
 use Modules\Brand\Models\BrandModel;
+use Modules\Branch\Enums\BranchStatusEnum;
 use Modules\Chair\Models\ChairModel;
 use Modules\OfferedService\Models\OfferedServiceModel;
 use Modules\Review\Models\ReviewModel;
 use Spatie\Translatable\HasTranslations;
 
-#[Fillable(['name', 'email', 'password', 'brand_id', 'latitude', 'longitude'])]
+#[Fillable(['name', 'email', 'password', 'brand_id', 'latitude', 'longitude', 'status'])]
 #[Hidden(['password', 'remember_token'])]
 class BranchModel extends Authenticatable implements FilamentUser
 {
@@ -76,12 +76,13 @@ class BranchModel extends Authenticatable implements FilamentUser
 
     public function getIsEnabledAttribute(): bool
     {
-        return $this->status === 'enabled';
+        return $this->status === BranchStatusEnum::Enabled;
     }
 
     protected function casts(): array
     {
         return [
+            'status' => BranchStatusEnum::class,
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'latitude' => 'decimal:8',

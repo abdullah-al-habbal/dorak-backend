@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\Activation\Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Modules\Activation\Enums\ActivationStatusEnum;
 use Modules\Activation\Models\ActivationLogModel;
 use Modules\Admin\Models\AdminModel;
 use Modules\Barber\Models\BarberModel;
@@ -20,8 +21,8 @@ class ActivationSeeder extends Seeder
         if ($barber) {
             ActivationLogModel::create([
                 'activable_id' => $barber->id,
-                'activable_type' => 'barber',
-                'status' => 'enabled',
+                'activable_type' => $barber->getMorphClass(),
+                'status' => ActivationStatusEnum::Enabled->value,
                 'admin_id' => $admin->id,
                 'activated_at' => now(),
             ]);
@@ -31,8 +32,8 @@ class ActivationSeeder extends Seeder
         if ($branch) {
             ActivationLogModel::create([
                 'activable_id' => $branch->id,
-                'activable_type' => 'branch',
-                'status' => 'enabled',
+                'activable_type' => $branch->getMorphClass(),
+                'status' => ActivationStatusEnum::Enabled->value,
                 'admin_id' => $admin->id,
                 'activated_at' => now(),
             ]);

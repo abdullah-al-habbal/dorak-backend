@@ -13,6 +13,13 @@ class ServiceCatalogMediumModel extends Model
 {
     protected $table = 'service_catalog_media';
 
+    protected function casts(): array
+    {
+        return [
+            'sort_order' => 'integer',
+        ];
+    }
+
     public function mediable(): MorphTo
     {
         return $this->morphTo();

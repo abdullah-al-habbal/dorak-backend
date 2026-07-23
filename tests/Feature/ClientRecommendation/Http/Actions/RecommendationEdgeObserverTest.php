@@ -26,7 +26,7 @@ it('creates recommendation edge when favorite is added', function () {
         ->first();
 
     expect($edge)->not->toBeNull();
-    expect($edge->edge_type)->toBe(EdgeTypeEnum::Favorite->value);
+    expect($edge->edge_type)->toBe(EdgeTypeEnum::Favorite);
     expect($edge->weight)->toBe(1.0);
 });
 

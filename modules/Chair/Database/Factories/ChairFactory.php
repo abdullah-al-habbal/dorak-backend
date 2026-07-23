@@ -1,12 +1,12 @@
 <?php
 
-// modules/Chair/Database/Factories/ChairFactory.php
 declare(strict_types=1);
 
 namespace Modules\Chair\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Branch\Models\BranchModel;
+use Modules\Chair\Enums\ChairStatus;
 use Modules\Chair\Models\ChairModel;
 
 class ChairFactory extends Factory
@@ -27,21 +27,21 @@ class ChairFactory extends Factory
                 'height' => 60,
                 'rotation' => 0,
             ],
-            'status' => 'available',
+            'status' => ChairStatus::Available->value,
         ];
     }
 
     public function occupied(): static
     {
         return $this->state(fn (array $attrs) => [
-            'status' => 'occupied',
+            'status' => ChairStatus::Occupied->value,
         ]);
     }
 
     public function maintenance(): static
     {
         return $this->state(fn (array $attrs) => [
-            'status' => 'maintenance',
+            'status' => ChairStatus::Maintenance->value,
         ]);
     }
 }

@@ -1,12 +1,12 @@
 <?php
 
-// modules/Booking/Database/Factories/BookingFactory.php
 declare(strict_types=1);
 
 namespace Modules\Booking\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Barber\Models\BarberModel;
+use Modules\Booking\Enums\BookingStatus;
 use Modules\Booking\Models\BookingModel;
 use Modules\Chair\Models\ChairModel;
 use Modules\Client\Models\ClientModel;
@@ -22,7 +22,7 @@ class BookingFactory extends Factory
             'chair_id' => ChairModel::factory(),
             'barber_id' => BarberModel::factory(),
             'time_slot' => fake()->dateTimeBetween('+1 day', '+1 week'),
-            'status' => 'confirmed',
+            'status' => BookingStatus::Confirmed->value,
             'at_home_location' => null,
         ];
     }
@@ -30,14 +30,14 @@ class BookingFactory extends Factory
     public function completed(): static
     {
         return $this->state(fn (array $attrs) => [
-            'status' => 'completed',
+            'status' => BookingStatus::Completed->value,
         ]);
     }
 
     public function cancelled(): static
     {
         return $this->state(fn (array $attrs) => [
-            'status' => 'canceled',
+            'status' => BookingStatus::Canceled->value,
         ]);
     }
 

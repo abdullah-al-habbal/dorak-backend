@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Modules\ClientRecommendation\Enums\EdgeTypeEnum;
 
 #[Fillable([
     'source_type', 'source_id',
@@ -23,6 +24,7 @@ final class RecommendationEdgeModel extends Model
     protected function casts(): array
     {
         return [
+            'edge_type' => EdgeTypeEnum::class,
             'weight' => 'float',
             'context' => 'array',
             'expires_at' => 'datetime',

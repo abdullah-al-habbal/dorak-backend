@@ -7,6 +7,7 @@ namespace Modules\ClientRecommendation\Console\Commands;
 use Illuminate\Console\Command;
 use Laravel\Ai\Embeddings;
 use Modules\Barber\Models\BarberModel;
+use Modules\Booking\Enums\BookingStatus;
 use Modules\Branch\Models\BranchModel;
 use Modules\Client\Models\ClientModel;
 use Modules\ClientInteraction\Models\ClientFavoriteModel;
@@ -208,11 +209,11 @@ final class RecomputeClientVectorsCommand extends Command
 
         $favorites = ClientFavoriteModel::where('client_id', $client->id)->get();
         foreach ($favorites as $favorite) {
-            $signals[] = "favorite:{$favorite->favorable_type}:{$favorite->favorable_id}";
+            $signals[] = "favorite:{$favorite->favorable_type->value}:{$favorite->favorable_id}";
         }
 
         $bookings = $client->bookings()
-            ->where('status', 'completed')
+            ->where('status', BookingStatus::Completed->value)
             ->with('barber', 'services.catalogItem')
             ->get();
 
@@ -236,7 +237,7 @@ final class RecomputeClientVectorsCommand extends Command
                 [
                     'source_type' => 'client',
                     'source_id' => $client->id,
-                    'target_type' => $favorite->favorable_type,
+                    'target_type' => $favorite->favorable_type->value,
                     'target_id' => $favorite->favorable_id,
                     'edge_type' => EdgeTypeEnum::Favorite->value,
                 ],

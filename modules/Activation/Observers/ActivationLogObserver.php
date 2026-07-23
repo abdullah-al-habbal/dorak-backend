@@ -23,7 +23,7 @@ final class ActivationLogObserver
     {
         if ($entity = $log->activable) {
             if ($entity->isFillable('status')) {
-                $entity->status = $log->status;
+                $entity->status = $log->status->value;
                 $entity->saveQuietly();
             }
         }

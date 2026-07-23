@@ -1,12 +1,13 @@
 <?php
 
-// modules/BarberAffiliation/Database/Factories/BarberAffiliationFactory.php
 declare(strict_types=1);
 
 namespace Modules\BarberAffiliation\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Barber\Models\BarberModel;
+use Modules\BarberAffiliation\Enums\AffiliationStatus;
+use Modules\BarberAffiliation\Enums\AffiliableType;
 use Modules\BarberAffiliation\Models\BarberAffiliationModel;
 use Modules\Branch\Models\BranchModel;
 
@@ -19,8 +20,8 @@ class BarberAffiliationFactory extends Factory
         return [
             'barber_id' => BarberModel::factory(),
             'affiliable_id' => BranchModel::factory(),
-            'affiliable_type' => 'branch',
-            'status' => 'accepted',
+            'affiliable_type' => AffiliableType::Branch->value,
+            'status' => AffiliationStatus::Accepted->value,
             'commission_rate' => null,
             'invited_at' => now()->subDays(7),
             'accepted_at' => now()->subDays(6),
@@ -31,7 +32,7 @@ class BarberAffiliationFactory extends Factory
     public function pending(): static
     {
         return $this->state(fn (array $attrs) => [
-            'status' => 'pending',
+            'status' => AffiliationStatus::Pending->value,
             'accepted_at' => null,
         ]);
     }
@@ -39,7 +40,7 @@ class BarberAffiliationFactory extends Factory
     public function terminated(): static
     {
         return $this->state(fn (array $attrs) => [
-            'status' => 'terminated',
+            'status' => AffiliationStatus::Terminated->value,
             'terminated_at' => now(),
         ]);
     }

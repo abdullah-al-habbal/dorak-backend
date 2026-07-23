@@ -19,8 +19,9 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Modules\Ban\Models\BanModel;
 use Modules\Booking\Models\BookingModel;
-use Modules\Core\Enums\Universe;
+use Modules\Client\Enums\ClientStatusEnum;
 use Modules\Client\Database\Factories\ClientFactory;
+use Modules\Core\Enums\Universe;
 use Spatie\Translatable\HasTranslations;
 
 #[Fillable(['name', 'email', 'email_verified_at', 'password', 'preferred_universe', 'phone', 'avatar', 'status'])]
@@ -79,6 +80,7 @@ class ClientModel extends Authenticatable implements FilamentUser
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'status' => ClientStatusEnum::class,
             'preferred_universe' => Universe::class,
             'deleted_at' => 'datetime',
         ];

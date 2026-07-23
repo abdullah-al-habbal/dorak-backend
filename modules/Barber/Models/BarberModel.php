@@ -1,6 +1,5 @@
 <?php
 
-// modules/Barber/Models/BarberModel.php
 declare(strict_types=1);
 
 namespace Modules\Barber\Models;
@@ -18,12 +17,13 @@ use Illuminate\Notifications\Notifiable;
 use Modules\Activation\Models\ActivationLogModel;
 use Modules\Ban\Models\BanModel;
 use Modules\Barber\Database\Factories\BarberFactory;
+use Modules\Barber\Enums\BarberStatusEnum;
 use Modules\Booking\Models\BookingModel;
 use Modules\OfferedService\Models\OfferedServiceModel;
 use Modules\Review\Models\ReviewModel;
 use Spatie\Translatable\HasTranslations;
 
-#[Fillable(['name', 'email', 'password'])]
+#[Fillable(['name', 'email', 'password', 'status', 'is_freelancer', 'client_id', 'latitude', 'longitude'])]
 #[Hidden(['password', 'remember_token'])]
 class BarberModel extends Authenticatable implements FilamentUser
 {
@@ -74,14 +74,17 @@ class BarberModel extends Authenticatable implements FilamentUser
 
     public function getIsEnabledAttribute(): bool
     {
-        return $this->status === 'enabled';
+        return $this->status === BarberStatusEnum::Enabled;
     }
 
     protected function casts(): array
     {
         return [
+            'status' => BarberStatusEnum::class,
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'latitude' => 'decimal:8',
+            'longitude' => 'decimal:8',
         ];
     }
 }

@@ -6,6 +6,7 @@ namespace Modules\Chair\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Modules\Branch\Models\BranchModel;
+use Modules\Chair\Enums\ChairStatus;
 use Modules\Chair\Models\ChairModel;
 
 class ChairSeeder extends Seeder
@@ -16,14 +17,14 @@ class ChairSeeder extends Seeder
             ?? BranchModel::factory()->create(['email' => 'branch@dorak.sy']);
 
         $positions = [
-            ['x' => 50,  'y' => 100],
+            ['x' => 50, 'y' => 100],
             ['x' => 200, 'y' => 100],
-            ['x' => 50,  'y' => 300],
+            ['x' => 50, 'y' => 300],
             ['x' => 200, 'y' => 300],
         ];
 
         foreach ($positions as $i => $pos) {
-            $status = $i === 3 ? 'maintenance' : 'available';
+            $status = $i === 3 ? ChairStatus::Maintenance : ChairStatus::Available;
             ChairModel::create([
                 'branch_id' => $branch->id,
                 'barber_id' => null,
@@ -36,7 +37,7 @@ class ChairSeeder extends Seeder
                     'height' => 60,
                     'rotation' => 0,
                 ],
-                'status' => $status,
+                'status' => $status->value,
             ]);
         }
     }

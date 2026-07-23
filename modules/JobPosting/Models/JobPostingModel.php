@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Branch\Models\BranchModel;
+use Modules\JobPosting\Enums\JobPostingStatusEnum;
 use Spatie\Translatable\HasTranslations;
 
 #[Fillable(['branch_id', 'title', 'description', 'status', 'requirements', 'location', 'type'])]
@@ -29,6 +30,7 @@ class JobPostingModel extends Model
     protected function casts(): array
     {
         return [
+            'status' => JobPostingStatusEnum::class,
             'title' => 'array',
             'description' => 'array',
             'requirements' => 'array',

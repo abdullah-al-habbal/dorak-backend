@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
+use Modules\Branch\Enums\BranchStatusEnum;
 use Modules\Branch\Models\BranchModel;
+use Modules\Chair\Enums\ChairStatus;
 use Modules\Chair\Models\ChairModel;
 
 final class FloorPlanDemoSeeder extends Seeder
@@ -17,36 +19,40 @@ final class FloorPlanDemoSeeder extends Seeder
             [
                 'name' => ['en' => 'Demo Salon', 'ar' => 'صالون تجريبي'],
                 'password' => bcrypt('password'),
-                'status' => 'enabled',
+                'status' => BranchStatusEnum::Enabled->value,
             ],
         );
 
         $chairs = [
-            ['label' => 'Chair 1', 'status' => 'available', 'position_x' => 50, 'position_y' => 100],
-            ['label' => 'Chair 2', 'status' => 'available', 'position_x' => 200, 'position_y' => 100],
-            ['label' => 'Chair 3', 'status' => 'occupied', 'position_x' => 50, 'position_y' => 300],
-            ['label' => 'Chair 4', 'status' => 'available', 'position_x' => 200, 'position_y' => 300],
-            ['label' => 'Chair 5', 'status' => 'maintenance', 'position_x' => 350, 'position_y' => 200],
+            ['label' => 'Chair 1', 'status' => ChairStatus::Available, 'position_x' => 50, 'position_y' => 100],
+            ['label' => 'Chair 2', 'status' => ChairStatus::Available, 'position_x' => 200, 'position_y' => 100],
+            ['label' => 'Chair 3', 'status' => ChairStatus::Occupied, 'position_x' => 50, 'position_y' => 300],
+            ['label' => 'Chair 4', 'status' => ChairStatus::Available, 'position_x' => 200, 'position_y' => 300],
+            ['label' => 'Chair 5', 'status' => ChairStatus::Maintenance, 'position_x' => 350, 'position_y' => 200],
         ];
 
-        foreach ($chairs as $chair) {
-            ChairModel::query()->firstOrCreate(
-                [
-                    'branch_id' => $branch->id,
-                    'label' => $chair['label'],
+        $chairData = array_map(function ($chair) use ($branch) {
+            return [
+                'branch_id' => $branch->id,
+                'label' => $chair['label'],
+                'status' => $chair['status']->value,
+                'ui_metadata' => [
+                    'shape' => 'circle',
+                    'position_x' => $chair['position_x'],
+                    'position_y' => $chair['position_y'],
+                    'width' => 60,
+                    'height' => 60,
+                    'rotation' => 0,
                 ],
-                [
-                    'status' => $chair['status'],
-                    'ui_metadata' => [
-                        'shape' => 'circle',
-                        'position_x' => $chair['position_x'],
-                        'position_y' => $chair['position_y'],
-                        'width' => 60,
-                        'height' => 60,
-                        'rotation' => 0,
-                    ],
-                ],
-            );
-        }
+                'created_at' => now(),
+                'updated_at' => now(),
+            ];
+        }, $chairs);
+
+        ChairModel::query()->upsert(
+            $chairData,
+            ['branch_id', 'label'],
+            ['status', 'ui_metadata', 'updated_at'],
+        );
     }
 }

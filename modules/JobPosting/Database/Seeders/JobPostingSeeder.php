@@ -7,6 +7,8 @@ namespace Modules\JobPosting\Database\Seeders;
 use Illuminate\Database\Seeder;
 use Modules\Barber\Models\BarberModel;
 use Modules\Branch\Models\BranchModel;
+use Modules\JobPosting\Enums\ApplicationStatus;
+use Modules\JobPosting\Enums\JobPostingStatusEnum;
 use Modules\JobPosting\Models\ApplicationModel;
 use Modules\JobPosting\Models\JobPostingModel;
 
@@ -24,7 +26,7 @@ class JobPostingSeeder extends Seeder
             'branch_id' => $branch->id,
             'title' => ['en' => 'Experienced Barber', 'ar' => 'حلاق ذو خبرة'],
             'description' => ['en' => 'Looking for an experienced barber', 'ar' => 'نبحث عن حلاق ذو خبرة'],
-            'status' => 'open',
+            'status' => JobPostingStatusEnum::Open->value,
         ]);
 
         ApplicationModel::create([
@@ -36,7 +38,7 @@ class JobPostingSeeder extends Seeder
                 'is_freelancer' => $barber->is_freelancer,
                 'rating' => 4.5,
             ],
-            'status' => 'submitted',
+            'status' => ApplicationStatus::Submitted->value,
         ]);
     }
 }

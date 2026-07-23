@@ -1,12 +1,12 @@
 <?php
 
-// modules/JobPosting/Database/Factories/JobPostingFactory.php
 declare(strict_types=1);
 
 namespace Modules\JobPosting\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Branch\Models\BranchModel;
+use Modules\JobPosting\Enums\JobPostingStatusEnum;
 use Modules\JobPosting\Models\JobPostingModel;
 
 class JobPostingFactory extends Factory
@@ -25,7 +25,7 @@ class JobPostingFactory extends Factory
                 'en' => fake()->paragraph(),
                 'ar' => fake('ar_SA')->paragraph(),
             ],
-            'status' => 'open',
+            'status' => JobPostingStatusEnum::Open->value,
             'requirements' => [
                 'en' => fake()->sentence(),
                 'ar' => fake('ar_SA')->sentence(),

@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Modules\JobPosting\Eloquent\Resolvers\Barber;
 
 use Modules\JobPosting\CQRS\Command\Barber\ApplyForJobCommand;
+use Modules\JobPosting\Enums\ApplicationStatus;
+use Modules\JobPosting\Enums\JobPostingStatusEnum;
 use Modules\JobPosting\Models\ApplicationModel;
 use Modules\JobPosting\Models\JobPostingModel;
 use Modules\JobPosting\ValuesObjects\ApplyForJobResult;
@@ -15,7 +17,7 @@ final class ApplyForJobEloquentResolver
     {
         $jobPosting = JobPostingModel::findOrFail($command->jobPostingId);
 
-        if ($jobPosting->status !== 'open') {
+        if ($jobPosting->status !== JobPostingStatusEnum::Open) {
             return ApplyForJobResult::notOpen();
         }
 
@@ -35,7 +37,7 @@ final class ApplyForJobEloquentResolver
                 'email' => $command->barberEmail,
                 'is_freelancer' => $command->isFreelancer,
             ],
-            'status' => 'submitted',
+            'status' => ApplicationStatus::Submitted->value,
         ]);
 
         return ApplyForJobResult::success($application);

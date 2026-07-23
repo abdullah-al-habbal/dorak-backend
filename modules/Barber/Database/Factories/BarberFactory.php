@@ -1,7 +1,5 @@
 <?php
 
-// modules/Barber/Database/Factories/BarberFactory.php
-
 declare(strict_types=1);
 
 namespace Modules\Barber\Database\Factories;
@@ -9,6 +7,7 @@ namespace Modules\Barber\Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use Modules\Barber\Enums\BarberStatusEnum;
 use Modules\Barber\Models\BarberModel;
 
 class BarberFactory extends Factory
@@ -27,7 +26,7 @@ class BarberFactory extends Factory
             'password' => Hash::make('password'),
             'remember_token' => Str::random(10),
             'is_freelancer' => false,
-            'status' => 'pending',
+            'status' => BarberStatusEnum::Pending->value,
             'client_id' => null,
         ];
     }

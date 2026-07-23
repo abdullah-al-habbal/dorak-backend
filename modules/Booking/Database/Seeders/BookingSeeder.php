@@ -6,6 +6,7 @@ namespace Modules\Booking\Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Modules\Barber\Models\BarberModel;
+use Modules\Booking\Enums\BookingStatus;
 use Modules\Booking\Models\BookingModel;
 use Modules\Chair\Models\ChairModel;
 use Modules\Client\Models\ClientModel;
@@ -32,7 +33,7 @@ class BookingSeeder extends Seeder
             'chair_id' => $chair->id,
             'barber_id' => $barber->id,
             'time_slot' => now()->addDay()->setHour(10)->setMinute(0),
-            'status' => 'completed',
+            'status' => BookingStatus::Completed->value,
             'at_home_location' => null,
         ]);
 

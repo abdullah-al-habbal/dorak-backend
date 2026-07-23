@@ -1,11 +1,10 @@
 <?php
 
-// modules/Activation/Enums/ActivationStatusEnum.php
 declare(strict_types=1);
 
-namespace Modules\Activation\Enums;
+namespace Modules\Branch\Enums;
 
-enum ActivationStatusEnum: string
+enum BranchStatusEnum: string
 {
     case Pending = 'pending';
     case Enabled = 'enabled';
