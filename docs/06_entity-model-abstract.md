@@ -285,3 +285,233 @@ A Service can be owned by a **Brand** (the shop's menu) **or** by a **Barber** (
 - **No commitment to stored vs. computed Floor Plans** — left to implementation.
 
 These omissions are intentional: the model stays small enough to ship and flexible enough to grow.
+
+---
+
+## 6. Client Intelligence Entities (new — 15 entities, 5 modules)
+
+> Migrated from `prd.md` §5. Naming Convention: every entity uses PascalCase, ends with `Model`, and uses `HasUuids`. Translatable fields use `Spatie\Translatable\HasTranslations`. Full migration schemas in `11_backend-architecture.md` §5.8.
+
+### 6.1 Service Catalog & Taxonomy
+
+**ServiceCatalogCategoryModel**
+- `id` (UUID)
+- `name` (translatable: ar/en)
+- `universe` (enum: `men` / `women` / `unisex`) — which universe this category appears in
+- `sort_order` (integer)
+- `is_active` (boolean)
+
+**ServiceCatalogItemModel** — *The canonical "haircut type" or "service type."*
+- `id` (UUID)
+- `category_id` (FK → ServiceCatalogCategoryModel)
+- `name` (translatable: ar/en)
+- `description` (translatable: ar/en)
+- `default_duration_minutes` (integer)
+- `typical_price_range` (JSON) — cast to `PriceRangeValueObject`
+- `metadata` (JSON) — cast to `ServiceCatalogItemMetadataValueObject`:
+  ```json
+  {
+    "suitable_face_shapes": ["oval", "round", "square"],
+    "suitable_hair_textures": ["straight", "wavy", "curly", "coily"],
+    "maintenance_level": "low",
+    "style_period": "modern",
+    "formality": "casual"
+  }
+  ```
+- `is_active` (boolean)
+
+**ServiceCatalogItemTagModel** — *Tags for filtering (e.g., "trending", "classic", "low-maintenance").*
+- `id` (UUID)
+- `name` (translatable: ar/en)
+- `slug` (string, unique)
+
+**ServiceCatalogItemTagAssignmentModel** — *Pivot between item and tag.*
+- `catalog_item_id` (FK)
+- `tag_id` (FK)
+
+**ServiceCatalogItemMediaModel** — *Example images/videos for the style.*
+- `id` (UUID)
+- `catalog_item_id` (FK)
+- `media_url` (string)
+- `media_type` (enum: `image` / `video`)
+- `sort_order` (integer)
+
+### 6.2 Client Service History
+
+**ClientServiceHistoryModel** — *The durable journal of what was performed.*
+- `id` (UUID)
+- `client_id` (FK → ClientModel)
+- `booking_id` (FK → BookingModel, nullable — for walk-ins without prior booking)
+- `barber_id` (FK → BarberModel)
+- `branch_id` (FK → BranchModel, nullable for at-home)
+- `offered_service_id` (FK → OfferedServiceModel, nullable)
+- `catalog_item_id` (FK → ServiceCatalogItemModel, nullable — the canonical style performed)
+- `performed_at` (datetime)
+- `client_rating` (integer, 1–5, nullable — private rating for the specific service)
+- `client_notes` (text, nullable — e.g., "shorter on sides next time")
+- `barber_notes` (text, nullable — e.g., "used #2 guard, textured top")
+- `metadata` (JSON) — cast to `ServiceHistoryMetadataValueObject`: products used, length settings, color codes
+- `created_at` / `updated_at`
+
+**ClientServiceHistoryMediaModel** — *Before/after photos linked to a history entry.*
+- `id` (UUID)
+- `history_id` (FK)
+- `photo_url` (string)
+- `photo_type` (enum: `before` / `after` / `reference`)
+- `uploaded_at` (datetime)
+
+### 6.3 Client Face Profile & AI Onboarding
+
+**ClientFaceProfileModel** — *A face photo uploaded by the client.*
+- `id` (UUID)
+- `client_id` (FK → ClientModel)
+- `image_url` (string)
+- `image_hash` (string, 64 chars — for deduplication)
+- `is_primary` (boolean)
+- `uploaded_at` (datetime)
+
+**ClientFaceAnalysisResultModel** — *Output of the AI model.*
+- `id` (UUID)
+- `client_id` (FK)
+- `face_profile_id` (FK → ClientFaceProfileModel, nullable — which photo was analyzed)
+- `analysis_version` (string) — model version or API version
+- `analysis_source` (enum: `third_party_api` / `internal_python_service`)
+- `detected_face_shape` (enum: `oval`, `round`, `square`, `heart`, `diamond`, `oblong`, `triangle`)
+- `confidence_score` (decimal, 0.00–1.00)
+- `detected_features` (JSON) — cast to `FaceAnalysisFeaturesValueObject`
+- `recommended_catalog_item_ids` (JSON array of UUIDs) — cast to `RecommendedCatalogItemIdsValueObject`
+- `computed_at` (datetime)
+
+### 6.4 Discovery Preferences & Interaction Tracking
+
+**ClientDiscoveryPreferenceModel** — *Explicit preferences collected during onboarding or profile editing.*
+- `id` (UUID)
+- `client_id` (FK)
+- `style_period_preference` (enum: `classic` / `modern` / `no_preference`)
+- `maintenance_level_preference` (enum: `low` / `medium` / `high` / `no_preference`)
+- `length_preference` (enum: `short` / `medium` / `long` / `no_preference`)
+- `price_sensitivity` (enum: `budget` / `moderate` / `premium` / `no_preference`)
+- `preferred_max_distance_km` (integer, nullable)
+- `updated_at` (datetime)
+
+**ClientInteractionLogModel** — *Immutable behavioral event log.*
+- `id` (UUID)
+- `client_id` (FK)
+- `session_id` (string, 64 chars — groups events into a single discovery session)
+- `interaction_type` (enum: `viewed_branch`, `viewed_barber`, `viewed_catalog_item`, `searched`, `favorited`, `unfavorited`, `booked`, `reviewed`, `shared_location`)
+- `subject_id` (UUID)
+- `subject_type` (string) — polymorphic class name
+- `context` (JSON) — cast to `InteractionContextValueObject`: snapshot of filters at time of interaction:
+  ```json
+  {
+    "universe": "men",
+    "applied_filters": {"radius_km": 5, "catalog_item_ids": ["uuid1"], "rating_min": 4},
+    "search_query": "fade",
+    "screen": "explore"
+  }
+  ```
+- `occurred_at` (datetime)
+
+**ClientFavoriteModel** — *Private bookmarks.*
+- `id` (UUID)
+- `client_id` (FK)
+- `favoritable_id` (UUID)
+- `favoritable_type` (string) — polymorphic: BranchModel, BarberModel, BrandModel, ServiceCatalogItemModel
+- `notes` (text, nullable — e.g., "try this next time")
+- `created_at` (datetime)
+
+**ClientSavedFilterModel** — *Named saved searches.*
+- `id` (UUID)
+- `client_id` (FK)
+- `filter_name` (string, e.g., "Barbers within 2km who do fades")
+- `filter_configuration` (JSON) — cast to `FilterConfigurationValueObject`
+- `created_at` (datetime)
+
+### 6.5 Recommendation Engine
+
+**ClientPreferenceVectorModel** — *Computed dense preference profile.*
+- `id` (UUID)
+- `client_id` (FK)
+- `vector_version` (string) — schema version of the vector
+- `vector_data` (vector, 1536 dimensions) — pgvector column storing the client's preference embedding
+- `factor_weights` (JSON) — cast to `RecommendationFactorWeightsValueObject`:
+  ```json
+  {"proximity": 0.3, "preference_match": 0.4, "trending": 0.2, "rating": 0.1}
+  ```
+- `last_computed_at` (datetime)
+
+**RecommendationEdgeModel** — *Weighted edge in the recommendation graph.*
+- `id` (UUID)
+- `source_id` (UUID)
+- `source_type` (string) — polymorphic
+- `target_id` (UUID)
+- `target_type` (string) — polymorphic
+- `edge_type` (enum: `client_preferred`, `similar_style`, `often_booked_with`, `trending_nearby`, `face_shape_compatible`)
+- `weight` (decimal, 0.00–1.00)
+- `context` (JSON) — cast to `RecommendationEdgeContextValueObject`
+- `computed_at` (datetime)
+
+---
+
+## 7. Client Intelligence Relationship Diagram
+
+> Extended from `prd.md` §7. Dashed lines indicate polymorphic relations.
+
+```mermaid
+erDiagram
+    SERVICE_CATALOG_CATEGORY ||--o{ SERVICE_CATALOG_ITEM : "categorizes"
+    SERVICE_CATALOG_ITEM ||--o{ SERVICE_CATALOG_ITEM_TAG_ASSIGNMENT : "tagged"
+    SERVICE_CATALOG_ITEM_TAG ||--o{ SERVICE_CATALOG_ITEM_TAG_ASSIGNMENT : "assigned_to"
+    SERVICE_CATALOG_ITEM ||--o{ SERVICE_CATALOG_ITEM_MEDIA : "displayed_by"
+    SERVICE_CATALOG_ITEM ||--o{ OFFERED_SERVICE : "referenced_by"
+
+    CLIENT ||--o{ CLIENT_SERVICE_HISTORY : "owns"
+    BOOKING ||--o| CLIENT_SERVICE_HISTORY : "yields"
+    OFFERED_SERVICE ||--o| CLIENT_SERVICE_HISTORY : "performed"
+    SERVICE_CATALOG_ITEM ||--o| CLIENT_SERVICE_HISTORY : "classified_as"
+    CLIENT_SERVICE_HISTORY ||--o{ CLIENT_SERVICE_HISTORY_MEDIA : "documented_by"
+
+    CLIENT ||--o{ CLIENT_FACE_PROFILE : "uploads"
+    CLIENT_FACE_PROFILE ||--o{ CLIENT_FACE_ANALYSIS_RESULT : "analyzed_by"
+    SERVICE_CATALOG_ITEM ||..o{ CLIENT_FACE_ANALYSIS_RESULT : "recommended_in"
+
+    CLIENT ||--o| CLIENT_DISCOVERY_PREFERENCE : "declares"
+    CLIENT ||--o{ CLIENT_INTERACTION_LOG : "generates"
+    CLIENT ||--o{ CLIENT_FAVORITE : "bookmarks"
+    CLIENT ||--o{ CLIENT_SAVED_FILTER : "saves"
+
+    CLIENT ||--o| CLIENT_PREFERENCE_VECTOR : "profiled_by"
+    CLIENT ||..o{ RECOMMENDATION_EDGE : "source_or_target"
+    SERVICE_CATALOG_ITEM ||..o{ RECOMMENDATION_EDGE : "source_or_target"
+    BARBER ||..o{ RECOMMENDATION_EDGE : "source_or_target"
+    BRANCH ||..o{ RECOMMENDATION_EDGE : "source_or_target"
+
+    CLIENT_FAVORITE ||..o| BRANCH : "favoritable"
+    CLIENT_FAVORITE ||..o| BARBER : "favoritable"
+    CLIENT_FAVORITE ||..o| SERVICE_CATALOG_ITEM : "favoritable"
+    CLIENT_FAVORITE ||..o| BRAND : "favoritable"
+```
+
+> This diagram extends the core relationship diagram in §3. The 15 new entities span 5 modules: ServiceCatalog, ClientHistory, ClientFaceProfile, ClientInteraction, Recommendation.
+
+---
+
+## 8. Naming Reference (Client Intelligence)
+
+| Concept | Model Name | Table Name | Notes |
+|---------|-----------|------------|-------|
+| Canonical service category | `ServiceCatalogCategoryModel` | `service_catalog_categories` | Universe-scoped |
+| Canonical service item | `ServiceCatalogItemModel` | `service_catalog_items` | JSON metadata for specs |
+| Tag on catalog item | `ServiceCatalogItemTagModel` | `service_catalog_item_tags` | Translatable |
+| Tag assignment pivot | `ServiceCatalogItemTagAssignmentModel` | `service_catalog_item_tag_assignments` | |
+| Media on catalog item | `ServiceCatalogItemMediaModel` | `service_catalog_item_media` | Polymorphic-ready |
+| Client's performed service record | `ClientServiceHistoryModel` | `client_service_histories` | Auto-created on completion |
+| Photo on history entry | `ClientServiceHistoryMediaModel` | `client_service_history_media` | before/after/reference |
+| Uploaded face photo | `ClientFaceProfileModel` | `client_face_profiles` | Max 5 per client |
+| AI analysis result | `ClientFaceAnalysisResultModel` | `client_face_analysis_results` | Stores labels, not raw tensors |
+| Client's discovery preferences | `ClientDiscoveryPreferenceModel` | `client_discovery_preferences` | Onboarding/profile |
+| Interaction event log | `ClientInteractionLogModel` | `client_interaction_logs` | Immutable |
+| Favorite bookmark | `ClientFavoriteModel` | `client_favorites` | Polymorphic, private |
+| Saved filter config | `ClientSavedFilterModel` | `client_saved_filters` | Named searches |
+| Computed preference vector | `ClientPreferenceVectorModel` | `client_preference_vectors` | Nightly recomputed |
+| Recommendation graph edge | `RecommendationEdgeModel` | `recommendation_edges` | Polymorphic source/target |

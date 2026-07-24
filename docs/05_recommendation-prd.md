@@ -202,3 +202,16 @@ Batch size: 100 clients per chunk to avoid OOM.
 | Ranking formula feels arbitrary | Make weights configurable via `RecommendationFactorWeightsValueObject` + admin panel later |
 | Explore response shape changes break mobile | Add new fields at end of response; `compatibility_score` is nullable + defaults null |
 | No reviews/ratings data yet | `rating_min` filter gracefully ignored when no ratings table exists; no crash |
+
+---
+
+## 11. Cross-References
+
+This document is the detailed Phase 5 PRD for the Recommendation Module. Related docs:
+
+| Document | Section | What it covers |
+|----------|---------|----------------|
+| `02_prd.md` | §12 Client Intelligence Engine | Full PRD overview — 5 subsystems, gaps, phasing, house rules, naming reference |
+| `04_house-rules.md` | §L Client Intelligence | All Client Intelligence house rules (CAT-1, HIST-1/2/3, FACE-1/2/3, INT-1, FAV-1, REC-1/2) |
+| `06_entity-model-abstract.md` | §6–8 | Entity definitions, ER diagram, naming reference for all 15 new entities |
+| `11_backend-architecture.md` | §13 Architecture-Aligned PRD (v2.0) | Value Object catalog, CQRS specs, module structure, pgvector setup, AI search strategy, migration schemas |

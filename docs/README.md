@@ -32,7 +32,8 @@ The documents move from **"What problem are we solving?"** → **"Who does what?
 | 08 | [`08_edge-cases.md`](./08_edge-cases.md) | The hard situations and how the product behaves | Eng, QA, Product |
 | 09 | [`09_c4-context.md`](./09_c4-context.md) | C4 Level 1 — the system as one box and who/what touches it | Eng, Stakeholders |
 | 10 | [`10_c4-containers.md`](./10_c4-containers.md) | C4 Level 2 — the major moving parts inside the system | Eng |
-| 11 | [`11_backend-architecture.md`](./11_backend-architecture.md) | C4 Level 3 — module layout + the **Action → Handler → EloquentResolver** pattern + coding conventions | Eng |
+| 11 | [`11_backend-architecture.md`](./11_backend-architecture.md) | C4 Level 3 — module layout + the **Action → Handler → EloquentResolver** pattern + coding conventions + Architecture-Aligned PRD (v2.0) | Eng |
+| — | [`05_recommendation-prd.md`](./05_recommendation-prd.md) | Phase 5 Recommendation Module — data model, architecture, ranking formula, nightly batch, filters, test plan | Eng |
 | — | [`feature-index.md`](./feature-index.md) | **Chronological map of built features** — append after each new feature | AI Agents |
 | — | [`marketing/`](./marketing/) | Marketing strategy & brand docs (Arabic/English) | Marketing, Product, Stakeholders |
 

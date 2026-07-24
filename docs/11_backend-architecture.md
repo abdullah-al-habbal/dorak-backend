@@ -235,3 +235,574 @@ config/panels.php                        # panel colors, paths, brand, plugins
 - **Flows (`07`) → actions.** Each step that hits the backend is one Action.
 - **Containers (`10`) → this is its inside.** `10` named the API container; this is its component structure.
 - **The skill** `.claude/skills/laravel-baseline/module-architecture/SKILL.md` makes all of the above enforceable in the Ralph loop, and can carry the concrete code patterns on request.
+
+---
+
+## 13. Architecture-Aligned PRD (Client Intelligence — v2.0)
+
+> Migrated from `prd.md` §0-10. This section adapts the Client Intelligence PRD to the native Dorak patterns: **Action → Handler → EloquentResolver**, `final readonly` Value Objects, CQRS (Command/Query), and `declare(strict_types=1)`. Cross-references to `02_prd.md` §12 (full PRD) and `06_entity-model-abstract.md` §6 (entity definitions).
+
+### 13.1 Architecture Alignment Statement
+
+Every JSON field in the v1.0 PRD is replaced with a **typed Value Object** stored as PostgreSQL JSON but hydrated into strict objects via Eloquent casts. No `array` casts for domain data — only `ValueObject::class` casts or custom cast classes.
+
+**Rule:** If a column stores structured data, it is represented in PHP as a `final readonly class` in `{Module}/ValuesObjects/` — never as an untyped `array`.
+
+### 13.2 Value Object Catalog
+
+All Value Objects are `final readonly` classes with typed properties, living in `{Module}/ValuesObjects/`.
+
+| Value Object | Module | Properties | Stored In |
+|-------------|--------|------------|-----------|
+| `ServiceCatalogItemMetadataValueObject` | `ServiceCatalog` | `suitableFaceShapes: array<FaceShapeEnum>`, `suitableHairTextures: array<HairTextureEnum>`, `maintenanceLevel: MaintenanceLevelEnum`, `stylePeriod: StylePeriodEnum`, `formality: FormalityEnum` | `service_catalog_items.metadata` |
+| `PriceRangeValueObject` | `ServiceCatalog` | `min: int`, `max: int`, `currencyId: string` | `service_catalog_items.typical_price_range` |
+| `ServiceHistoryMetadataValueObject` | `ClientHistory` | `productsUsed: array<string>`, `lengthSettings: array<string>`, `colorCodes: array<string>` | `client_service_histories.metadata` |
+| `FaceAnalysisFeaturesValueObject` | `ClientFaceProfile` | `foreheadWidth: int`, `jawAngle: int`, `cheekboneProminence: string` | `client_face_analysis_results.detected_features` |
+| `RecommendedCatalogItemIdsValueObject` | `ClientFaceProfile` | `ids: array<string>` (UUIDs) | `client_face_analysis_results.recommended_catalog_item_ids` |
+| `FilterConfigurationValueObject` | `ClientInteraction` | `radiusKm: int\|null`, `catalogItemIds: array<string>`, `ratingMin: int\|null`, `priceMax: int\|null` | embedded in `InteractionContextValueObject` |
+| `InteractionContextValueObject` | `ClientInteraction` | `universe: UniverseEnum`, `appliedFilters: FilterConfigurationValueObject`, `searchQuery: string\|null`, `screen: string` | `client_interaction_logs.context` |
+| `ClientPreferenceVectorDataValueObject` | `Recommendation` | `tagAffinity: array<string, float>`, `priceMidpoint: int`, `avgDistanceKm: float` | `client_preference_vectors.vector_data` |
+| `RecommendationFactorWeightsValueObject` | `Recommendation` | `proximity: float`, `preferenceMatch: float`, `trending: float`, `rating: float` | `client_preference_vectors.factor_weights` |
+| `RecommendationEdgeContextValueObject` | `Recommendation` | `universe: UniverseEnum`, `season: string`, `locationRadiusKm: int` | `recommendation_edges.context` |
+
+**Casting Strategy:** Each Value Object implements a static `fromArray(array $data): self` and `toArray(): array`. Eloquent models use custom cast classes (e.g., `ServiceCatalogItemMetadataCast`) that delegate to these methods. See §13.6 for the cast pattern.
+
+### 13.3 Module Structure (5 New Modules)
+
+Following the existing rule — **one module per aggregate** — five new modules. Each owns its entire vertical slice.
+
+```
+modules/
+├── ServiceCatalog/           # Canonical taxonomy
+│   ├── Models/
+│   │   ├── ServiceCatalogCategoryModel.php
+│   │   ├── ServiceCatalogItemModel.php
+│   │   ├── ServiceCatalogItemTagModel.php
+│   │   ├── ServiceCatalogItemTagAssignmentModel.php
+│   │   └── ServiceCatalogItemMediaModel.php
+│   ├── ValuesObjects/
+│   │   ├── ServiceCatalogItemMetadataValueObject.php
+│   │   └── PriceRangeValueObject.php
+│   ├── Enums/
+│   │   ├── FaceShapeEnum.php
+│   │   ├── HairTextureEnum.php
+│   │   ├── MaintenanceLevelEnum.php
+│   │   ├── StylePeriodEnum.php
+│   │   └── FormalityEnum.php
+│   ├── Http/
+│   │   ├── Actions/
+│   │   ├── Requests/
+│   │   └── ...
+│   ├── Handlers/
+│   ├── Eloquent/Resolvers/
+│   ├── CQRS/
+│   │   ├── Command/
+│   │   └── Query/
+│   ├── Database/Migrations/
+│   ├── Filament/Admin/
+│   └── Providers/ServiceCatalogServiceProvider.php
+│
+├── ClientHistory/            # Service history journal
+│   ├── Models/
+│   │   ├── ClientServiceHistoryModel.php
+│   │   └── ClientServiceHistoryMediaModel.php
+│   ├── ValuesObjects/
+│   │   └── ServiceHistoryMetadataValueObject.php
+│   ├── Http/Actions/
+│   ├── Handlers/
+│   ├── Eloquent/Resolvers/
+│   └── Providers/ClientHistoryServiceProvider.php
+│
+├── ClientFaceProfile/        # AI onboarding data
+│   ├── Models/
+│   │   ├── ClientFaceProfileModel.php
+│   │   └── ClientFaceAnalysisResultModel.php
+│   ├── ValuesObjects/
+│   │   ├── FaceAnalysisFeaturesValueObject.php
+│   │   └── RecommendedCatalogItemIdsValueObject.php
+│   ├── Enums/
+│   │   └── DetectedFaceShapeEnum.php
+│   ├── Http/Actions/
+│   ├── Handlers/
+│   ├── Eloquent/Resolvers/
+│   └── Providers/ClientFaceProfileServiceProvider.php
+│
+├── ClientInteraction/        # Tracking, favorites, filters
+│   ├── Models/
+│   │   ├── ClientInteractionLogModel.php
+│   │   ├── ClientFavoriteModel.php
+│   │   ├── ClientSavedFilterModel.php
+│   │   └── ClientDiscoveryPreferenceModel.php
+│   ├── ValuesObjects/
+│   │   ├── InteractionContextValueObject.php
+│   │   └── FilterConfigurationValueObject.php
+│   ├── Enums/
+│   │   └── InteractionTypeEnum.php
+│   ├── Http/Actions/
+│   ├── Handlers/
+│   ├── Eloquent/Resolvers/
+│   └── Providers/ClientInteractionServiceProvider.php
+│
+└── Recommendation/           # Graph edges & vectors
+    ├── Models/
+    │   ├── ClientPreferenceVectorModel.php
+    │   └── RecommendationEdgeModel.php
+    ├── ValuesObjects/
+    │   ├── ClientPreferenceVectorDataValueObject.php
+    │   ├── RecommendationFactorWeightsValueObject.php
+    │   └── RecommendationEdgeContextValueObject.php
+    ├── Enums/
+    │   └── EdgeTypeEnum.php
+    ├── Console/Commands/     # Nightly batch job
+    │   └── RecomputeRecommendationVectorsCommand.php
+    ├── Http/Actions/
+    ├── Handlers/
+    ├── Eloquent/Resolvers/
+    └── Providers/RecommendationServiceProvider.php
+```
+
+**Registration:** Each provider is explicitly added to `bootstrap/providers.php`. No auto-discovery. Models use `#[Fillable]` and `#[Hidden]` PHP attributes.
+
+### 13.4 CQRS Command & Query Specifications
+
+Every write is a **Command**. Every read is a **Query**. Each flows through `Request → Action → Handler → EloquentResolver`.
+
+#### ServiceCatalog Module
+
+| Operation | Command / Query | Handler | Resolver |
+|-----------|-----------------|---------|----------|
+| Admin creates category | `CreateServiceCatalogCategoryCommand` | `CreateServiceCatalogCategoryHandler` | `CreateServiceCatalogCategoryEloquentResolver` |
+| Admin creates item | `CreateServiceCatalogItemCommand` | `CreateServiceCatalogItemHandler` | `CreateServiceCatalogItemEloquentResolver` |
+| Admin updates item | `UpdateServiceCatalogItemCommand` | `UpdateServiceCatalogItemHandler` | `UpdateServiceCatalogItemEloquentResolver` |
+| Client browses catalog | `ListServiceCatalogItemsQuery` | `ListServiceCatalogItemsHandler` | `ListServiceCatalogItemsEloquentResolver` |
+| Client views item detail | `ShowServiceCatalogItemQuery` | `ShowServiceCatalogItemHandler` | `ShowServiceCatalogItemEloquentResolver` |
+
+```php
+// Example: CreateServiceCatalogItemCommand
+declare(strict_types=1);
+final readonly class CreateServiceCatalogItemCommand
+{
+    public function __construct(
+        public string $categoryId,
+        public array $name,           // translatable map
+        public array $description,   // translatable map
+        public int $defaultDurationMinutes,
+        public PriceRangeValueObject $priceRange,
+        public ServiceCatalogItemMetadataValueObject $metadata,
+    ) {}
+}
+```
+
+#### ClientHistory Module
+
+| Operation | Command / Query | Handler | Resolver |
+|-----------|-----------------|---------|----------|
+| System auto-creates history on booking completion | `CreateClientServiceHistoryCommand` | `CreateClientServiceHistoryHandler` | `CreateClientServiceHistoryEloquentResolver` |
+| Client views timeline | `ListClientServiceHistoryQuery` | `ListClientServiceHistoryHandler` | `ListClientServiceHistoryEloquentResolver` |
+| Client adds media to entry | `AttachHistoryMediaCommand` | `AttachHistoryMediaHandler` | `AttachHistoryMediaEloquentResolver` |
+| Client rebooks from history | `RebookFromHistoryCommand` | `RebookFromHistoryHandler` | `RebookFromHistoryEloquentResolver` |
+
+**Rule:** `CreateClientServiceHistoryCommand` is dispatched from a `BookingModel` observer or from the `CompleteBookingHandler` in the Booking module (cross-module call via command bus).
+
+#### ClientFaceProfile Module
+
+| Operation | Command / Query | Handler | Resolver |
+|-----------|-----------------|---------|----------|
+| Client uploads face photo | `UploadFaceProfilePhotoCommand` | `UploadFaceProfilePhotoHandler` | `UploadFaceProfilePhotoEloquentResolver` |
+| System queues AI analysis | `RequestFaceAnalysisCommand` | `RequestFaceAnalysisHandler` | `RequestFaceAnalysisEloquentResolver` |
+| System stores AI result | `StoreFaceAnalysisResultCommand` | `StoreFaceAnalysisResultHandler` | `StoreFaceAnalysisResultEloquentResolver` |
+| Client views recommendations | `GetFaceBasedRecommendationsQuery` | `GetFaceBasedRecommendationsHandler` | `GetFaceBasedRecommendationsEloquentResolver` |
+
+```php
+// Example: UploadFaceProfilePhotoCommand
+final readonly class UploadFaceProfilePhotoCommand
+{
+    public function __construct(
+        public string $clientId,
+        public string $imageUrl,
+        public string $imageHash,
+        public bool $isPrimary,
+    ) {}
+}
+```
+
+#### ClientInteraction Module
+
+| Operation | Command / Query | Handler | Resolver |
+|-----------|-----------------|---------|----------|
+| Log interaction event | `LogClientInteractionCommand` | `LogClientInteractionHandler` | `LogClientInteractionEloquentResolver` |
+| Client favorites entity | `CreateClientFavoriteCommand` | `CreateClientFavoriteHandler` | `CreateClientFavoriteEloquentResolver` |
+| Client unfavorites entity | `DeleteClientFavoriteCommand` | `DeleteClientFavoriteHandler` | `DeleteClientFavoriteEloquentResolver` |
+| Client saves filter | `SaveClientFilterCommand` | `SaveClientFilterHandler` | `SaveClientFilterEloquentResolver` |
+| Client views favorites | `ListClientFavoritesQuery` | `ListClientFavoritesHandler` | `ListClientFavoritesEloquentResolver` |
+
+```php
+// Example: LogClientInteractionCommand
+final readonly class LogClientInteractionCommand
+{
+    public function __construct(
+        public string $clientId,
+        public string $sessionId,
+        public InteractionTypeEnum $interactionType,
+        public string $subjectId,
+        public string $subjectType,
+        public InteractionContextValueObject $context,
+    ) {}
+}
+```
+
+#### Recommendation Module
+
+| Operation | Command / Query | Handler | Resolver |
+|-----------|-----------------|---------|----------|
+| Nightly: recompute vectors | `RecomputePreferenceVectorsCommand` | `RecomputePreferenceVectorsHandler` | `RecomputePreferenceVectorsEloquentResolver` |
+| Nightly: recompute edges | `RecomputeRecommendationEdgesCommand` | `RecomputeRecommendationEdgesHandler` | `RecomputeRecommendationEdgesEloquentResolver` |
+| Discovery API reads composite score | `GetRecommendedBranchesQuery` | `GetRecommendedBranchesHandler` | `GetRecommendedBranchesEloquentResolver` |
+
+```php
+// Example: RecomputePreferenceVectorsCommand
+final readonly class RecomputePreferenceVectorsCommand
+{
+    public function __construct(
+        public ?string $clientId = null,  // null = all active clients
+    ) {}
+}
+```
+
+### 13.5 Phasing (Architecture Order)
+
+| Phase | Module | CQRS Deliverables | Value Objects |
+|-------|--------|-------------------|---------------|
+| **Phase 1** | `ServiceCatalog` | `Create*Command`, `List*Query`, `Update*Command` | `ServiceCatalogItemMetadataValueObject`, `PriceRangeValueObject` |
+| **Phase 2** | `ClientHistory` | `CreateClientServiceHistoryCommand`, `ListClientServiceHistoryQuery` | `ServiceHistoryMetadataValueObject` |
+| **Phase 3** | `ClientFaceProfile` | `UploadFaceProfilePhotoCommand`, `StoreFaceAnalysisResultCommand` | `FaceAnalysisFeaturesValueObject`, `RecommendedCatalogItemIdsValueObject` |
+| **Phase 4** | `ClientInteraction` | `LogClientInteractionCommand`, `CreateClientFavoriteCommand` | `InteractionContextValueObject`, `FilterConfigurationValueObject` |
+| **Phase 5** | `Recommendation` | `RecomputePreferenceVectorsCommand`, `GetRecommendedBranchesQuery` | `ClientPreferenceVectorDataValueObject`, `RecommendationFactorWeightsValueObject`, `RecommendationEdgeContextValueObject` |
+
+### 13.6 Custom Cast Pattern
+
+Since Eloquent does not natively cast to Value Objects, each module provides a cast class in `{Module}/Eloquent/Casts/`.
+
+```php
+// Example: ServiceCatalogItemMetadataCast
+declare(strict_types=1);
+final class ServiceCatalogItemMetadataCast implements CastsAttributes
+{
+    public function get($model, string $key, $value, array $attributes): ?ServiceCatalogItemMetadataValueObject
+    {
+        if ($value === null) {
+            return null;
+        }
+        return ServiceCatalogItemMetadataValueObject::fromArray(json_decode($value, true));
+    }
+
+    public function set($model, string $key, $value, array $attributes): ?string
+    {
+        if ($value === null) {
+            return null;
+        }
+        if (!$value instanceof ServiceCatalogItemMetadataValueObject) {
+            throw new \InvalidArgumentException('Value must be a ServiceCatalogItemMetadataValueObject');
+        }
+        return json_encode($value->toArray());
+    }
+}
+```
+
+**Model registration:**
+```php
+'metadata' => ServiceCatalogItemMetadataCast::class,
+```
+
+### 13.7 Laravel 13 AI Search Strategy
+
+> Full reference material from `laravel-13-ai.md` consolidated here.
+
+#### Dual Search Strategy per Module
+
+Every searchable module uses a **two-tier approach**:
+
+| Tier | Technique | When | Syntax |
+|------|-----------|------|--------|
+| **Tier 1: Keyword** | `whereFullText()` | User types a search query | `->whereFullText(['name', 'description'], 'fade haircut')` |
+| **Tier 2: Semantic** | `whereVectorSimilarTo()` + `rerank()` | AI-powered preference matching | `->whereVectorSimilarTo('embedding', $query)->limit(10)->get()` |
+
+#### Per-Module Mapping
+
+| Phase | Module | Tier 1 (Full-Text) | Tier 2 (Vector/Semantic) |
+|-------|--------|--------------------|--------------------------|
+| **1** | ServiceCatalog | Browse/search items by name/description. `$table->fullText(['name', 'description'])`. | (Not yet — no client profile) |
+| **2** | ClientHistory | Search barber notes, service names. | (Not yet — no vector data) |
+| **3** | FaceProfile | — | AI recommends items from face shape analysis via `whereIn('catalog_item_ids')` (API-driven, not vector). |
+| **4** | Interaction | Filter logs by interaction_type, date range via `where` clauses. | — |
+| **5** | Recommendation | — | `whereVectorSimilarTo('vector_data', $embedding, minSimilarity: 0.6)` for "clients like you" ranking. `rerank()` on results for final scoring. |
+
+#### Bilingual Full-Text Search (PostgreSQL)
+
+Spatie Translatable stores `{"en": "Fade Haircut", "ar": "قصة شعر فيد"}` as JSON. PostgreSQL's `to_tsvector()` cannot directly index JSON columns.
+
+**Solution:** Add a dedicated `searchable_text` column with a GIN tsvector index:
+
+```php
+// Migration
+Schema::table('service_catalog_items', function (Blueprint $table) {
+    $table->text('searchable_text')->nullable()->after('description');
+});
+DB::statement('CREATE INDEX items_search_gin ON service_catalog_items USING GIN (to_tsvector(\'simple\', searchable_text))');
+
+// Model: auto-populate searchable_text from translatable JSON
+protected static function booted(): void
+{
+    static::saving(function ($model) {
+        $name = $model->getTranslations('name');
+        $desc = $model->getTranslations('description');
+        $model->searchable_text = implode(' ', array_filter([
+            $name['en'] ?? '', $name['ar'] ?? '',
+            $desc['en'] ?? '', $desc['ar'] ?? '',
+        ]));
+    });
+}
+```
+
+#### Vector Search for Recommendation Engine (Phase 5)
+
+```php
+// 1. Generate client preference embedding
+$embedding = AI::embeddings()->create($clientPreferenceText);
+
+// 2. Find similar clients via cosine similarity
+$similarClients = ClientPreferenceVectorModel::query()
+    ->whereVectorSimilarTo('vector_data', $embedding, minSimilarity: 0.6)
+    ->limit(20)
+    ->get();
+
+// 3. Rerank for final precision
+$ranked = $similarClients->rerank('factor_weights', $query);
+```
+
+#### PostgreSQL pgvector Setup
+
+**Always use PostgreSQL** for Laravel 13 AI features. Key differences from MySQL:
+
+| Concern | PostgreSQL + pgvector | MySQL (Rejected) |
+|---------|----------------------|------------------|
+| **Vector Search** | Native `whereVectorSimilarTo()` + HNSW indexes | JSON column + manual scoring only |
+| **Full-Text Search** | `whereFullText()` with `to_tsvector`, GIN indexes | FULLTEXT on plain text only |
+| **AI SDK Integration** | `SimilaritySearch` tool, `rerank()`, `Embeddings::for()` | No native integration |
+| **Laravel 13 Native** | `$table->vector()`, `$table->vectorIndex()` | Community packages only |
+
+**Migration pattern for vector columns:**
+```php
+Schema::ensureVectorExtensionExists(); // Enable pgvector extension
+
+Schema::create('client_preference_vectors', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
+    $table->string('vector_version');
+    $table->vector('vector_data', 1536);  // pgvector column
+    $table->json('factor_weights');        // RecommendationFactorWeightsValueObject cast
+    $table->timestamp('last_computed_at');
+    $table->vectorIndex('vector_data', 'hnsw', 'vector_cosine_ops');  // HNSW for fast similarity
+});
+```
+
+#### Laravel AI SDK Installation
+
+```bash
+composer require laravel/ai
+php artisan vendor:publish --provider="Laravel\Ai\AiServiceProvider"
+php artisan migrate  # Creates agent_conversations + agent_conversation_messages tables
+```
+
+Configure `.env` with the chosen embedding provider (default: OpenAI, 1536 dimensions):
+```ini
+OPENAI_API_KEY=sk-...
+# Or for open-source:
+OLLAMA_API_KEY=
+OPENAI_COMPATIBLE_URL=http://localhost:11434/v1
+OPENAI_COMPATIBLE_API_KEY=
+```
+
+#### AI Agent Integration (Future — Post-MVP)
+
+The `SimilaritySearch` tool enables RAG-style agents for ServiceCatalog:
+```php
+SimilaritySearch::usingModel(
+    model: ServiceCatalogItemModel::class,
+    column: 'metadata',
+    minSimilarity: 0.7,
+    limit: 5,
+    query: fn ($query) => $query->where('is_active', true),
+),
+```
+
+### 13.8 Migration Summary (PostgreSQL + pgvector)
+
+> All migrations live in their respective module's `Database/Migrations/`. Each module's `ServiceProvider` loads them. Every vector migration must call `Schema::ensureVectorExtensionExists()`.
+
+**ServiceCatalog Module:**
+```php
+Schema::create('service_catalog_categories', function (Blueprint $table) {
+    $table->id();
+    $table->json('name');                     // Spatie Translatable
+    $table->json('description')->nullable();   // Spatie Translatable
+    $table->string('slug')->unique();
+    $table->foreignId('parent_id')->nullable()->constrained('service_catalog_categories')->cascadeOnDelete();
+    $table->boolean('is_active')->default(true);
+    $table->unsignedSmallInteger('sort_order')->default(0);
+    $table->timestamps();
+    $table->softDeletes();
+    $table->fullText(['name', 'description']);  // PostgreSQL GIN tsvector index
+});
+
+Schema::create('service_catalog_items', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('category_id')->constrained('service_catalog_categories')->cascadeOnDelete();
+    $table->json('name');                     // Spatie Translatable
+    $table->json('description')->nullable();   // Spatie Translatable
+    $table->string('slug')->unique();
+    $table->string('sku')->unique()->nullable();
+    $table->json('price_range')->nullable();   // PriceRangeValueObject cast
+    $table->string('maintenance_level')->nullable();
+    $table->string('style_period')->nullable();
+    $table->string('formality')->nullable();
+    $table->json('face_shapes')->nullable();
+    $table->json('hair_textures')->nullable();
+    $table->json('metadata')->nullable();      // ServiceCatalogItemMetadataValueObject cast
+    $table->boolean('is_active')->default(true);
+    $table->unsignedSmallInteger('sort_order')->default(0);
+    $table->timestamps();
+    $table->softDeletes();
+    $table->fullText(['name', 'description']);  // PostgreSQL GIN tsvector index
+});
+```
+
+**ClientHistory Module:**
+```php
+Schema::create('client_service_histories', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
+    $table->foreignId('booking_id')->nullable()->constrained('bookings');
+    $table->foreignId('barber_id')->constrained('barbers');
+    $table->foreignId('branch_id')->nullable()->constrained('branches');
+    $table->foreignId('offered_service_id')->nullable()->constrained('offered_services');
+    $table->foreignId('catalog_item_id')->nullable()->constrained('service_catalog_items');
+    $table->timestamp('performed_at');
+    $table->tinyInteger('client_rating')->nullable();
+    $table->text('client_notes')->nullable();
+    $table->text('barber_notes')->nullable();
+    $table->json('metadata')->nullable();   // ServiceHistoryMetadataValueObject cast
+    $table->timestamps();
+});
+```
+
+**ClientFaceProfile Module:**
+```php
+Schema::create('client_face_profiles', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
+    $table->string('image_url');
+    $table->string('image_hash', 64);
+    $table->boolean('is_primary')->default(false);
+    $table->timestamp('uploaded_at');
+    $table->timestamps();
+});
+
+Schema::create('client_face_analysis_results', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
+    $table->foreignId('face_profile_id')->nullable()->constrained('client_face_profiles');
+    $table->string('analysis_version');
+    $table->string('analysis_source');        // enum backed
+    $table->string('detected_face_shape');     // enum backed: oval/round/square/heart/diamond/oblong/triangle
+    $table->decimal('confidence_score', 4, 2);
+    $table->json('detected_features');         // FaceAnalysisFeaturesValueObject cast
+    $table->json('recommended_catalog_item_ids'); // RecommendedCatalogItemIdsValueObject cast
+    $table->timestamp('computed_at');
+    $table->timestamps();
+});
+```
+
+**ClientInteraction Module:**
+```php
+Schema::create('client_discovery_preferences', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
+    $table->string('style_period_preference');     // enum backed
+    $table->string('maintenance_level_preference'); // enum backed
+    $table->string('length_preference');            // enum backed
+    $table->string('price_sensitivity');            // enum backed
+    $table->integer('preferred_max_distance_km')->nullable();
+    $table->timestamp('updated_at');
+});
+
+Schema::create('client_interaction_logs', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
+    $table->string('session_id', 64);
+    $table->string('interaction_type');           // enum backed
+    $table->string('subject_type');               // morphs type
+    $table->string('subject_id');                 // morphs id (UUID)
+    $table->json('context')->nullable();          // InteractionContextValueObject cast
+    $table->timestamp('created_at')->index();
+    $table->index(['client_id', 'session_id']);   // Session-based lookup index
+});
+
+Schema::create('client_favorites', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
+    $table->string('favoritable_type');
+    $table->string('favoritable_id');
+    $table->text('notes')->nullable();
+    $table->timestamps();
+    $table->unique(['client_id', 'favoritable_type', 'favoritable_id']);
+});
+```
+
+**Recommendation Module (pgvector):**
+```php
+Schema::ensureVectorExtensionExists();
+
+Schema::create('client_preference_vectors', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('client_id')->constrained('clients')->cascadeOnDelete();
+    $table->string('vector_version');
+    $table->vector('vector_data', 1536);            // pgvector column
+    $table->json('factor_weights');                 // RecommendationFactorWeightsValueObject cast
+    $table->timestamp('last_computed_at');
+    $table->vectorIndex('vector_data', 'hnsw', 'vector_cosine_ops'); // HNSW index
+});
+
+Schema::create('recommendation_edges', function (Blueprint $table) {
+    $table->id();
+    $table->string('source_type');
+    $table->string('source_id');
+    $table->string('target_type');
+    $table->string('target_id');
+    $table->string('edge_type');           // enum backed
+    $table->decimal('weight', 5, 2)->default(0.00);
+    $table->json('context')->nullable();   // RecommendationEdgeContextValueObject cast
+    $table->timestamp('computed_at');
+    $table->timestamps();
+    $table->index(['source_type', 'source_id']);
+    $table->index(['target_type', 'target_id']);
+});
+```
+
+### 13.9 Implementation Checklist
+
+- [ ] All five modules created with `final` providers in `bootstrap/providers.php`.
+- [ ] All Value Objects are `final readonly` with `fromArray()` and `toArray()`.
+- [ ] All custom cast classes implement `CastsAttributes` and validate strictly.
+- [ ] All enums are Backed Enums used in model casts and FormRequest `Rule::enum` validation.
+- [ ] No `array` cast for structured domain data — only Value Object casts.
+- [ ] CQRS Commands are immutable `final readonly` classes.
+- [ ] Handlers are `final` with single `handle()` method.
+- [ ] EloquentResolvers are `final` with single-method resolution.
+- [ ] `composer require laravel/ai` installed and published.
+- [ ] `.env` switched to `DB_CONNECTION=pgsql` with correct host/port/database.
+- [ ] `pgvector` extension enabled (`Schema::ensureVectorExtensionExists()`).
+- [ ] `fullText` GIN indexes added to `service_catalog_categories` and `service_catalog_items`.
+- [ ] Phase 5 migration uses `$table->vector('vector_data', 1536)` with HNSW index.
+- [ ] Dual-strategy search implemented: `whereFullText()` + `whereVectorSimilarTo()`.
+- [ ] `composer analyse` passes at max level with zero new errors.
