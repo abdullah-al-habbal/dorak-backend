@@ -287,16 +287,31 @@
 
 ---
 
-## Remaining Gaps
+## Feature Registry
 
-### Backend
-All originally planned backend APIs built, tested, and passing (343 tests, 0 failures).
+All backend features built, tested, and passing (343 tests, 0 failures).
 
-### Frontend (Flutter)
-- Widget tests: only 8 exist
-- Contract tests: no Flutter equivalent of `ApiResponseContractTest` for DTO parsing
-- Recommendation UI: not consuming `compatibility_score`/`rank` or vector-similarity ranking
-- Entity embedding display: no admin/Filament view for `entity_embeddings` table
+| # | Feature | Status | Spec |
+|---|---------|--------|------|
+| BE-01 | Core Infrastructure | ✅ Complete | [BE-01](features/BE-01-core-infrastructure.md) |
+| BE-02 | Client Auth Module | ✅ Complete | [BE-02](features/BE-02-client-auth.md) |
+| BE-03 | Explore API | ✅ Complete | [BE-03](features/BE-03-explore-api.md) |
+| BE-04 | Floor Plan & Booking Engine | ✅ Complete | [BE-04](features/BE-04-floor-plan-booking.md) |
+| BE-05 | Review API | ✅ Complete | [BE-05](features/BE-05-review-api.md) |
+| BE-06 | Brand API | ✅ Complete | [BE-06](features/BE-06-brand-api.md) |
+| BE-07 | BarberAffiliation API | ✅ Complete | [BE-07](features/BE-07-barber-affiliation-api.md) |
+| BE-08 | JobPosting API | ✅ Complete | [BE-08](features/BE-08-job-posting-api.md) |
+| BE-09 | Admin Activation API | ✅ Complete | [BE-09](features/BE-09-admin-activation-api.md) |
+| BE-10 | Chair API | ✅ Complete | [BE-10](features/BE-10-chair-api.md) |
+| BE-11 | ServiceCatalog Module (PRD Phase 1) | ✅ Complete | [BE-11](features/BE-11-service-catalog-module.md) |
+| BE-12 | ClientHistory Module (PRD Phase 2) | ✅ Complete | [BE-12](features/BE-12-client-history-module.md) |
+| BE-13 | ClientFaceProfile Module (PRD Phase 3) | ✅ Complete | [BE-13](features/BE-13-client-face-profile-module.md) |
+| BE-14 | ClientInteraction Module (PRD Phase 4) | ✅ Complete | [BE-14](features/BE-14-client-interaction-module.md) |
+| BE-15 | Recommendation Module (PRD Phase 5) | ✅ Complete | [BE-15](features/BE-15-recommendation-module.md) |
+| BE-16 | AI SDK & PostgreSQL Setup | ✅ Complete | [BE-16](features/BE-16-ai-sdk-postgresql-setup.md) |
+| BE-17 | Explore Enhancements (Phase 5 Filters + Ranking) | ✅ Complete | [BE-17](features/BE-17-explore-enhancements.md) |
+| BE-18 | Context-Driven Namespacing (Refactor) | ✅ Complete | [BE-18](features/BE-18-context-driven-namespacing.md) |
+| BE-19 | Profile Expand (Phone, Avatar, Soft Delete) | ✅ Complete | [BE-19](features/BE-19-profile-expand.md) |
 
 ### Future Phases (not started)
 See `docs/12_implementation-prd.md#phase-6--12` for scope
