@@ -8,9 +8,11 @@ namespace Modules\Core\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Modules\Barber\Models\BarberModel;
+use Modules\BarberAffiliation\Models\BarberAffiliationModel;
 use Modules\Booking\Models\BookingModel;
 use Modules\Branch\Models\BranchModel;
 use Modules\Chair\Models\ChairModel;
+use Modules\JobPosting\Models\ApplicationModel;
 use Modules\JobPosting\Models\JobPostingModel;
 use Modules\OfferedService\Models\OfferedServiceModel;
 use Modules\Review\Models\ReviewModel;
@@ -58,6 +60,10 @@ final class ScopePanelToCurrentUser
                 fn ($q) => $q->where('barber_id', $barberId),
             ),
         );
+
+        BarberAffiliationModel::addGlobalScope('panel-scope', fn ($q) => $q->where('barber_id', $barberId));
+
+        ApplicationModel::addGlobalScope('panel-scope', fn ($q) => $q->where('barber_id', $barberId));
     }
 
     private function scopeToBranch(Request $request): void
@@ -98,5 +104,11 @@ final class ScopePanelToCurrentUser
                 fn ($q) => $q->where('branch_id', $branchId),
             ),
         );
+
+        BarberAffiliationModel::addGlobalScope('panel-scope', fn ($q) => $q
+            ->where('affiliable_id', $branchId)
+            ->where('affiliable_type', 'branch'));
+
+        ApplicationModel::addGlobalScope('panel-scope', fn ($q) => $q->whereHas('jobPosting', fn ($q) => $q->where('branch_id', $branchId)));
     }
 }

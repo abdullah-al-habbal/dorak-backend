@@ -313,5 +313,14 @@ All backend features built, tested, and passing (343 tests, 0 failures).
 | BE-18 | Context-Driven Namespacing (Refactor) | ✅ Complete | [BE-18](features/BE-18-context-driven-namespacing.md) |
 | BE-19 | Profile Expand (Phone, Avatar, Soft Delete) | ✅ Complete | [BE-19](features/BE-19-profile-expand.md) |
 
+### Barber Panel (Filament)
+- `ProfileResource` — barber self-service profile (edit name, email, password)
+- `OfferedServiceResource` — CRUD for barber's offered services (auto-sets serviceable_type=barber)
+- `BookingResource` — list/view/edit barber's bookings (status management)
+- `ReviewResource` — read-only view of client reviews for barber's bookings
+- `ApplicationResource` — list/create/view job applications (auto-sets barber_id)
+- `BarberAffiliationResource` — read-only view of branch/brand affiliations
+- `ScopePanelToCurrentUser` middleware — global scopes: BarberModel, BookingModel, OfferedServiceModel, ReviewModel, BarberAffiliationModel, ApplicationModel
+
 ### Future Phases (not started)
 See `docs/12_implementation-prd.md#phase-6--12` for scope

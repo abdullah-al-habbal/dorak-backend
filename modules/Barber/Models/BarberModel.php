@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Modules\Activation\Models\ActivationLogModel;
 use Modules\Ban\Models\BanModel;
 use Modules\Barber\Database\Factories\BarberFactory;
@@ -23,10 +24,11 @@ use Modules\OfferedService\Models\OfferedServiceModel;
 use Modules\Review\Models\ReviewModel;
 use Spatie\Translatable\HasTranslations;
 
-#[Fillable(['name', 'email', 'password', 'status', 'is_freelancer', 'client_id', 'latitude', 'longitude'])]
+#[Fillable(['name', 'email', 'password', 'status', 'is_freelancer', 'client_id', 'latitude', 'longitude', 'travel_radius'])]
 #[Hidden(['password', 'remember_token'])]
 class BarberModel extends Authenticatable implements FilamentUser
 {
+    use HasApiTokens;
     use HasFactory;
     use HasTranslations;
     use HasUuids;
@@ -83,6 +85,7 @@ class BarberModel extends Authenticatable implements FilamentUser
             'status' => BarberStatusEnum::class,
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'travel_radius' => 'decimal:2',
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',
         ];

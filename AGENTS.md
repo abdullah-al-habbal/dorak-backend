@@ -25,6 +25,10 @@ composer analyze        # phpstan level 9 via larastan
 - `AUTH_MODEL` is hardcoded as `ClientModel::class` in auth.php — not env-driven (no backslash in .env).
 - `MAIL_SENDMAIL_PATH` must be quoted in .env: `"/usr/sbin/sendmail -bs -i"` (space in value).
 
+## Technical Concepts
+
+Before implementing any feature, read `docs/13_technical-concepts.md` — mandatory CRUD patterns (optimistic/pessimistic updates, version locking, idempotency keys, soft delete, PATCH vs PUT, race conditions, batch operations, retry backoff, consistency models, field projection) and Flutter/Laravel integration patterns.
+
 ## Code conventions
 
 - `declare(strict_types=1)` on every file

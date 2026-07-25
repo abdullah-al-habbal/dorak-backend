@@ -17,6 +17,7 @@ final class BarberResource extends JsonResource
             'email' => $this->email,
             'is_freelancer' => $this->is_freelancer,
             'status' => $this->status,
+            'travel_radius' => $this->travel_radius,
             'latitude' => $this->latitude,
             'longitude' => $this->longitude,
             'distance' => $this->distance ?? null,

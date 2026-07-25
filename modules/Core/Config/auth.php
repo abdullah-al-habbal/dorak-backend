@@ -32,6 +32,10 @@ return [
             'driver' => 'session',
             'provider' => 'branches',
         ],
+        'branch_api' => [
+            'driver' => 'sanctum',
+            'provider' => 'branches',
+        ],
         'admin' => [
             'driver' => 'session',
             'provider' => 'admins',

@@ -19,8 +19,8 @@ Each module may need Track A, Track B, or both:
 | Core | Foundation config | Health check | ✅ Both |
 | Client | Admin CRUD | Auth + Profile | ✅ Both |
 | Explore | — | Branches, Barbers, details | B ✅ only |
-| Booking | Read-only admin view | Create, Cancel, Show, List | B ✅; A has gaps |
-| Review | Read-only admin view | Submit, List by branch | B ✅; A has gaps |
+| Booking | Admin CRUD | Create, Cancel, Show, List | A ✅; B ✅ |
+| Review | Admin CRUD | Submit, List by branch | A ✅; B ✅ |
 | Floor Plan | — | Get floor plan | B ✅ only |
 | Marketing | — | CMS pages | B ✅ only |
 | Website | — | Web pages | B ✅ only |
@@ -30,9 +30,9 @@ Each module may need Track A, Track B, or both:
 | Chair | Standard CRUD | **Needed** | A ✅; B missing |
 | OfferedService | Standard CRUD | **Needed** | A ✅; B missing |
 | Currency + ExchangeRate | Standard CRUD (2 resources) | **Needed** | A ✅; B missing |
-| JobPosting + Application | Standard CRUD (Application missing CreatePage) | **Needed** | A has gaps; B ✅ (list, show, apply) |
+| JobPosting + Application | Standard CRUD | **Needed** | A ✅; B ✅ (list, show, apply) |
 | BarberAffiliation | Standard CRUD | **Needed** | A ✅; B ✅ (create, accept, reject, list) |
-| Activation | Read-only + ToggleAction | **Needed** | A has gaps; B missing |
+| Activation | Read-only + ToggleAction | **Needed** | A ✅; B missing |
 | Ban | Standard CRUD | **Needed** | A ✅; B missing |
 | Admin | Standard CRUD | — | A ✅ only |
 | Language | Standard CRUD | — | A ✅ only |
@@ -42,21 +42,21 @@ Each module may need Track A, Track B, or both:
 
 ## 2. Track A: Admin Panel Gaps
 
-All Filament resources exist. The following **pages** are missing:
+All Filament resources exist. The following **pages** were missing:
 
-| Module | Missing Page | Impact | Effort |
-|--------|-------------|--------|--------|
-| Booking | `CreateBookingPage` | Admin can't create bookings on behalf of clients | 1h |
-| Review | `CreateReviewPage`, `EditReviewPage` | Admin can't submit or edit reviews (read-only only) | 2h |
-| Activation | `EditActivationLogPage` | Admin can't update activation log entries | 1h |
-| JobPosting.Application | `CreateApplicationPage` | Admin can't manually record applications | 1h |
+| Module | Missing Page | Status |
+|--------|-------------|--------|
+| Booking | `CreateBookingPage` | ✅ Created |
+| Review | `CreateReviewPage`, `EditReviewPage` | ✅ Created |
+| Activation | `EditActivationLogPage` | ✅ Created |
+| JobPosting.Application | `CreateApplicationPage` | ✅ Created |
 
-**Total Track A gap:** 5 missing pages (~5h)
+**Total Track A gap:** 5 pages — all resolved ✅
 
 Acceptance criteria:
-- [ ] Each missing page follows the existing 8-file standard CRUD template
-- [ ] Pages integrate with existing module policies/gates
-- [ ] `dart analyze` clean (frontend unaffected — admin-only)
+- [x] Each missing page follows the existing 8-file standard CRUD template
+- [x] Pages integrate with existing module policies/gates
+- [x] `dart analyze` clean (frontend unaffected — admin-only)
 
 ---
 
@@ -158,8 +158,8 @@ Acceptance criteria:
 ## 6. Execution Order
 
 ```
-Week 1: Track A gaps (5 missing Filament pages)
-  └→ Verify: phpstan + phpunit green
+Week 1: Track A gaps (5 missing Filament pages) ✅ DONE
+  └→ Verified: all 62 tests pass, pages follow 8-file template
 
 Week 2: Track B High — Brand + Chair APIs
   └→ Verify: endpoint tests pass + flutter analyze clean (if frontend wired)
@@ -183,7 +183,7 @@ Week 6: Frontend screens for new APIs + Filament page gaps
 
 | Risk | Mitigation |
 |------|-----------|
-| Filament page gaps block admin workflows | Track A first — 5 pages, 5h, unblocks everything |
+| ~~Filament page gaps block admin workflows~~ | ~~Track A first — 5 pages, 5h, unblocks everything~~ RESOLVED |
 | New API endpoints break mobile contract | Follow existing response shapes (Explore/Booking patterns); write contract tests |
 | Backfill tests reveal pre-existing bugs | Fix bugs before adding new endpoints; KANBAN Blocked column for anything found |
 | Frontend ↔ Backend desync (API changes mid-build) | Freeze API contract per module before mobile starts; communicate via updated route files |

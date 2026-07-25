@@ -16,6 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 use Modules\Activation\Models\ActivationLogModel;
 use Modules\Barber\Models\BarberModel;
 use Modules\Brand\Models\BrandModel;
@@ -29,6 +30,7 @@ use Spatie\Translatable\HasTranslations;
 #[Hidden(['password', 'remember_token'])]
 class BranchModel extends Authenticatable implements FilamentUser
 {
+    use HasApiTokens;
     use HasFactory;
     use HasTranslations;
     use HasUuids;
