@@ -12,13 +12,15 @@ it('lists all currencies', function () {
     $response->assertOk();
     $response->assertJsonStructure([
         'success',
-        'data' => ['*' => ['id', 'code', 'symbol', 'is_default']],
+        'code',
+        'data' => ['*' => ['id', 'code', 'name', 'symbol', 'is_default']],
     ]);
     expect($response->json('data'))->toHaveCount(3);
 });
 
-it('returns empty when no currencies exist', function () {
+it('returns empty array when no currencies exist', function () {
     $response = $this->getJson('/api/v1/currencies');
 
+    $response->assertOk();
     expect($response->json('data'))->toHaveCount(0);
 });

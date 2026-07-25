@@ -6,8 +6,8 @@ namespace Modules\Branch\Http\Actions\Branch;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Modules\Core\Enums\SuccessCodeEnum;
 use Modules\Core\Http\Actions\BaseApiAction;
+use Modules\JobPosting\Http\Resources\Shared\JobPostingResource;
 use Modules\JobPosting\Models\JobPostingModel;
 
 final class ListJobPostingsAction extends BaseApiAction
@@ -21,6 +21,6 @@ final class ListJobPostingsAction extends BaseApiAction
             ->orderByDesc('created_at')
             ->paginate($request->input('per_page', 15));
 
-        return $this->paginated($jobPostings, \Modules\JobPosting\Http\Resources\Shared\JobPostingResource::class);
+        return $this->paginated($jobPostings, JobPostingResource::class);
     }
 }

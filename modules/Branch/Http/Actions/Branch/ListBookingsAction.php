@@ -6,8 +6,8 @@ namespace Modules\Branch\Http\Actions\Branch;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Modules\Booking\Http\Resources\Client\BookingResource;
 use Modules\Booking\Models\BookingModel;
-use Modules\Core\Enums\SuccessCodeEnum;
 use Modules\Core\Http\Actions\BaseApiAction;
 
 final class ListBookingsAction extends BaseApiAction
@@ -21,6 +21,6 @@ final class ListBookingsAction extends BaseApiAction
             ->orderByDesc('time_slot')
             ->paginate($request->input('per_page', 15));
 
-        return $this->paginated($bookings, \Modules\Booking\Http\Resources\Client\BookingResource::class);
+        return $this->paginated($bookings, BookingResource::class);
     }
 }

@@ -22,7 +22,7 @@ final class ListApplicationsRequest extends BaseApiFormRequest
     {
         return new ListApplicationsQuery(
             perPage: (int) ($this->validated('per_page') ?? 20),
-            barberId: $this->validated('barber_id'),
+            barberId: (string) $this->user()->id,
             status: $this->validated('status'),
         );
     }

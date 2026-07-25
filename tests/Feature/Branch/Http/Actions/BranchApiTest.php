@@ -2,15 +2,18 @@
 
 declare(strict_types=1);
 
+use Illuminate\Support\Facades\Event;
 use Modules\BarberAffiliation\Enums\AffiliationStatus;
 use Modules\BarberAffiliation\Models\BarberAffiliationModel;
 use Modules\Booking\Models\BookingModel;
 use Modules\Branch\Models\BranchModel;
 use Modules\Chair\Enums\ChairStatus;
+use Modules\Chair\Events\ChairStatusUpdated;
 use Modules\Chair\Models\ChairModel;
 use Modules\JobPosting\Enums\JobPostingStatusEnum;
 use Modules\JobPosting\Models\ApplicationModel;
 use Modules\JobPosting\Models\JobPostingModel;
+use Modules\Review\Models\ReviewModel;
 
 function createAuthenticatedBranch(): BranchModel
 {
@@ -111,7 +114,7 @@ describe('Branch API', function () {
                     'status' => ChairStatus::Available,
                 ]);
 
-                \Illuminate\Support\Facades\Event::fake();
+                Event::fake();
 
                 $response = $this->patchJson("/api/v1/branch/chairs/{$chair->id}/status", [
                     'status' => 'maintenance',
@@ -121,7 +124,7 @@ describe('Branch API', function () {
                 $data = $response->json('data');
                 expect($data['status'])->toBe('maintenance');
 
-                \Illuminate\Support\Facades\Event::assertDispatched(\Modules\Chair\Events\ChairStatusUpdated::class);
+                Event::assertDispatched(ChairStatusUpdated::class);
             });
 
             it('returns 404 for chair not belonging to branch', function () {
@@ -339,7 +342,7 @@ describe('Branch API', function () {
 
         describe('GET /api/v1/branch/reviews', function () {
             it('lists reviews for branch', function () {
-                \Modules\Review\Models\ReviewModel::factory()->count(2)->create([
+                ReviewModel::factory()->count(2)->create([
                     'subject_id' => $this->branch->id,
                     'subject_type' => BranchModel::class,
                 ]);

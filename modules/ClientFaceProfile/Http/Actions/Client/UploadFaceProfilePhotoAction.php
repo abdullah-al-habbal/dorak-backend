@@ -6,6 +6,7 @@ namespace Modules\ClientFaceProfile\Http\Actions\Client;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Storage;
+use Modules\ClientFaceProfile\CQRS\Command\UploadFaceProfilePhotoCommand;
 use Modules\ClientFaceProfile\Handlers\UploadFaceProfilePhotoHandler;
 use Modules\ClientFaceProfile\Http\Requests\Client\UploadFaceProfilePhotoRequest;
 use Modules\Core\Http\Actions\BaseApiAction;
@@ -23,7 +24,7 @@ final class UploadFaceProfilePhotoAction extends BaseApiAction
         $imageUrl = Storage::disk('public')->url($path);
         $imageHash = md5($file->get());
 
-        $command = new \Modules\ClientFaceProfile\CQRS\Command\UploadFaceProfilePhotoCommand(
+        $command = new UploadFaceProfilePhotoCommand(
             clientId: (string) $request->user()->id,
             imageUrl: $imageUrl,
             imageHash: $imageHash,

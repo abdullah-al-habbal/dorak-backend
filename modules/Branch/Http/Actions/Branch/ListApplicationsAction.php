@@ -6,8 +6,8 @@ namespace Modules\Branch\Http\Actions\Branch;
 
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Modules\Core\Enums\SuccessCodeEnum;
 use Modules\Core\Http\Actions\BaseApiAction;
+use Modules\JobPosting\Http\Resources\Barber\ApplicationResource;
 use Modules\JobPosting\Models\ApplicationModel;
 use Modules\JobPosting\Models\JobPostingModel;
 
@@ -24,6 +24,6 @@ final class ListApplicationsAction extends BaseApiAction
             ->orderByDesc('created_at')
             ->paginate($request->input('per_page', 15));
 
-        return $this->paginated($applications, \Modules\JobPosting\Http\Resources\Barber\ApplicationResource::class);
+        return $this->paginated($applications, ApplicationResource::class);
     }
 }

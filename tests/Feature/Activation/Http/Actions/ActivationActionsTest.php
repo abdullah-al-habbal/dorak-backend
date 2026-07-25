@@ -4,22 +4,23 @@ declare(strict_types=1);
 
 use Modules\Barber\Models\BarberModel;
 
-it('activates a barber', function () {
-    $barber = BarberModel::factory()->create();
+beforeEach(function () {
+    $this->barber = BarberModel::factory()->create();
+    $this->actingAs($this->barber, 'barber');
+});
 
-    $response = $this->postJson("/api/v1/barbers/{$barber->id}/activate", [
+it('activates a barber', function () {
+    $response = $this->postJson("/api/v1/barbers/{$this->barber->id}/activate", [
         'reason' => 'Approved for platform',
     ]);
 
     $response->assertCreated();
     expect($response->json('data.status'))->toBe('enabled');
-    expect($response->json('data.activable_id'))->toBe($barber->id);
+    expect($response->json('data.activable_id'))->toBe($this->barber->id);
 });
 
 it('deactivates a barber', function () {
-    $barber = BarberModel::factory()->create();
-
-    $response = $this->postJson("/api/v1/barbers/{$barber->id}/deactivate", [
+    $response = $this->postJson("/api/v1/barbers/{$this->barber->id}/deactivate", [
         'reason' => 'Violation of terms',
     ]);
 
@@ -28,9 +29,7 @@ it('deactivates a barber', function () {
 });
 
 it('activates without reason', function () {
-    $barber = BarberModel::factory()->create();
-
-    $response = $this->postJson("/api/v1/barbers/{$barber->id}/activate");
+    $response = $this->postJson("/api/v1/barbers/{$this->barber->id}/activate");
 
     $response->assertCreated();
     expect($response->json('data.status'))->toBe('enabled');

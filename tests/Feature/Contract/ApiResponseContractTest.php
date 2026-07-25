@@ -7,6 +7,7 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Modules\Admin\Models\AdminModel;
 use Modules\Ban\Models\BanModel;
 use Modules\Barber\Models\BarberModel;
 use Modules\BarberAffiliation\Models\BarberAffiliationModel;
@@ -616,17 +617,19 @@ describe('OfferedService API', function () {
 describe('Ban API', function () {
 
     describe('GET /api/v1/clients/{client}/bans/check', function () {
-        it('returns is_banned=false for client with no bans', function () {
+        it('returns banned=false for client with no bans', function () {
             $client = ClientModel::factory()->create();
+            $this->actingAs($client, 'client');
 
             $response = $this->getJson("/api/v1/clients/{$client->id}/bans/check");
 
             assertApiEnvelope($response, 200);
-            expect($response->json('data.is_banned'))->toBeFalse();
+            expect($response->json('data.banned'))->toBeFalse();
         });
 
-        it('returns is_banned=true for actively banned client', function () {
+        it('returns banned=true for actively banned client', function () {
             $client = ClientModel::factory()->create();
+            $this->actingAs($client, 'client');
             BanModel::factory()->create([
                 'bannable_id' => $client->id,
                 'bannable_type' => 'client',
@@ -637,11 +640,12 @@ describe('Ban API', function () {
             $response = $this->getJson("/api/v1/clients/{$client->id}/bans/check");
 
             assertApiEnvelope($response, 200);
-            expect($response->json('data.is_banned'))->toBeTrue();
+            expect($response->json('data.banned'))->toBeTrue();
         });
 
-        it('returns is_banned=false for expired ban', function () {
+        it('returns banned=false for expired ban', function () {
             $client = ClientModel::factory()->create();
+            $this->actingAs($client, 'client');
             BanModel::factory()->create([
                 'bannable_id' => $client->id,
                 'bannable_type' => 'client',
@@ -652,10 +656,13 @@ describe('Ban API', function () {
             $response = $this->getJson("/api/v1/clients/{$client->id}/bans/check");
 
             assertApiEnvelope($response, 200);
-            expect($response->json('data.is_banned'))->toBeFalse();
+            expect($response->json('data.banned'))->toBeFalse();
         });
 
         it('returns 404 for non-existent client', function () {
+            $client = ClientModel::factory()->create();
+            $this->actingAs($client, 'client');
+
             $response = $this->getJson('/api/v1/clients/00000000-0000-0000-0000-000000000000/bans/check');
             $response->assertNotFound();
         });
@@ -1190,6 +1197,9 @@ describe('Currency API', function () {
 
     describe('GET /api/v1/exchange-rates', function () {
         it('returns list of exchange rates', function () {
+            $admin = AdminModel::factory()->create();
+            $this->actingAs($admin, 'admin');
+
             $from = CurrencyModel::factory()->create(['code' => 'USD']);
             $to = CurrencyModel::factory()->create(['code' => 'EUR']);
             ExchangeRateModel::factory()->create([
@@ -1210,8 +1220,11 @@ describe('Currency API', function () {
         });
     });
 
-    describe('GET /api/v1/convert', function () {
+    describe('POST /api/v1/currency/convert', function () {
         it('returns conversion result shape', function () {
+            $admin = AdminModel::factory()->create();
+            $this->actingAs($admin, 'admin');
+
             $from = CurrencyModel::factory()->create(['code' => 'USD']);
             $to = CurrencyModel::factory()->create(['code' => 'EUR']);
             ExchangeRateModel::factory()->create([
@@ -1220,7 +1233,11 @@ describe('Currency API', function () {
                 'rate' => 0.85,
             ]);
 
-            $response = $this->getJson('/api/v1/convert?from=USD&to=EUR&amount=100');
+            $response = $this->postJson('/api/v1/currency/convert', [
+                'from' => 'USD',
+                'to' => 'EUR',
+                'amount' => 100,
+            ]);
 
             assertApiEnvelope($response, 200);
             $data = $response->json('data');
@@ -1242,6 +1259,7 @@ describe('Activation API', function () {
     describe('POST /api/v1/barbers/{barber}/activate', function () {
         it('returns ActivationLogResource shape', function () {
             $barber = BarberModel::factory()->create();
+            $this->actingAs($barber, 'barber');
 
             $response = $this->postJson("/api/v1/barbers/{$barber->id}/activate", [
                 'reason' => 'Approved after review',
@@ -1258,6 +1276,7 @@ describe('Activation API', function () {
     describe('POST /api/v1/barbers/{barber}/deactivate', function () {
         it('returns ActivationLogResource with disabled status', function () {
             $barber = BarberModel::factory()->create();
+            $this->actingAs($barber, 'barber');
 
             $response = $this->postJson("/api/v1/barbers/{$barber->id}/deactivate", [
                 'reason' => 'Violation of terms',

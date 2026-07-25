@@ -34,7 +34,6 @@ it('creates brand', function () {
 
     $response = $this->postJson('/api/v1/brands', [
         'name' => ['en' => 'Test Brand EN', 'ar' => 'Test Brand AR'],
-        'owner_id' => $this->client->id,
         'base_currency_id' => $currency->id,
     ]);
 
@@ -43,8 +42,8 @@ it('creates brand', function () {
     expect($response->json('data.name.ar'))->toBe('Test Brand AR');
 });
 
-it('updates brand', function () {
-    $brand = BrandModel::factory()->create();
+it('updates own brand', function () {
+    $brand = BrandModel::factory()->create(['owner_id' => $this->client->id]);
 
     $response = $this->putJson("/api/v1/brands/{$brand->id}", [
         'name' => ['en' => 'Updated EN'],
@@ -56,7 +55,6 @@ it('updates brand', function () {
 
 it('rejects create with missing name', function () {
     $response = $this->postJson('/api/v1/brands', [
-        'owner_id' => $this->client->id,
         'base_currency_id' => '00000000-0000-0000-0000-000000000000',
     ]);
 
@@ -69,8 +67,29 @@ it('rejects unauthorized brand create', function () {
 
     $response = $this->postJson('/api/v1/brands', [
         'name' => ['en' => 'Test', 'ar' => 'Test'],
-        'owner_id' => $this->client->id,
         'base_currency_id' => $currency->id,
+    ]);
+
+    $response->assertUnauthorized();
+});
+
+it('rejects updating another users brand', function () {
+    $otherClient = ClientModel::factory()->create();
+    $brand = BrandModel::factory()->create(['owner_id' => $otherClient->id]);
+
+    $response = $this->putJson("/api/v1/brands/{$brand->id}", [
+        'name' => ['en' => 'Hacked'],
+    ]);
+
+    $response->assertForbidden();
+});
+
+it('rejects unauthorized brand update', function () {
+    $this->app->get('auth')->forgetGuards();
+    $brand = BrandModel::factory()->create();
+
+    $response = $this->putJson("/api/v1/brands/{$brand->id}", [
+        'name' => ['en' => 'Hacked'],
     ]);
 
     $response->assertUnauthorized();
