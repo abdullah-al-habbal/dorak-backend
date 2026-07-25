@@ -12,8 +12,8 @@ final class ExploreBarbersRequest extends BaseApiFormRequest
     public function rules(): array
     {
         return [
-            'lat' => ['required', 'numeric', 'between:-90,90'],
-            'lng' => ['required', 'numeric', 'between:-180,180'],
+            'latitude' => ['required', 'numeric', 'between:-90,90'],
+            'longitude' => ['required', 'numeric', 'between:-180,180'],
             'radius' => ['required', 'numeric', 'min:0'],
             'per_page' => ['sometimes', 'integer', 'min:1', 'max:100'],
             'catalog_item_ids' => ['sometimes', 'array'],
@@ -32,8 +32,8 @@ final class ExploreBarbersRequest extends BaseApiFormRequest
         $priceRange = $this->validated('price_range');
 
         return new ExploreBarbersQuery(
-            lat: (float) $this->validated('lat'),
-            lng: (float) $this->validated('lng'),
+            latitude: (float) $this->validated('latitude'),
+            longitude: (float) $this->validated('longitude'),
             radius: (float) $this->validated('radius'),
             perPage: (int) ($this->validated('per_page') ?? 20),
             catalogItemIds: $this->validated('catalog_item_ids'),

@@ -484,7 +484,7 @@ describe('Explore API', function () {
                 'latitude' => 33.5, 'longitude' => 36.3, 'brand_id' => $brand->id,
             ]);
 
-            $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=1000&universe=men&per_page=10');
+            $response = $this->getJson('/api/v1/explore/branches?latitude=33.5&longitude=36.3&radius=1000&universe=men&per_page=10');
 
             assertApiEnvelope($response, 200);
             assertPaginationMeta($response);
@@ -501,7 +501,7 @@ describe('Explore API', function () {
                 'latitude' => 33.5, 'longitude' => 36.3, 'brand_id' => $brand->id,
             ]);
 
-            $response = $this->getJson('/api/v1/explore/branches?lat=33.5&lng=36.3&radius=1000&universe=men&available_now=1&rating_min=3&price_range[min]=10&price_range[max]=100');
+            $response = $this->getJson('/api/v1/explore/branches?latitude=33.5&longitude=36.3&radius=1000&universe=men&available_now=1&rating_min=3&price_range[min]=10&price_range[max]=100');
 
             assertApiEnvelope($response, 200);
             assertPaginationMeta($response);
@@ -530,7 +530,7 @@ describe('Explore API', function () {
                 'is_freelancer' => true, 'latitude' => 33.5, 'longitude' => 36.3,
             ]);
 
-            $response = $this->getJson('/api/v1/explore/barbers?lat=33.5&lng=36.3&radius=1000');
+            $response = $this->getJson('/api/v1/explore/barbers?latitude=33.5&longitude=36.3&radius=1000');
 
             assertApiEnvelope($response, 200);
             assertPaginationMeta($response);
@@ -543,7 +543,7 @@ describe('Explore API', function () {
                 'is_freelancer' => true, 'latitude' => 33.5, 'longitude' => 36.3,
             ]);
 
-            $response = $this->getJson('/api/v1/explore/barbers?lat=33.5&lng=36.3&radius=1000&available_now=1&rating_min=3');
+            $response = $this->getJson('/api/v1/explore/barbers?latitude=33.5&longitude=36.3&radius=1000&available_now=1&rating_min=3');
 
             assertApiEnvelope($response, 200);
             assertPaginationMeta($response);

@@ -20,14 +20,14 @@
 - `ClientModel` — fillable: name, email, password, preferred_universe. Sanctum HasApiTokens, HasUuids, HasTranslations
 
 ### Explore
-- `ExploreBranchesAction` [GET /api/v1/explore/branches] — Haversine SQL radius search with `lat`, `lng`, `radius`, `universe` (via brand) filters. Paginated.
+- `ExploreBranchesAction` [GET /api/v1/explore/branches] — Haversine SQL radius search with `latitude`, `longitude`, `radius`, `universe` (via brand) filters. Paginated.
 - `ExploreBarbersAction` [GET /api/v1/explore/barbers] — Haversine radius search for `is_freelancer=true` barbers. Paginated.
 - `BranchResource` — id, name, email, status, latitude, longitude, brand_id, distance?, created_at
 - `BarberResource` — id, name, email, is_freelancer, status, latitude, longitude, distance?, created_at
 - `BranchModel` — fillable: name, email, password, brand_id, latitude, longitude. `BranchModel::brand()` BelongsTo BrandModel
 - `BarberModel` — fillable: name, email, password. `BarberModel::services()` morphMany
 - `BrandModel` — fillable: owner_id, name, description, logo, base_currency_id. `universe` field (default neutral)
-- Migration: branches.brand_id FK + lat/lng, barbers.lat/lng, brands.universe, clients.preferred_universe
+- Migration: branches.brand_id FK + latitude/longitude, barbers.latitude/longitude, brands.universe, clients.preferred_universe
 
 ### Models
 - `ClientModel` — HasUuids, HasTranslations, HasFactory, Notifiable, Sanctum tokens. `bans()` morphMany
@@ -45,7 +45,7 @@
 - `ListUserBookingsAction` [GET /api/v1/bookings] — auth client's paginated bookings
 - `BookingResource` — id, time_slot, status, chair (ChairResource::make), barber (BarberResource::make), services (ServiceResource::collection), at_home_location
 - `ServiceResource` — id, name, price
-- `CreateBookingRequest` — extends BaseApiFormRequest, validates chair_id/barber_id/time_slot/service_ids. Mutually exclusive validation: chair_id XOR at_home_location. at_home_location.lat/lng with required_with/prohibited_with
+- `CreateBookingRequest` — extends BaseApiFormRequest, validates chair_id/barber_id/time_slot/service_ids. Mutually exclusive validation: chair_id XOR at_home_location. at_home_location.latitude/longitude with required_with/prohibited_with
 - `CreateBookingCommand` — readonly value object with PascalCase properties (ChairId, BarberId, ClientId, TimeSlot, ServiceIds, AtHomeLocation). ChairId nullable
 - `BookingModel` — fillable: client_id, chair_id, barber_id, time_slot, status, at_home_location. HasUuids, HasFactory. at_home_location cast to array
 - Routes: bookings.php (auth:client), floor-plan.php (no auth)

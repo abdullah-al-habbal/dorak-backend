@@ -75,7 +75,7 @@ it('creates at-home booking without chair_id', function () {
     $timeSlot = Carbon::now()->addDay()->format('Y-m-d H:i:s');
 
     $response = $this->postJson('/api/v1/bookings', [
-        'at_home_location' => ['lat' => 33.5, 'lng' => 36.3],
+        'at_home_location' => ['latitude' => 33.5, 'longitude' => 36.3],
         'time_slot' => $timeSlot,
     ]);
 
@@ -89,7 +89,7 @@ it('rejects booking with both chair_id and at_home_location', function () {
 
     $response = $this->postJson('/api/v1/bookings', [
         'chair_id' => $chair->id,
-        'at_home_location' => ['lat' => 33.5, 'lng' => 36.3],
+        'at_home_location' => ['latitude' => 33.5, 'longitude' => 36.3],
         'time_slot' => $timeSlot,
     ]);
 

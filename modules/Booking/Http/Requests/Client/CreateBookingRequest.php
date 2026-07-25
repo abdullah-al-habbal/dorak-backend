@@ -19,8 +19,8 @@ final class CreateBookingRequest extends BaseApiFormRequest
             'service_ids' => ['nullable', 'array'],
             'service_ids.*' => ['string', 'exists:offered_services,id'],
             'at_home_location' => ['nullable', 'array', 'required_without:chair_id', 'prohibits:chair_id'],
-            'at_home_location.lat' => ['required_with:at_home_location', 'numeric', 'between:-90,90'],
-            'at_home_location.lng' => ['required_with:at_home_location', 'numeric', 'between:-180,180'],
+            'at_home_location.latitude' => ['required_with:at_home_location', 'numeric', 'between:-90,90'],
+            'at_home_location.longitude' => ['required_with:at_home_location', 'numeric', 'between:-180,180'],
         ];
     }
 

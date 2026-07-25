@@ -45,8 +45,8 @@ class BookingFactory extends Factory
     {
         return $this->state(fn (array $attrs) => [
             'at_home_location' => [
-                'lat' => fake()->latitude(),
-                'lng' => fake()->longitude(),
+                'latitude' => fake()->latitude(),
+                'longitude' => fake()->longitude(),
                 'address' => fake()->address(),
             ],
             'chair_id' => null,

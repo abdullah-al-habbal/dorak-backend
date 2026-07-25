@@ -4,7 +4,7 @@
 ## Frontend Consumer: [FE-01 Explore Recommendations](../../../../dorak-frontend/apps/dorak_client_app/docs/features/FE-01-explore-recommendations.md)
 
 ## What Was Built
-- `ExploreBranchesAction` — Haversine SQL radius search with `lat`, `lng`, `radius`, `universe` filters + recommendation ranking
+- `ExploreBranchesAction` — Haversine SQL radius search with `latitude`, `longitude`, `radius`, `universe` filters + recommendation ranking
 - `ExploreBarbersAction` — Haversine radius search for freelancers + recommendation ranking
 - `GetBranchDetailAction` — branch info + chairs_count + barbers + services
 - `GetBarberDetailAction` — barber info + services
@@ -120,8 +120,8 @@
 ## Query Parameters (explore list endpoints)
 | Param | Type | Default | Notes |
 |-------|------|---------|-------|
-| `lat` | float | required | User latitude |
-| `lng` | float | required | User longitude |
+| `latitude` | float | required | User latitude |
+| `longitude` | float | required | User longitude |
 | `radius` | int | 50 | km |
 | `universe` | string | — | men/women (branches only) |
 | `page` | int | 1 | Pagination |

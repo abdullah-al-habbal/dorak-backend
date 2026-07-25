@@ -19,7 +19,7 @@ final class ExploreBranchesEloquentResolver
     {
         $haversine = sprintf(
             '(6371 * acos(cos(radians(%f)) * cos(radians(latitude)) * cos(radians(longitude) - radians(%f)) + sin(radians(%f)) * sin(radians(latitude))))',
-            $payload->lat, $payload->lng, $payload->lat
+            $payload->latitude, $payload->longitude, $payload->latitude
         );
 
         $subQuery = BranchModel::query()

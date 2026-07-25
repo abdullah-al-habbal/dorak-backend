@@ -24,8 +24,8 @@
 **Request Query Parameters:**
 | Parameter | Type | Required | Notes |
 |-----------|------|----------|-------|
-| `lat` | float | yes | between -90, 90 |
-| `lng` | float | yes | between -180, 180 |
+| `latitude` | float | yes | between -90, 90 |
+| `longitude` | float | yes | between -180, 180 |
 | `radius` | float | yes | km, min: 0 |
 | `universe` | string | yes | `UniverseEnum` value |
 | `per_page` | integer | no | 1–100, default: 20 |
@@ -97,8 +97,8 @@
 **Request Query Parameters:**
 | Parameter | Type | Required | Notes |
 |-----------|------|----------|-------|
-| `lat` | float | yes | between -90, 90 |
-| `lng` | float | yes | between -180, 180 |
+| `latitude` | float | yes | between -90, 90 |
+| `longitude` | float | yes | between -180, 180 |
 | `radius` | float | yes | km, min: 0 |
 | `per_page` | integer | no | 1–100, default: 20 |
 | `catalog_item_ids[]` | array | no | integers, exists in `service_catalog_items` |

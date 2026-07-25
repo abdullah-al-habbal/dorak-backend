@@ -9,8 +9,8 @@ use Modules\Client\Enums\UniverseEnum;
 final readonly class ExploreBranchesQuery
 {
     public function __construct(
-        public float $lat,
-        public float $lng,
+        public float $latitude,
+        public float $longitude,
         public float $radius,
         public UniverseEnum $universe,
         public int $perPage,
