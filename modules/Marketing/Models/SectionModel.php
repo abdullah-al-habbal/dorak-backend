@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace Modules\Marketing\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Modules\Marketing\Database\Factories\SectionFactory;
+use Spatie\Translatable\Attributes\Translatable;
 use Spatie\Translatable\HasTranslations;
 
 #[Fillable([
@@ -23,16 +25,17 @@ use Spatie\Translatable\HasTranslations;
     'sort_order',
     'universe_visibility',
 ])]
+#[Table('sections')]
+#[Translatable([
+    'content',
+    'title',
+    'subtitle',
+])]
 final class SectionModel extends Model
 {
     use HasFactory;
     use HasTranslations;
     use HasUuids;
-
-    protected $table = 'sections';
-
-    /** @phpstan-ignore-next-line */
-    public array $translatable = ['content', 'title', 'subtitle'];
 
     protected function casts(): array
     {

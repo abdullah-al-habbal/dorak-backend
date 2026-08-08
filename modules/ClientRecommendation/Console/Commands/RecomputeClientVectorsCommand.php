@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Modules\ClientRecommendation\Console\Commands;
 
+use Illuminate\Console\Attributes\Description;
+use Illuminate\Console\Attributes\Signature;
 use Illuminate\Console\Command;
 use Laravel\Ai\Embeddings;
 use Modules\Barber\Models\BarberModel;
@@ -17,14 +19,12 @@ use Modules\ClientRecommendation\Models\EntityEmbeddingModel;
 use Modules\ClientRecommendation\Models\RecommendationEdgeModel;
 use Modules\ClientRecommendation\ValuesObjects\RecommendationFactorWeightsValueObject;
 
+#[Signature('recommend:recompute-vectors
+    {--client-id= : Recompute a single client by UUID}
+    {--force : Skip freshness check}')]
+#[Description('Recompute client preference vectors from interaction signals')]
 final class RecomputeClientVectorsCommand extends Command
 {
-    protected $signature = 'recommend:recompute-vectors
-        {--client-id= : Recompute a single client by UUID}
-        {--force : Skip freshness check}';
-
-    protected $description = 'Recompute client preference vectors from interaction signals';
-
     public function handle(): int
     {
         $clientId = $this->option('client-id');
@@ -91,6 +91,7 @@ final class RecomputeClientVectorsCommand extends Command
 
             if ($embedding === null) {
                 $this->warn("No embedding returned for {$config['type']}: {$entity->id}");
+
                 return;
             }
 
@@ -180,6 +181,7 @@ final class RecomputeClientVectorsCommand extends Command
 
             if ($embedding === null) {
                 $this->warn("No embedding returned for client: {$client->id}");
+
                 return;
             }
 

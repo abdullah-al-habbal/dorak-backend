@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Modules\OfferedService\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
 use Modules\Currency\Models\CurrencyModel;
 use Modules\ServiceCatalog\Models\ServiceCatalogItemModel;
+use Spatie\Translatable\Attributes\Translatable;
 use Spatie\Translatable\HasTranslations;
 
 #[Fillable([
@@ -27,16 +29,16 @@ use Spatie\Translatable\HasTranslations;
     'active',
     'catalog_item_id',
 ])]
+#[Table('offered_services')]
+#[Translatable([
+    'name',
+    'description',
+])]
 class OfferedServiceModel extends Model
 {
     use HasFactory;
     use HasTranslations;
     use HasUuids;
-
-    protected $table = 'offered_services';
-
-    /** @phpstan-ignore-next-line */
-    public array $translatable = ['name', 'description'];
 
     protected function casts(): array
     {

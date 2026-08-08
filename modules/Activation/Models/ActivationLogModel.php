@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Modules\Activation\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -23,12 +24,11 @@ use Modules\Admin\Models\AdminModel;
     'activated_at',
     'expires_at',
 ])]
+#[Table('activation_logs')]
 class ActivationLogModel extends Model
 {
     use HasFactory;
     use HasUuids;
-
-    protected $table = 'activation_logs';
 
     protected function casts(): array
     {

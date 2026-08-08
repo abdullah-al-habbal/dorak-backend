@@ -5,22 +5,20 @@ declare(strict_types=1);
 namespace Modules\ServiceCatalog\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Spatie\Translatable\Attributes\Translatable;
 use Spatie\Translatable\HasTranslations;
 
 #[Fillable(['name', 'slug', 'group', 'is_active'])]
+#[Table('service_catalog_item_tags')]
+#[Translatable(['name'])]
 class ServiceCatalogItemTagModel extends Model
 {
     use HasFactory, HasTranslations, SoftDeletes;
-
-    protected $table = 'service_catalog_item_tags';
-
-    protected array $translatable = [
-        'name',
-    ];
 
     protected function casts(): array
     {

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\ClientRecommendation\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\MorphTo;
@@ -15,11 +16,10 @@ use Modules\ClientRecommendation\Enums\EdgeTypeEnum;
     'target_type', 'target_id',
     'edge_type', 'weight', 'context', 'expires_at',
 ])]
+#[Table('recommendation_edges')]
 final class RecommendationEdgeModel extends Model
 {
     use HasUuids;
-
-    protected $table = 'recommendation_edges';
 
     protected function casts(): array
     {

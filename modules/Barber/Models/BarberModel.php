@@ -8,6 +8,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -22,10 +23,13 @@ use Modules\Barber\Enums\BarberStatusEnum;
 use Modules\Booking\Models\BookingModel;
 use Modules\OfferedService\Models\OfferedServiceModel;
 use Modules\Review\Models\ReviewModel;
+use Spatie\Translatable\Attributes\Translatable;
 use Spatie\Translatable\HasTranslations;
 
 #[Fillable(['name', 'email', 'password', 'status', 'is_freelancer', 'client_id', 'latitude', 'longitude', 'travel_radius'])]
 #[Hidden(['password', 'remember_token'])]
+#[Table('barbers')]
+#[Translatable(['name'])]
 class BarberModel extends Authenticatable implements FilamentUser
 {
     use HasApiTokens;
@@ -33,11 +37,6 @@ class BarberModel extends Authenticatable implements FilamentUser
     use HasTranslations;
     use HasUuids;
     use Notifiable;
-
-    protected $table = 'barbers';
-
-    /** @phpstan-ignore-next-line */
-    public array $translatable = ['name'];
 
     protected static function newFactory(): BarberFactory
     {

@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Modules\Ban\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -22,12 +23,11 @@ use Modules\Admin\Models\AdminModel;
     'banned_until',
     'admin_id',
 ])]
+#[Table('bans')]
 class BanModel extends Model
 {
     use HasFactory;
     use HasUuids;
-
-    protected $table = 'bans';
 
     protected function casts(): array
     {

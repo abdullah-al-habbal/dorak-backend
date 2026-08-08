@@ -9,6 +9,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -19,13 +20,16 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Modules\Ban\Models\BanModel;
 use Modules\Booking\Models\BookingModel;
-use Modules\Client\Enums\ClientStatusEnum;
 use Modules\Client\Database\Factories\ClientFactory;
+use Modules\Client\Enums\ClientStatusEnum;
 use Modules\Core\Enums\Universe;
+use Spatie\Translatable\Attributes\Translatable;
 use Spatie\Translatable\HasTranslations;
 
 #[Fillable(['name', 'email', 'email_verified_at', 'password', 'preferred_universe', 'phone', 'avatar', 'status'])]
 #[Hidden(['password', 'remember_token'])]
+#[Table('clients')]
+#[Translatable(['name'])]
 class ClientModel extends Authenticatable implements FilamentUser
 {
     use HasApiTokens;
@@ -34,11 +38,6 @@ class ClientModel extends Authenticatable implements FilamentUser
     use HasUuids;
     use Notifiable;
     use SoftDeletes;
-
-    protected $table = 'clients';
-
-    /** @phpstan-ignore-next-line */
-    public array $translatable = ['name'];
 
     protected static function newFactory(): ClientFactory
     {

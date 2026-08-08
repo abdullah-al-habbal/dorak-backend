@@ -8,6 +8,7 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Panel;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -19,15 +20,18 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Modules\Activation\Models\ActivationLogModel;
 use Modules\Barber\Models\BarberModel;
-use Modules\Brand\Models\BrandModel;
 use Modules\Branch\Enums\BranchStatusEnum;
+use Modules\Brand\Models\BrandModel;
 use Modules\Chair\Models\ChairModel;
 use Modules\OfferedService\Models\OfferedServiceModel;
 use Modules\Review\Models\ReviewModel;
+use Spatie\Translatable\Attributes\Translatable;
 use Spatie\Translatable\HasTranslations;
 
 #[Fillable(['name', 'email', 'password', 'brand_id', 'latitude', 'longitude', 'status'])]
 #[Hidden(['password', 'remember_token'])]
+#[Table('branches')]
+#[Translatable(['name'])]
 class BranchModel extends Authenticatable implements FilamentUser
 {
     use HasApiTokens;
@@ -35,11 +39,6 @@ class BranchModel extends Authenticatable implements FilamentUser
     use HasTranslations;
     use HasUuids;
     use Notifiable;
-
-    protected $table = 'branches';
-
-    /** @phpstan-ignore-next-line */
-    public array $translatable = ['name'];
 
     public function canAccessPanel(Panel $panel): bool
     {

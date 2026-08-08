@@ -31,9 +31,10 @@ Before implementing any feature, read `docs/13_technical-concepts.md` — mandat
 
 ## Code conventions
 
+- **Before writing ANY new code, read `.claude/skills/laravel-attributes/SKILL.md`** — full Laravel 13 attribute reference. Use attributes (not properties) for models, jobs, commands, requests, resources, factories, tests, DI.
 - `declare(strict_types=1)` on every file
 - Final classes for service providers and middleware
-- PHP 8 attributes for Eloquent model meta (`#[Fillable]`, `#[Hidden]`)
+- PHP 8 attributes for Eloquent model meta (`#[Fillable]`, `#[Hidden]`, `#[Table]`, `#[Translatable]`)
 - PSR-4: `Modules\\` → `modules/`, `Database\\Seeders\\` → `database/seeders/`, `Tests\\` → `tests/`
 - Test config uses sqlite `:memory:`, array cache/session/mail, sync queue
 

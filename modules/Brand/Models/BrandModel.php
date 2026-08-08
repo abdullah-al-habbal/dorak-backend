@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Modules\Brand\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -19,19 +20,20 @@ use Modules\Client\Models\ClientModel;
 use Modules\Currency\Models\CurrencyModel;
 use Modules\OfferedService\Models\OfferedServiceModel;
 use Modules\Preference\Models\PreferenceModel;
+use Spatie\Translatable\Attributes\Translatable;
 use Spatie\Translatable\HasTranslations;
 
 #[Fillable(['owner_id', 'name', 'description', 'logo', 'base_currency_id'])]
+#[Table('brands')]
+#[Translatable([
+    'name',
+    'description',
+])]
 class BrandModel extends Model
 {
     use HasFactory;
     use HasTranslations;
     use HasUuids;
-
-    protected $table = 'brands';
-
-    /** @phpstan-ignore-next-line */
-    public array $translatable = ['name', 'description'];
 
     protected function casts(): array
     {

@@ -22,13 +22,19 @@ description: Mandatory PHP coding conventions for this project: strict_types, fi
 
 ## PHP 8 attributes
 
-Use PHP 8 attributes for Eloquent model metadata instead of `$fillable`/`$hidden` arrays:
+Use PHP 8 attributes for Eloquent model metadata instead of `$fillable`/`$hidden`/`$table`/`$translatable` properties:
 
 ```php
 #[Fillable(['name', 'email', 'password'])]
 #[Hidden(['password', 'remember_token'])]
+#[Table('clients')]
+#[Translatable(['name'])]
 class ClientModel extends Authenticatable
 ```
+
+- `#[Table('table_name')]` replaces `protected $table`. Only pass extra args (`key`, `keyType`, `timestamps`, `dateFormat`) when the property previously set them.
+- `#[Translatable([...])]` (spatie) replaces `public array $translatable`. Import from `Spatie\Translatable\Attributes\Translatable` alongside `HasTranslations`.
+- Same value, same behaviour — attributes resolve lazily through `Model::resolveClassAttribute()` in the constructor, so runtime is identical.
 
 ## Naming
 

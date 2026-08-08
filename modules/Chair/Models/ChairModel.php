@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Modules\Chair\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,12 +18,11 @@ use Modules\Branch\Models\BranchModel;
 use Modules\Chair\Enums\ChairStatus;
 
 #[Fillable(['branch_id', 'barber_id', 'label', 'ui_metadata', 'status'])]
+#[Table('chairs')]
 class ChairModel extends Model
 {
     use HasFactory;
     use HasUuids;
-
-    protected $table = 'chairs';
 
     protected function casts(): array
     {

@@ -5,11 +5,13 @@ declare(strict_types=1);
 namespace Modules\Marketing\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Modules\Marketing\Database\Factories\TestimonialFactory;
+use Spatie\Translatable\Attributes\Translatable;
 use Spatie\Translatable\HasTranslations;
 
 #[Fillable([
@@ -21,16 +23,16 @@ use Spatie\Translatable\HasTranslations;
     'rating',
     'display_order',
 ])]
+#[Table('testimonials')]
+#[Translatable([
+    'quote',
+    'author_title',
+])]
 final class TestimonialModel extends Model
 {
     use HasFactory;
     use HasTranslations;
     use HasUuids;
-
-    protected $table = 'testimonials';
-
-    /** @phpstan-ignore-next-line */
-    public array $translatable = ['quote', 'author_title'];
 
     protected function casts(): array
     {

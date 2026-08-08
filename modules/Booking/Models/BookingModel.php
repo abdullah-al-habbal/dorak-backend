@@ -6,6 +6,7 @@ declare(strict_types=1);
 namespace Modules\Booking\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,12 +21,11 @@ use Modules\OfferedService\Models\OfferedServiceModel;
 use Modules\Review\Models\ReviewModel;
 
 #[Fillable(['client_id', 'chair_id', 'barber_id', 'time_slot', 'status', 'at_home_location'])]
+#[Table('bookings')]
 class BookingModel extends Model
 {
     use HasFactory;
     use HasUuids;
-
-    protected $table = 'bookings';
 
     protected function casts(): array
     {

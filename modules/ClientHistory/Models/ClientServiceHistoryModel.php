@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Modules\ClientHistory\Models;
 
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Attributes\Table;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -30,11 +31,10 @@ use Modules\ServiceCatalog\Models\ServiceCatalogItemModel;
     'barber_notes',
     'metadata',
 ])]
+#[Table('client_service_histories')]
 class ClientServiceHistoryModel extends Model
 {
     use HasUuids;
-
-    protected $table = 'client_service_histories';
 
     protected function casts(): array
     {
