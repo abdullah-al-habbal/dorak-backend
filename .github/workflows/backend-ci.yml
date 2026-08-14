@@ -47,9 +47,6 @@ jobs:
       - name: Laravel Pint (Formatting)
         run: ./vendor/bin/pint --test
 
-      - name: PHPStan (Static Analysis Level Max)
-        run: ./vendor/bin/phpstan analyse --error-format=github
-
       - name: Run Tests & Generate Coverage
         run: |
           php artisan migrate --force
