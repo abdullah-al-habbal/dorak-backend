@@ -11,7 +11,8 @@ use Modules\ClientRecommendation\Constants\RecommendationConstants;
 
 #[Name('explore-ranking')]
 final class ExploreRankingFeature
-{   public function resolve(?string $clientId): string
+{
+    public function resolve(?string $clientId): string
     {
         if ($clientId === null) {
             return RecommendationConstants::EXPLORE_RANKING_VARIANT_DEFAULT;

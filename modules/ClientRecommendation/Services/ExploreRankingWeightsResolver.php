@@ -19,7 +19,7 @@ final class ExploreRankingWeightsResolver
 
         $variant = Feature::for($clientId)->value(ExploreRankingFeature::class);
 
-        return $variant ===  RecommendationConstants::EXPLORE_RANKING_VARIANT_FACTOR_WEIGHTS_V2
+        return $variant === RecommendationConstants::EXPLORE_RANKING_VARIANT_FACTOR_WEIGHTS_V2
             ? $this->factorWeightsV2()
             : RecommendationFactorWeightsValueObject::defaults();
     }
