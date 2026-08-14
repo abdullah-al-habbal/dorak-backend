@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 use Laravel\Pennant\Feature;
-use Modules\ClientRecommendation\Features\ExploreRankingFeature;
+use Modules\ClientRecommendation\Constants\RecommendationConstants;
 use Modules\ClientRecommendation\Services\ExploreRankingWeightsResolver;
 use Modules\ClientRecommendation\ValuesObjects\RecommendationFactorWeightsValueObject;
 
@@ -16,7 +16,7 @@ it('returns default weights for guest without a client scope', function () {
 it('returns factor-weights-v2 when feature activated for the client', function () {
     $clientId = '11111111-1111-1111-1111-111111111111';
 
-    Feature::for($clientId)->activate('explore-ranking', ExploreRankingFeature::VariantFactorWeightsV2);
+    Feature::for($clientId)->activate('explore-ranking', RecommendationConstants::EXPLORE_RANKING_VARIANT_FACTOR_WEIGHTS_V2);
 
     $weights = app(ExploreRankingWeightsResolver::class)->resolveFor($clientId);
 
@@ -28,7 +28,7 @@ it('returns factor-weights-v2 when feature activated for the client', function (
 });
 
 it('returns default weights when feature resolves to the default variant', function () {
-    Feature::define('explore-ranking', fn () => ExploreRankingFeature::VariantDefault);
+    Feature::define('explore-ranking', fn () => RecommendationConstants::EXPLORE_RANKING_VARIANT_DEFAULT);
 
     $weights = app(ExploreRankingWeightsResolver::class)->resolveFor('a5d1c9a1-1234-4abc-9def-000000000001');
 

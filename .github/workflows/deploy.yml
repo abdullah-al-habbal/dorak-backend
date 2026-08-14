@@ -25,11 +25,11 @@ jobs:
           if [ "${GITHUB_REF_NAME}" = "main" ]; then
             echo "TARGET=/home/u685718414/domains/dev-dorak-backend.io/public_html/main" >> $GITHUB_ENV
             echo "ENVIRONMENT=production" >> $GITHUB_ENV
-            echo "COMPOSER_FLAGS=--no-dev --optimize-autoloader --no-interaction" >> $GITHUB_ENV
+            echo "COMPOSER_FLAGS=--no-dev --optimize-autoloader --no-interaction --no-scripts" >> $GITHUB_ENV
           else
             echo "TARGET=/home/u685718414/domains/dev-dorak-backend.io/public_html/dev" >> $GITHUB_ENV
             echo "ENVIRONMENT=development" >> $GITHUB_ENV
-            echo "COMPOSER_FLAGS=--optimize-autoloader --no-interaction" >> $GITHUB_ENV
+            echo "COMPOSER_FLAGS=--optimize-autoloader --no-interaction --no-scripts" >> $GITHUB_ENV
           fi
 
       - name: 🔍 Check for seed flag
@@ -85,10 +85,31 @@ jobs:
             git checkout ${{ github.ref_name }}
 
             # ═══════════════════════════════════════════════════════════════
+            # 🔑 Prepare .env before installing dependencies
+            # composer install uses --no-scripts, so the app must be
+            # bootable (valid .env) before package:discover runs later.
+            # key:generate is deferred until after composer install because
+            # a fresh clone has no vendor/ and artisan cannot boot yet.
+            # ═══════════════════════════════════════════════════════════════
+            FIRST_DEPLOY=false
+            if [ -f "$CURRENT_DIR/.env" ]; then
+              cp "$CURRENT_DIR/.env" .env
+            else
+              cp .env.example .env
+              FIRST_DEPLOY=true
+            fi
+
+            # ═══════════════════════════════════════════════════════════════
             # 📦 Install dependencies
             # ═══════════════════════════════════════════════════════════════
             echo "📦 Installing PHP dependencies..."
             composer install $COMPOSER_FLAGS
+            $PHP_BIN artisan package:discover --ansi
+
+            if [ "$FIRST_DEPLOY" = "true" ]; then
+              echo "🔑 Generating application key..."
+              $PHP_BIN artisan key:generate
+            fi
 
             # ═══════════════════════════════════════════════════════════════
             # 🗄️ Prepare directories & symlinks
@@ -96,14 +117,6 @@ jobs:
             mkdir -p storage/logs
             mkdir -p storage/framework/{cache,sessions,views}
             mkdir -p storage/app/public
-
-            # Copy existing .env if exists
-            if [ -f "$CURRENT_DIR/.env" ]; then
-              cp "$CURRENT_DIR/.env" .env
-            else
-              cp .env.example .env
-              $PHP_BIN artisan key:generate
-            fi
 
             # Storage symlink (Hostinger disables exec)
             rm -f public/storage

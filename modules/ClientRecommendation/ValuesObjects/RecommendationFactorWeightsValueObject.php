@@ -1,19 +1,15 @@
 <?php
 
+// modules/ClientRecommendation/ValuesObjects/RecommendationFactorWeightsValueObject.php
+
 declare(strict_types=1);
 
 namespace Modules\ClientRecommendation\ValuesObjects;
 
+use Modules\ClientRecommendation\Constants\RecommendationConstants;
+
 final readonly class RecommendationFactorWeightsValueObject
 {
-    private const float DEFAULT_ALPHA = 0.4;
-
-    private const float DEFAULT_BETA = 0.3;
-
-    private const float DEFAULT_GAMMA = 0.1;
-
-    private const float DEFAULT_GEOGRAPHIC = 0.2;
-
     private function __construct(
         private float $alpha,
         private float $beta,
@@ -23,24 +19,21 @@ final readonly class RecommendationFactorWeightsValueObject
 
     public static function defaults(): self
     {
-        return new self(
-            alpha: self::DEFAULT_ALPHA,
-            beta: self::DEFAULT_BETA,
-            gamma: self::DEFAULT_GAMMA,
-            geographic: self::DEFAULT_GEOGRAPHIC,
-        );
+        return self::fromArray(RecommendationConstants::DEFAULT_WEIGHTS);
     }
 
     public static function fromArray(array $data): self
     {
-        $total = (float) ($data['alpha'] ?? self::DEFAULT_ALPHA)
-            + (float) ($data['beta'] ?? self::DEFAULT_BETA)
-            + (float) ($data['gamma'] ?? self::DEFAULT_GAMMA);
+        $defaults = RecommendationConstants::DEFAULT_WEIGHTS;
+
+        $total = (float) ($data['alpha'] ?? $defaults['alpha'])
+            + (float) ($data['beta'] ?? $defaults['beta'])
+            + (float) ($data['gamma'] ?? $defaults['gamma']);
 
         return new self(
-            alpha: (float) ($data['alpha'] ?? self::DEFAULT_ALPHA),
-            beta: (float) ($data['beta'] ?? self::DEFAULT_BETA),
-            gamma: (float) ($data['gamma'] ?? self::DEFAULT_GAMMA),
+            alpha: (float) ($data['alpha'] ?? $defaults['alpha']),
+            beta: (float) ($data['beta'] ?? $defaults['beta']),
+            gamma: (float) ($data['gamma'] ?? $defaults['gamma']),
             geographic: $total >= 1.0 ? 0.0 : (1.0 - $total),
         );
     }
