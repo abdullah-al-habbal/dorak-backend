@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 use Modules\Barber\Models\BarberModel;
+use Modules\Booking\Models\BookingModel;
 
 it('lists freelancer barbers within radius with distance', function () {
     $barber = BarberModel::factory()->freelancer()->create([
@@ -96,4 +97,39 @@ it('returns empty when no barbers nearby', function () {
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(0);
+});
+
+it('excludes barbers with an in-progress confirmed booking when filtering availableNow', function () {
+    $barber = BarberModel::factory()->freelancer()->create([
+        'latitude' => 33.5,
+        'longitude' => 36.3,
+    ]);
+
+    BookingModel::factory()->create([
+        'barber_id' => $barber->id,
+        'time_slot' => now()->subMinutes(30),
+    ]);
+
+    $response = $this->getJson('/api/v1/explore/barbers?latitude=33.5&longitude=36.3&radius=1000&available_now=true');
+
+    $response->assertOk();
+    expect($response->json('data'))->toHaveCount(0);
+});
+
+it('includes barbers with only future confirmed bookings when filtering availableNow', function () {
+    $barber = BarberModel::factory()->freelancer()->create([
+        'latitude' => 33.5,
+        'longitude' => 36.3,
+    ]);
+
+    BookingModel::factory()->create([
+        'barber_id' => $barber->id,
+        'time_slot' => now()->addHour(),
+    ]);
+
+    $response = $this->getJson('/api/v1/explore/barbers?latitude=33.5&longitude=36.3&radius=1000&available_now=true');
+
+    $response->assertOk();
+    expect($response->json('data'))->toHaveCount(1);
+    expect($response->json('data.0.id'))->toBe($barber->id);
 });

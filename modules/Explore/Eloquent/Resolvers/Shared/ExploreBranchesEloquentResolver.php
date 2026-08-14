@@ -113,8 +113,8 @@ final class ExploreBranchesEloquentResolver
 
         if ($payload->availableNow !== null && $payload->availableNow) {
             $query->whereHas('chairs', fn ($q) => $q->whereDoesntHave('bookings', fn ($b) => $b->where('status', 'confirmed')
-                ->where('time_slot', '<=', DB::raw('NOW()'))
-                ->where(DB::raw("time_slot + INTERVAL '1 hour'"), '>', DB::raw('NOW()'))
+                ->where('time_slot', '<=', now())
+                ->where('time_slot', '>', now()->subHour())
             )
             );
         }

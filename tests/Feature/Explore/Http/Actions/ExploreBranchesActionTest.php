@@ -2,8 +2,10 @@
 
 declare(strict_types=1);
 
+use Modules\Booking\Models\BookingModel;
 use Modules\Branch\Models\BranchModel;
 use Modules\Brand\Models\BrandModel;
+use Modules\Chair\Models\ChairModel;
 
 beforeEach(function () {
     $this->brand = BrandModel::factory()->create(['universe' => 'men']);
@@ -109,4 +111,43 @@ it('returns empty when no branches nearby', function () {
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(0);
+});
+
+it('excludes branches with an in-progress confirmed booking when filtering availableNow', function () {
+    $branch = BranchModel::factory()->create([
+        'latitude' => 33.5,
+        'longitude' => 36.3,
+        'brand_id' => $this->brand->id,
+    ]);
+    $chair = ChairModel::factory()->create(['branch_id' => $branch->id]);
+
+    BookingModel::factory()->create([
+        'chair_id' => $chair->id,
+        'time_slot' => now()->subMinutes(30),
+    ]);
+
+    $response = $this->getJson('/api/v1/explore/branches?latitude=33.5&longitude=36.3&radius=1000&universe=men&per_page=10&available_now=true');
+
+    $response->assertOk();
+    expect($response->json('data'))->toHaveCount(0);
+});
+
+it('includes branches with only future confirmed bookings when filtering availableNow', function () {
+    $branch = BranchModel::factory()->create([
+        'latitude' => 33.5,
+        'longitude' => 36.3,
+        'brand_id' => $this->brand->id,
+    ]);
+    $chair = ChairModel::factory()->create(['branch_id' => $branch->id]);
+
+    BookingModel::factory()->create([
+        'chair_id' => $chair->id,
+        'time_slot' => now()->addHour(),
+    ]);
+
+    $response = $this->getJson('/api/v1/explore/branches?latitude=33.5&longitude=36.3&radius=1000&universe=men&per_page=10&available_now=true');
+
+    $response->assertOk();
+    expect($response->json('data'))->toHaveCount(1);
+    expect($response->json('data.0.id'))->toBe($branch->id);
 });

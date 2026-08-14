@@ -124,7 +124,7 @@ php artisan test --filter Core   # only Core-related tests
 2. Create a new branch per feature.
 3. Follow the established naming conventions and code rules.
 4. Write tests in the `tests/` directory.
-5. Ensure `composer analyze` and `composer test` pass before pushing.
+5. Ensure `composer test` passes before pushing.
 
 ## License
 
