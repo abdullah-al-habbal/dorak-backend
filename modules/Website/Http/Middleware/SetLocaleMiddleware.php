@@ -13,11 +13,7 @@ final class SetLocaleMiddleware
 {
     public function handle(Request $request, Closure $next): mixed
     {
-        $locale = $request->route('locale', 'ar');
-
-        if (! in_array($locale, ['ar', 'en'], true)) {
-            $locale = 'ar';
-        }
+        $locale = $request->getPreferredLanguage(['ar', 'en']) ?? 'ar';
 
         App::setLocale($locale);
 

@@ -287,7 +287,7 @@
 - 34 dedicated feature tests across 6 modules (OfferedService, Ban, Client, ClientFaceProfile, ClientInteraction, ClientRecommendation)
 
 ### Onboarding
-- `GetOnboardingConfigAction` [GET /api/v1/app/onboarding-config] — locale resolution `?locale=` → `Accept-Language` → `en`; season `?season=` → month auto-detect (`Season::fromMonth`). Returns `{hero_image_url, season, locale}`. Fallback chain: exact season → default row (season null) → first active row any locale → 404. No auth.
+- `GetOnboardingConfigAction` [GET /api/v1/app/onboarding-config] — locale resolution `Accept-Language` header → `en`; season `?season=` → month auto-detect (`Season::fromMonth`). Locale must be sent via the `Accept-Language` header only — never in the URL path or query params. Returns `{hero_image_url, season, locale}`. Fallback chain: exact season → default row (season null) → first active row any locale → 404. No auth.
 - `OnboardingConfigurationModel` — uuid pk, locale (2), season (nullable), hero_image_path, is_active, sort_order. Unique(locale, season)
 - `Season` enum — spring/summer/autumn/winter + `fromMonth()`
 - `OnboardingConfigSeeder` — config-driven `Config/seed_onboarding_configs.php` via `BulkSeedable`; triggered on deploy by `[seed-onboarding]` commit flag

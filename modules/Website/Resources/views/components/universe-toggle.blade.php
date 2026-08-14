@@ -4,16 +4,16 @@
     <button @click="toggleUniverse('neutral')"
             :class="universe === 'neutral' ? 'bg-accent text-white' : 'bg-white text-slate-600 hover:bg-slate-50'"
             class="px-3 py-1.5 transition">
-        {{ __('general') }}
+        {{ __('website::universe.general') }}
     </button>
     <button @click="toggleUniverse('men')"
             :class="universe === 'men' ? 'bg-accent text-white' : 'bg-white text-slate-600 hover:bg-slate-50'"
             class="border-x border-slate-200 px-3 py-1.5 transition">
-        {{ __('men') }}
+        {{ __('website::universe.men') }}
     </button>
     <button @click="toggleUniverse('women')"
             :class="universe === 'women' ? 'bg-accent text-white' : 'bg-white text-slate-600 hover:bg-slate-50'"
             class="px-3 py-1.5 transition">
-        {{ __('women') }}
+        {{ __('website::universe.women') }}
     </button>
 </div>

@@ -10,13 +10,13 @@
         <meta name="description" content="{{ $page['page']['meta_description'] }}">
     @endisset
 
-    <title>{{ isset($page['page']['title']) ? $page['page']['title'] . ' — Dorak' : 'Dorak' }}</title>
+    <title>{{ isset($page['page']['title']) ? $page['page']['title'] . ' — ' . __('website::brand.name') : __('website::meta.default_title') }}</title>
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="bg-white text-slate-900 antialiased" x-data="websiteStore()">
     <div class="flex min-h-screen flex-col">
-        <x-website::navbar :locale="$locale" />
+        <x-website::navbar />
 
         <main class="flex-1">
             {{ $slot }}

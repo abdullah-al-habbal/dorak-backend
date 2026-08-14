@@ -40,7 +40,7 @@
             </div>
 
             <div x-show="!loading && !floorPlan" x-cloak class="py-20 text-center text-sm text-slate-400">
-                {{ __('Floor plan demo unavailable.') }}
+                {{ __('website::floor_plan.unavailable') }}
             </div>
         </div>
     </div>

@@ -19,7 +19,7 @@ it('returns the seasonal config for the requested locale', function () {
     seedOnboardingRow(['season' => 'summer', 'hero_image_path' => 'assets/images/onboarding/en/summer/hero.jpg', 'sort_order' => 1]);
     seedOnboardingRow();
 
-    $response = $this->getJson('/api/v1/app/onboarding-config?locale=en&season=summer');
+    $response = $this->withHeaders(['Accept-Language' => 'en'])->getJson('/api/v1/app/onboarding-config?season=summer');
 
     $response->assertOk();
     $response->assertJsonStructure([
@@ -33,7 +33,7 @@ it('returns the seasonal config for the requested locale', function () {
 it('falls back to the default row when season has no match', function () {
     seedOnboardingRow();
 
-    $response = $this->getJson('/api/v1/app/onboarding-config?locale=en&season=winter');
+    $response = $this->withHeaders(['Accept-Language' => 'en'])->getJson('/api/v1/app/onboarding-config?season=winter');
 
     $response->assertOk();
     expect($response->json('data.season'))->toBeNull();
@@ -42,7 +42,7 @@ it('falls back to the default row when season has no match', function () {
 it('falls back to any active locale when requested locale has no rows', function () {
     seedOnboardingRow(['locale' => 'ar', 'hero_image_path' => 'assets/images/onboarding/ar/default/hero.jpg']);
 
-    $response = $this->getJson('/api/v1/app/onboarding-config?locale=en');
+    $response = $this->withHeaders(['Accept-Language' => 'en'])->getJson('/api/v1/app/onboarding-config');
 
     $response->assertOk();
     expect($response->json('data.locale'))->toBe('ar');
@@ -58,13 +58,13 @@ it('resolves locale from Accept-Language header', function () {
 });
 
 it('returns 404 when no active config exists', function () {
-    $response = $this->getJson('/api/v1/app/onboarding-config?locale=en');
+    $response = $this->getJson('/api/v1/app/onboarding-config');
 
     $response->assertNotFound();
 });
 
-it('validates locale and season against allowed enums', function () {
-    $response = $this->getJson('/api/v1/app/onboarding-config?locale=fr&season=xyz');
+it('validates season against allowed enum', function () {
+    $response = $this->getJson('/api/v1/app/onboarding-config?season=xyz');
 
     $response->assertStatus(422);
 });
