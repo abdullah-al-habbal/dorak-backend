@@ -90,13 +90,15 @@ jobs:
             # key:generate is deferred until after composer install because
             # a fresh clone has no vendor/ and artisan cannot boot yet.
             # ═══════════════════════════════════════════════════════════════
-            FIRST_DEPLOY=false
-            if [ -f "$CURRENT_DIR/.env" ]; then
-              cp "$CURRENT_DIR/.env" .env
-            else
-              cp .env.example .env
-              FIRST_DEPLOY=true
+            SHARED_DIR="/home/u685718414/domains/dev-dorak-backend.io/shared"
+            ENV_FILE="$SHARED_DIR/.env"
+
+            if [ ! -f "$ENV_FILE" ]; then
+              echo "❌ Missing server environment file: $ENV_FILE"
+              exit 1
             fi
+
+            ln -s "$ENV_FILE" .env
 
             # ═══════════════════════════════════════════════════════════════
             # 📦 Install dependencies
@@ -104,11 +106,6 @@ jobs:
             echo "📦 Installing PHP dependencies..."
             composer install $COMPOSER_FLAGS
             $PHP_BIN artisan package:discover --ansi
-
-            if [ "$FIRST_DEPLOY" = "true" ]; then
-              echo "🔑 Generating application key..."
-              $PHP_BIN artisan key:generate
-            fi
 
             # ═══════════════════════════════════════════════════════════════
             # 🗄️ Prepare directories & symlinks
