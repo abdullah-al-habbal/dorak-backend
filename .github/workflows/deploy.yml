@@ -52,7 +52,6 @@ jobs:
           envs: TARGET,ENVIRONMENT,COMPOSER_FLAGS,SEED_ONBOARDING
           timeout: 60s
           command_timeout: 30m
-          script_stop: true
           script: |
             set -Eeuo pipefail
 
@@ -64,7 +63,7 @@ jobs:
             # ═══════════════════════════════════════════════════════════════
             # 🔑 SSH/Git setup
             # ═══════════════════════════════════════════════════════════════
-            DEPLOY_KEY="/home/u685718414/.ssh/dorak_deploy_key"
+            DEPLOY_KEY="/home/u685718414/.ssh/deploy_key"
             export GIT_SSH_COMMAND="ssh -i $DEPLOY_KEY -o IdentitiesOnly=yes -o StrictHostKeyChecking=no"
             PHP_BIN="$(command -v php8.4 || command -v php8.3 || command -v php || echo /usr/bin/php)"
 
