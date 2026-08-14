@@ -65,7 +65,14 @@ jobs:
             # ═══════════════════════════════════════════════════════════════
             DEPLOY_KEY="/home/u685718414/.ssh/deploy_key"
             export GIT_SSH_COMMAND="ssh -i $DEPLOY_KEY -o IdentitiesOnly=yes -o StrictHostKeyChecking=no"
-            PHP_BIN="$(command -v php8.4 || command -v php8.3 || command -v php || echo /usr/bin/php)"
+            PHP_BIN="$(command -v php8.5 || command -v php || echo /usr/bin/php)"
+
+            if [ "$("$PHP_BIN" -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')" != "8.5" ]; then
+              echo "❌ PHP 8.5 is required, found: $("$PHP_BIN" -v | head -n 1)"
+              exit 1
+            fi
+
+            echo "🐘 Using PHP: $("$PHP_BIN" -v | head -n 1)"
 
             echo "🎯 Deploying to: $TARGET ($ENVIRONMENT)"
 
