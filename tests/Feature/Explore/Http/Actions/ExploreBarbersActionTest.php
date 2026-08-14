@@ -110,7 +110,7 @@ it('excludes barbers with an in-progress confirmed booking when filtering availa
         'time_slot' => now()->subMinutes(30),
     ]);
 
-    $response = $this->getJson('/api/v1/explore/barbers?latitude=33.5&longitude=36.3&radius=1000&available_now=true');
+    $response = $this->getJson('/api/v1/explore/barbers?latitude=33.5&longitude=36.3&radius=1000&available_now=1');
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(0);
@@ -127,7 +127,7 @@ it('includes barbers with only future confirmed bookings when filtering availabl
         'time_slot' => now()->addHour(),
     ]);
 
-    $response = $this->getJson('/api/v1/explore/barbers?latitude=33.5&longitude=36.3&radius=1000&available_now=true');
+    $response = $this->getJson('/api/v1/explore/barbers?latitude=33.5&longitude=36.3&radius=1000&available_now=1');
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(1);

@@ -13,12 +13,14 @@ class ChairFactory extends Factory
 {
     protected $model = ChairModel::class;
 
+    private static int $labelSequence = 0;
+
     public function definition(): array
     {
         return [
             'branch_id' => BranchModel::factory(),
             'barber_id' => null,
-            'label' => fake()->randomElement(['1', '2', '3', '4']),
+            'label' => (string) (++self::$labelSequence),
             'ui_metadata' => [
                 'shape' => 'rectangle',
                 'position_x' => fake()->numberBetween(10, 500),

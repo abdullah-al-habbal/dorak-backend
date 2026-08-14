@@ -84,6 +84,7 @@ class BarberModel extends Authenticatable implements FilamentUser
             'status' => BarberStatusEnum::class,
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_freelancer' => 'boolean',
             'travel_radius' => 'decimal:2',
             'latitude' => 'decimal:8',
             'longitude' => 'decimal:8',

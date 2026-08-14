@@ -1163,7 +1163,10 @@ describe('Chair API', function () {
     describe('GET /api/v1/branches/{branch}/chairs', function () {
         it('returns chairs filtered by branch', function () {
             $branch = BranchModel::factory()->create();
-            ChairModel::factory()->count(2)->create(['branch_id' => $branch->id]);
+            ChairModel::factory()->count(2)->sequence(
+                ['branch_id' => $branch->id, 'label' => '1'],
+                ['branch_id' => $branch->id, 'label' => '2'],
+            )->create();
 
             $response = $this->getJson("/api/v1/branches/{$branch->id}/chairs");
 

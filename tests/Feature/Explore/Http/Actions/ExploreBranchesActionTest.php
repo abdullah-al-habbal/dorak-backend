@@ -126,7 +126,7 @@ it('excludes branches with an in-progress confirmed booking when filtering avail
         'time_slot' => now()->subMinutes(30),
     ]);
 
-    $response = $this->getJson('/api/v1/explore/branches?latitude=33.5&longitude=36.3&radius=1000&universe=men&per_page=10&available_now=true');
+    $response = $this->getJson('/api/v1/explore/branches?latitude=33.5&longitude=36.3&radius=1000&universe=men&per_page=10&available_now=1');
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(0);
@@ -145,7 +145,7 @@ it('includes branches with only future confirmed bookings when filtering availab
         'time_slot' => now()->addHour(),
     ]);
 
-    $response = $this->getJson('/api/v1/explore/branches?latitude=33.5&longitude=36.3&radius=1000&universe=men&per_page=10&available_now=true');
+    $response = $this->getJson('/api/v1/explore/branches?latitude=33.5&longitude=36.3&radius=1000&universe=men&per_page=10&available_now=1');
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(1);

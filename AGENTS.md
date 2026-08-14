@@ -3,9 +3,10 @@
 ```bash
 composer setup          # install + .env + key:generate + migrate + npm
 composer dev            # server, queue, logs, vite concurrently
-composer test           # config:clear + pest/phpunit
-composer analyze        # phpstan level 9 via larastan
+composer test           # config:clear + pest/phpunit (MySQL dorak_test via .env.testing)
 ```
+
+- Husky pre-push hook runs `pint --test` + `composer test` before every push; CI only checks formatting (`pint --test`). Tests are gated locally, not in CI.
 
 ## Architecture
 
@@ -36,7 +37,7 @@ Before implementing any feature, read `docs/13_technical-concepts.md` — mandat
 - Final classes for service providers and middleware
 - PHP 8 attributes for Eloquent model meta (`#[Fillable]`, `#[Hidden]`, `#[Table]`, `#[Translatable]`)
 - PSR-4: `Modules\\` → `modules/`, `Database\\Seeders\\` → `database/seeders/`, `Tests\\` → `tests/`
-- Test config uses sqlite `:memory:`, array cache/session/mail, sync queue
+- Test config targets a dedicated MySQL/MariaDB test DB via gitignored `.env.testing` (DB `dorak_test`), array cache/session/mail, sync queue
 
 ## Remaining Gaps (from `docs/02_prd.md` §5 + §8)
 
