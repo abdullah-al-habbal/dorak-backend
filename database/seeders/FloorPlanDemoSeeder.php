@@ -7,6 +7,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Modules\Branch\Enums\BranchStatusEnum;
 use Modules\Branch\Models\BranchModel;
+use Modules\Brand\Models\BrandModel;
 use Modules\Chair\Enums\ChairStatus;
 use Modules\Chair\Models\ChairModel;
 
@@ -14,11 +15,14 @@ final class FloorPlanDemoSeeder extends Seeder
 {
     public function run(): void
     {
+        $brand = BrandModel::query()->first() ?? BrandModel::factory()->create();
+
         $branch = BranchModel::query()->firstOrCreate(
             ['email' => 'demo@dorak.sy'],
             [
                 'name' => ['en' => 'Demo Salon', 'ar' => 'صالون تجريبي'],
                 'password' => bcrypt('password'),
+                'brand_id' => $brand->id,
                 'status' => BranchStatusEnum::Enabled->value,
             ],
         );
@@ -36,14 +40,14 @@ final class FloorPlanDemoSeeder extends Seeder
                 'branch_id' => $branch->id,
                 'label' => $chair['label'],
                 'status' => $chair['status']->value,
-                'ui_metadata' => [
+                'ui_metadata' => json_encode([
                     'shape' => 'circle',
                     'position_x' => $chair['position_x'],
                     'position_y' => $chair['position_y'],
                     'width' => 60,
                     'height' => 60,
                     'rotation' => 0,
-                ],
+                ]),
                 'created_at' => now(),
                 'updated_at' => now(),
             ];

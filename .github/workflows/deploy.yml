@@ -1,0 +1,153 @@
+name: 🚀 Deploy Dorak Backend
+
+on:
+  push:
+    branches: [main, dev]
+  workflow_dispatch:
+    branches: [main, dev]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    name: 🚀 Deploy to Hostinger
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🔍 Determine target environment
+        id: target
+        run: |
+          if [ "${GITHUB_REF_NAME}" = "main" ]; then
+            echo "TARGET=/home/u685718414/domains/dev-dorak-backend.io/public_html/main" >> $GITHUB_ENV
+            echo "ENVIRONMENT=production" >> $GITHUB_ENV
+            echo "COMPOSER_FLAGS=--no-dev --optimize-autoloader --no-interaction" >> $GITHUB_ENV
+          else
+            echo "TARGET=/home/u685718414/domains/dev-dorak-backend.io/public_html/dev" >> $GITHUB_ENV
+            echo "ENVIRONMENT=development" >> $GITHUB_ENV
+            echo "COMPOSER_FLAGS=--optimize-autoloader --no-interaction" >> $GITHUB_ENV
+          fi
+
+      - name: 🔍 Check for seed flag
+        id: check_seed
+        run: |
+          if echo "${{ github.event.head_commit.message }}" | grep -qF '[seed-onboarding]'; then
+            echo "SEED_ONBOARDING=true" >> $GITHUB_ENV
+            echo "✅ Onboarding seed flag detected"
+          else
+            echo "SEED_ONBOARDING=false" >> $GITHUB_ENV
+          fi
+
+      - name: 🚀 Deploy via SSH
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.HOSTINGER_SERVER_IP }}
+          username: ${{ secrets.HOSTINGER_USERNAME }}
+          key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
+          port: ${{ secrets.HOSTINGER_SSH_PORT }}
+          envs: TARGET,ENVIRONMENT,COMPOSER_FLAGS,SEED_ONBOARDING
+          timeout: 60s
+          command_timeout: 30m
+          script_stop: true
+          script: |
+            set -Eeuo pipefail
+
+            TARGET="${{ env.TARGET }}"
+            ENVIRONMENT="${{ env.ENVIRONMENT }}"
+            COMPOSER_FLAGS="${{ env.COMPOSER_FLAGS }}"
+            SEED_ONBOARDING="${{ env.SEED_ONBOARDING }}"
+
+            # ═══════════════════════════════════════════════════════════════
+            # 🔑 SSH/Git setup
+            # ═══════════════════════════════════════════════════════════════
+            DEPLOY_KEY="/home/u685718414/.ssh/dorak_deploy_key"
+            export GIT_SSH_COMMAND="ssh -i $DEPLOY_KEY -o IdentitiesOnly=yes -o StrictHostKeyChecking=no"
+            PHP_BIN="$(command -v php8.4 || command -v php8.3 || command -v php || echo /usr/bin/php)"
+
+            echo "🎯 Deploying to: $TARGET ($ENVIRONMENT)"
+
+            # ═══════════════════════════════════════════════════════════════
+            # 📁 Atomic swap deployment (zero downtime)
+            # ═══════════════════════════════════════════════════════════════
+            RELEASE_DIR="${TARGET}_release_$(date +%Y%m%d_%H%M%S)"
+            CURRENT_DIR="${TARGET}"
+
+            # Clone fresh (without deleting current)
+            echo "📥 Cloning fresh repository..."
+            git clone git@github-dbnkalhbalbgmail:abdullah-al-habbal/dorak-backend.git "$RELEASE_DIR"
+            cd "$RELEASE_DIR"
+
+            # Checkout target branch
+            git checkout ${{ github.ref_name }}
+
+            # ═══════════════════════════════════════════════════════════════
+            # 📦 Install dependencies
+            # ═══════════════════════════════════════════════════════════════
+            echo "📦 Installing PHP dependencies..."
+            composer install $COMPOSER_FLAGS
+
+            # ═══════════════════════════════════════════════════════════════
+            # 🗄️ Prepare directories & symlinks
+            # ═══════════════════════════════════════════════════════════════
+            mkdir -p storage/logs
+            mkdir -p storage/framework/{cache,sessions,views}
+            mkdir -p storage/app/public
+
+            # Copy existing .env if exists
+            if [ -f "$CURRENT_DIR/.env" ]; then
+              cp "$CURRENT_DIR/.env" .env
+            else
+              cp .env.example .env
+              $PHP_BIN artisan key:generate
+            fi
+
+            # Storage symlink (Hostinger disables exec)
+            rm -f public/storage
+            ln -s ../storage/app/public public/storage
+
+            # ═══════════════════════════════════════════════════════════════
+            # 🗄️ Migrations + Seeding
+            # ═══════════════════════════════════════════════════════════════
+            MIGRATE_LOCK="/tmp/laravel_migrate_$(basename "$TARGET").lock"
+            echo "🗄️ Running migrations..."
+            flock -n "$MIGRATE_LOCK" $PHP_BIN artisan migrate --force
+
+            if [ "${SEED_ONBOARDING}" = "true" ]; then
+              echo "🌱 Running OnboardingConfigSeeder..."
+              $PHP_BIN artisan db:seed --class="Modules\Onboarding\Database\Seeders\OnboardingConfigSeeder" --force
+            fi
+
+            # ═══════════════════════════════════════════════════════════════
+            # 🧹 Cache & optimize
+            # ═══════════════════════════════════════════════════════════════
+            echo "🧹 Clearing and caching..."
+            $PHP_BIN artisan optimize:clear
+            $PHP_BIN artisan config:cache
+            $PHP_BIN artisan route:cache
+            $PHP_BIN artisan view:cache
+
+            # ═══════════════════════════════════════════════════════════════
+            # 🔄 Atomic swap (zero downtime)
+            # ═══════════════════════════════════════════════════════════════
+            echo "🔄 Swapping to new release..."
+            # Remove old backup if exists
+            rm -rf "${CURRENT_DIR}_old" 2>/dev/null || true
+            # Move current to old backup
+            if [ -d "$CURRENT_DIR" ]; then
+              mv "$CURRENT_DIR" "${CURRENT_DIR}_old"
+            fi
+            # Move new release to current
+            mv "$RELEASE_DIR" "$CURRENT_DIR"
+
+            # ═══════════════════════════════════════════════════════════════
+            # ✅ Verify
+            # ═══════════════════════════════════════════════════════════════
+            cd "$CURRENT_DIR"
+            $PHP_BIN artisan about
+
+            echo "🎉 Deployment to $ENVIRONMENT completed successfully!"
+            echo "💡 Old release: ${CURRENT_DIR}_old (remove manually after verification)"

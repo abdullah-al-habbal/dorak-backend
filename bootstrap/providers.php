@@ -30,6 +30,7 @@ use Modules\JobPosting\Providers\JobPostingServiceProvider;
 use Modules\Language\Providers\LanguageServiceProvider;
 use Modules\Marketing\Providers\MarketingServiceProvider;
 use Modules\OfferedService\Providers\OfferedServiceServiceProvider;
+use Modules\Onboarding\Providers\OnboardingServiceProvider;
 use Modules\Preference\Providers\PreferenceServiceProvider;
 use Modules\Review\Providers\ReviewServiceProvider;
 use Modules\ServiceCatalog\Providers\ServiceCatalogServiceProvider;
@@ -59,6 +60,7 @@ return [
     PreferenceServiceProvider::class,
     BarberAffiliationServiceProvider::class,
     OfferedServiceServiceProvider::class,
+    OnboardingServiceProvider::class,
     ChairServiceProvider::class,
     BookingServiceProvider::class,
     ReviewServiceProvider::class,

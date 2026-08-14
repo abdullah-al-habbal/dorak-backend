@@ -19,6 +19,8 @@ return new class extends Migration
             $table->json('ui_metadata');
             $table->string('status');
             $table->timestamps();
+
+            $table->unique(['branch_id', 'label']);
         });
     }
 

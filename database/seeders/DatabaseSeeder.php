@@ -22,6 +22,7 @@ use Modules\Marketing\Database\Seeders\MarketingPageSeeder;
 use Modules\Marketing\Database\Seeders\SectionSeeder;
 use Modules\Marketing\Database\Seeders\TestimonialSeeder;
 use Modules\OfferedService\Database\Seeders\OfferedServiceSeeder;
+use Modules\Onboarding\Database\Seeders\OnboardingConfigSeeder;
 use Modules\Preference\Database\Seeders\PreferenceSeeder;
 use Modules\Review\Database\Seeders\ReviewSeeder;
 
@@ -32,6 +33,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             LanguageSeeder::class,
             CurrencySeeder::class,
+            OnboardingConfigSeeder::class,
             AdminSeeder::class,
             BarberSeeder::class,
             BranchSeeder::class,
