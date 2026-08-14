@@ -1,5 +1,7 @@
 # Dorak Platform — Post-Launch Improvements
 
+> ⚠️ **HISTORICAL (updated 2026-08-09):** The Flutter frontend was removed on 2026-08-09 and is being rebuilt from scratch (new UI/UX). All `dorak-frontend/apps/...` file-path references and frontend-specific findings below are superseded; the performance/security *findings* remain valid requirements for the rebuild.
+
 > **Created:** 2026-07-25
 > **Status:** ✅ ALL COMPLETE
 

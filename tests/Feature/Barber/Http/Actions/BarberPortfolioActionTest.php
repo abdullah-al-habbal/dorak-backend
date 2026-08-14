@@ -78,7 +78,7 @@ it('requires authentication for upload', function () {
 it('deletes a portfolio photo', function () {
     $photo = BarberPortfolioPhotoModel::factory()->create([
         'barber_id' => $this->barber->id,
-        'path' => 'portfolio/' . $this->barber->id . '/test.jpg',
+        'path' => 'portfolio/'.$this->barber->id.'/test.jpg',
     ]);
 
     $response = $this->deleteJson("/api/v1/barber/portfolio/{$photo->id}");

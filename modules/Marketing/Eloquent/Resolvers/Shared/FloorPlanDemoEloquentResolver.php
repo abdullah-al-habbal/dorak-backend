@@ -9,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 use Modules\Branch\Models\BranchModel;
 use Modules\Chair\Models\ChairModel;
 
-
 final class FloorPlanDemoEloquentResolver
 {
     private const DEMO_BRANCH_EMAIL = 'demo@dorak.sy';

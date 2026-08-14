@@ -7,8 +7,11 @@ namespace Modules\ClientRecommendation\ValuesObjects;
 final readonly class RecommendationFactorWeightsValueObject
 {
     private const float DEFAULT_ALPHA = 0.4;
+
     private const float DEFAULT_BETA = 0.3;
+
     private const float DEFAULT_GAMMA = 0.1;
+
     private const float DEFAULT_GEOGRAPHIC = 0.2;
 
     private function __construct(
@@ -52,8 +55,23 @@ final readonly class RecommendationFactorWeightsValueObject
         ];
     }
 
-    public function alpha(): float { return $this->alpha; }
-    public function beta(): float { return $this->beta; }
-    public function gamma(): float { return $this->gamma; }
-    public function geographic(): float { return $this->geographic; }
+    public function alpha(): float
+    {
+        return $this->alpha;
+    }
+
+    public function beta(): float
+    {
+        return $this->beta;
+    }
+
+    public function gamma(): float
+    {
+        return $this->gamma;
+    }
+
+    public function geographic(): float
+    {
+        return $this->geographic;
+    }
 }

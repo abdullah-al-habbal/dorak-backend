@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Modules\Marketing\Eloquent\Resolvers\Shared;
 
 use Illuminate\Database\Eloquent\Collection;
-
 use Modules\Marketing\Models\TestimonialModel;
 
 final class TestimonialEloquentResolver
@@ -16,5 +15,4 @@ final class TestimonialEloquentResolver
             ->where('section_id', $sectionId)
             ->get();
     }
-
 }

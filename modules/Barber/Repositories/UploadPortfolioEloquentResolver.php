@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace Modules\Barber\Repositories;
 
 use Modules\Barber\CQRS\Command\Barber\UploadPortfolioCommand;
-use Modules\Barber\Models\BarberPortfolioPhotoModel;
 use Modules\Barber\Models\BarberModel;
+use Modules\Barber\Models\BarberPortfolioPhotoModel;
 
 final class UploadPortfolioEloquentResolver
 {
@@ -14,7 +14,7 @@ final class UploadPortfolioEloquentResolver
     {
         $barber = BarberModel::findOrFail($command->barberId);
 
-        $path = $command->photo->store('portfolio/' . $barber->id, 'public');
+        $path = $command->photo->store('portfolio/'.$barber->id, 'public');
 
         $maxOrder = BarberPortfolioPhotoModel::where('barber_id', $barber->id)
             ->max('sort_order') ?? 0;

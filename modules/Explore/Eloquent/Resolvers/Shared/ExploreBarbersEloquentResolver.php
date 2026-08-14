@@ -10,11 +10,15 @@ use Modules\Barber\Models\BarberModel;
 use Modules\ClientRecommendation\Models\ClientPreferenceVectorModel;
 use Modules\ClientRecommendation\Models\EntityEmbeddingModel;
 use Modules\ClientRecommendation\Models\RecommendationEdgeModel;
-use Modules\ClientRecommendation\ValuesObjects\RecommendationFactorWeightsValueObject;
+use Modules\ClientRecommendation\Services\ExploreRankingWeightsResolver;
 use Modules\Explore\CQRS\Query\Shared\ExploreBarbersQuery;
 
 final class ExploreBarbersEloquentResolver
 {
+    public function __construct(
+        private readonly ExploreRankingWeightsResolver $weightsResolver,
+    ) {}
+
     public function resolve(ExploreBarbersQuery $payload): LengthAwarePaginator
     {
         $haversine = sprintf(
@@ -62,16 +66,14 @@ final class ExploreBarbersEloquentResolver
         if ($payload->faceShapeCompatible !== null) {
             $faceMatchIds = BarberModel::query()
                 ->whereIn('id', $barberIds)
-                ->whereHas('services', fn ($q) =>
-                    $q->whereHas('catalogItem', fn ($q) =>
-                        $q->whereJsonContains('face_shapes', $payload->faceShapeCompatible)
-                    )
+                ->whereHas('services', fn ($q) => $q->whereHas('catalogItem', fn ($q) => $q->whereJsonContains('face_shapes', $payload->faceShapeCompatible)
+                )
                 )
                 ->pluck('id')
                 ->toArray();
         }
 
-        $weights = RecommendationFactorWeightsValueObject::defaults();
+        $weights = $this->weightsResolver->resolveFor($payload->clientId);
 
         $scored = $paginator->getCollection()->map(function ($barber) use ($edgeWeights, $faceMatchIds, $payload, $clientEmbedding, $targetEmbeddings, $weights) {
             $geographic = 1 / (1 + $barber->distance / $payload->radius);
@@ -102,16 +104,14 @@ final class ExploreBarbersEloquentResolver
     private function applyFilters($query, ExploreBarbersQuery $payload)
     {
         if ($payload->catalogItemIds !== null) {
-            $query->whereHas('services', fn ($q) =>
-                $q->whereIn('catalog_item_id', $payload->catalogItemIds)
+            $query->whereHas('services', fn ($q) => $q->whereIn('catalog_item_id', $payload->catalogItemIds)
             );
         }
 
         if ($payload->availableNow !== null && $payload->availableNow) {
-            $query->whereDoesntHave('bookings', fn ($b) =>
-                $b->where('status', 'confirmed')
-                    ->where('time_slot', '<=', DB::raw('NOW()'))
-                    ->where(DB::raw("time_slot + INTERVAL '1 hour'"), '>', DB::raw('NOW()'))
+            $query->whereDoesntHave('bookings', fn ($b) => $b->where('status', 'confirmed')
+                ->where('time_slot', '<=', DB::raw('NOW()'))
+                ->where(DB::raw("time_slot + INTERVAL '1 hour'"), '>', DB::raw('NOW()'))
             );
         }
 
@@ -123,15 +123,15 @@ final class ExploreBarbersEloquentResolver
         }
 
         if ($payload->ratingMin !== null) {
-            $query->whereHas('reviews', fn ($q) =>
-                $q->select(DB::raw('avg(rating)'))
-                    ->groupBy('subject_id')
-                    ->having(DB::raw('avg(rating)'), '>=', $payload->ratingMin)
+            $query->whereHas('reviews', fn ($q) => $q->select(DB::raw('avg(rating)'))
+                ->groupBy('subject_id')
+                ->having(DB::raw('avg(rating)'), '>=', $payload->ratingMin)
             );
         }
 
         return $query;
     }
+
     private function cosineSimilarity(array $a, array $b): float
     {
         $dot = 0.0;
@@ -145,6 +145,7 @@ final class ExploreBarbersEloquentResolver
             $normB += $val * $val;
         }
         $denom = sqrt($normA) * sqrt($normB);
+
         return $denom > 0.0 ? $dot / $denom : 0.0;
     }
 }

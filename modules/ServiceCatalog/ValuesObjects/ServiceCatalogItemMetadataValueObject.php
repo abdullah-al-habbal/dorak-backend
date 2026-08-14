@@ -4,16 +4,13 @@ declare(strict_types=1);
 
 namespace Modules\ServiceCatalog\ValuesObjects;
 
-use Webmozart\Assert\Assert;
-
 final readonly class ServiceCatalogItemMetadataValueObject
 {
     private function __construct(
         private ?int $durationMinutes,
         private ?int $minAgeYears,
         private ?int $maxAgeYears,
-    ) {
-    }
+    ) {}
 
     public static function fromArray(array $data): self
     {

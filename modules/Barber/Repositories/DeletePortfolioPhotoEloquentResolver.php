@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Modules\Barber\Repositories;
 
+use Illuminate\Support\Facades\Storage;
 use Modules\Barber\CQRS\Command\Barber\DeletePortfolioPhotoCommand;
 use Modules\Barber\Models\BarberPortfolioPhotoModel;
-use Illuminate\Support\Facades\Storage;
 
 final class DeletePortfolioPhotoEloquentResolver
 {

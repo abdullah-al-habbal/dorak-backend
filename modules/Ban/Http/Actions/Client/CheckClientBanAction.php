@@ -9,7 +9,7 @@ use Modules\Ban\Handlers\Client\CheckClientBanHandler;
 use Modules\Ban\Http\Requests\Client\CheckClientBanRequest;
 use Modules\Core\Http\Actions\BaseApiAction;
 
-// todo: we must move it into Modules/Ban/Http/Actions/Api/V1/Client/CheckClientBanAction.php, 
+// todo: we must move it into Modules/Ban/Http/Actions/Api/V1/Client/CheckClientBanAction.php,
 final class CheckClientBanAction extends BaseApiAction
 {
     public function __construct(

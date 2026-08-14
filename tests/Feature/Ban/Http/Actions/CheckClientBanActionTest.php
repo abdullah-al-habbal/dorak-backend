@@ -67,7 +67,7 @@ it('returns 403 when checking another clients bans', function () {
 });
 
 it('returns 404 for non-existent client', function () {
-    $response = $this->getJson('/api/v1/clients/' . fake()->uuid() . '/bans/check');
+    $response = $this->getJson('/api/v1/clients/'.fake()->uuid().'/bans/check');
 
     $response->assertNotFound();
 });

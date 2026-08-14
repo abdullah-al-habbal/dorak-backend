@@ -3,9 +3,9 @@
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;
+use Modules\Chair\Http\Actions\Client\UpdateChairAction;
 use Modules\Chair\Http\Actions\Shared\ListChairsAction;
 use Modules\Chair\Http\Actions\Shared\ShowChairAction;
-use Modules\Chair\Http\Actions\Client\UpdateChairAction;
 
 Route::get('/chairs', ListChairsAction::class)->name('chairs.list');
 Route::get('/chairs/{chair}', ShowChairAction::class)->name('chairs.show');

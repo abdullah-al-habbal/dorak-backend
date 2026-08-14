@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Modules\Barber\Http\Actions\Barber;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 use Modules\Barber\Handlers\Barber\UploadPortfolioHandler;
 use Modules\Barber\Http\Requests\Barber\UploadPortfolioRequest;
 use Modules\Core\Http\Actions\BaseApiAction;
-use Illuminate\Support\Facades\Storage;
 
 final class UploadPortfolioAction extends BaseApiAction
 {

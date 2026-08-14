@@ -20,7 +20,7 @@ it('lists chairs filtered by branch', function () {
     $branchChair = ChairModel::factory()->create();
     ChairModel::factory()->create();
 
-    $response = $this->getJson('/api/v1/chairs?branch_id=' . $branchChair->branch_id);
+    $response = $this->getJson('/api/v1/chairs?branch_id='.$branchChair->branch_id);
 
     $response->assertOk();
     expect($response->json('data'))->toHaveCount(1);

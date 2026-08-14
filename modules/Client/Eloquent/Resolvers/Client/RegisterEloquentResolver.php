@@ -8,7 +8,7 @@ use Illuminate\Support\Facades\Hash;
 use Modules\Client\CQRS\Command\Client\RegisterCommand;
 use Modules\Client\Models\ClientModel;
 
-final class RegisterEloquentResolver 
+final class RegisterEloquentResolver
 {
     public function resolve(RegisterCommand $command): ClientModel
     {

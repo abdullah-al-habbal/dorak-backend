@@ -15,7 +15,7 @@ class BarberPortfolioPhotoFactory extends Factory
     {
         return [
             'barber_id' => null,
-            'path' => 'portfolio/' . fake()->uuid() . '/photo.jpg',
+            'path' => 'portfolio/'.fake()->uuid().'/photo.jpg',
             'sort_order' => fake()->numberBetween(0, 100),
         ];
     }

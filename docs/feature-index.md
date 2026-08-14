@@ -102,6 +102,7 @@
 - Routes: jobs.php
 
 ### Frontend Consumption
+> ⚠️ **HISTORICAL (2026-08-09):** Flutter frontend removed + being rebuilt. These API endpoints remain the stable contract for the new client.
 - Brand list/detail screens (Flutter client app) — connected to Brand API (GET /brands, GET /brands/{id})
 - BarberAffiliation list/accept/reject screens (Flutter client app) — connected to BarberAffiliation API
 - JobPosting list/detail/apply screens (Flutter client app) — connected to JobPosting API
@@ -323,4 +324,4 @@ All backend features built, tested, and passing (343 tests, 0 failures).
 - `ScopePanelToCurrentUser` middleware — global scopes: BarberModel, BookingModel, OfferedServiceModel, ReviewModel, BarberAffiliationModel, ApplicationModel
 
 ### Future Phases (not started)
-See `docs/12_implementation-prd.md#phase-6--12` for scope
+See `docs/02_prd.md` §5 (phase roadmap) and §8 (open decisions) for remaining scope.

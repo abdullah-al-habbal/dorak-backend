@@ -8,7 +8,6 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Modules\Booking\CQRS\Query\Client\ListUserBookingsQuery;
 use Modules\Booking\Eloquent\Resolvers\Client\ListUserBookingsEloquentResolver;
 
-
 final class ListUserBookingsHandler
 {
     public function __construct(

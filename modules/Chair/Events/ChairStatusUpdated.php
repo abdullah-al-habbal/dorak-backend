@@ -14,7 +14,9 @@ final class ChairStatusUpdated implements ShouldBroadcast
     use Dispatchable, SerializesModels;
 
     public string $chairId;
+
     public string $branchId;
+
     public string $status;
 
     public function __construct(string $chairId, string $branchId, string $status)
@@ -26,7 +28,7 @@ final class ChairStatusUpdated implements ShouldBroadcast
 
     public function broadcastOn(): Channel
     {
-        return new Channel('floor-plan.' . $this->branchId);
+        return new Channel('floor-plan.'.$this->branchId);
     }
 
     public function broadcastAs(): string

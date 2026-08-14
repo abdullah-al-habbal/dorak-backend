@@ -5,10 +5,10 @@ declare(strict_types=1);
 namespace Modules\Client\Http\Actions\Client;
 
 use Illuminate\Http\JsonResponse;
+use Illuminate\Support\Facades\Storage;
 use Modules\Client\Handlers\Client\UploadAvatarHandler;
 use Modules\Client\Http\Requests\Client\UploadAvatarRequest;
 use Modules\Core\Http\Actions\BaseApiAction;
-use Illuminate\Support\Facades\Storage;
 
 final class UploadAvatarAction extends BaseApiAction
 {

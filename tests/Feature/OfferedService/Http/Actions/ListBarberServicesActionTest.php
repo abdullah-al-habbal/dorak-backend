@@ -36,7 +36,7 @@ it('returns empty list when barber has no services', function () {
 });
 
 it('returns 500 for non-existent barber', function () {
-    $response = $this->getJson('/api/v1/barbers/' . fake()->uuid() . '/services');
+    $response = $this->getJson('/api/v1/barbers/'.fake()->uuid().'/services');
 
     $response->assertStatus(404);
 });

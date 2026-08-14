@@ -10,11 +10,15 @@ use Modules\Branch\Models\BranchModel;
 use Modules\ClientRecommendation\Models\ClientPreferenceVectorModel;
 use Modules\ClientRecommendation\Models\EntityEmbeddingModel;
 use Modules\ClientRecommendation\Models\RecommendationEdgeModel;
-use Modules\ClientRecommendation\ValuesObjects\RecommendationFactorWeightsValueObject;
+use Modules\ClientRecommendation\Services\ExploreRankingWeightsResolver;
 use Modules\Explore\CQRS\Query\Shared\ExploreBranchesQuery;
 
 final class ExploreBranchesEloquentResolver
 {
+    public function __construct(
+        private readonly ExploreRankingWeightsResolver $weightsResolver,
+    ) {}
+
     public function resolve(ExploreBranchesQuery $payload): LengthAwarePaginator
     {
         $haversine = sprintf(
@@ -63,16 +67,14 @@ final class ExploreBranchesEloquentResolver
         if ($payload->faceShapeCompatible !== null) {
             $faceMatchIds = BranchModel::query()
                 ->whereIn('id', $branchIds)
-                ->whereHas('offeredServices', fn ($q) =>
-                    $q->whereHas('catalogItem', fn ($q) =>
-                        $q->whereJsonContains('face_shapes', $payload->faceShapeCompatible)
-                    )
+                ->whereHas('offeredServices', fn ($q) => $q->whereHas('catalogItem', fn ($q) => $q->whereJsonContains('face_shapes', $payload->faceShapeCompatible)
+                )
                 )
                 ->pluck('id')
                 ->toArray();
         }
 
-        $weights = RecommendationFactorWeightsValueObject::defaults();
+        $weights = $this->weightsResolver->resolveFor($payload->clientId);
 
         $scored = $paginator->getCollection()->map(function ($branch) use ($edgeWeights, $faceMatchIds, $payload, $clientEmbedding, $targetEmbeddings, $weights) {
             $geographic = 1 / (1 + $branch->distance / $payload->radius);
@@ -105,18 +107,15 @@ final class ExploreBranchesEloquentResolver
     private function applyFilters($query, ExploreBranchesQuery $payload)
     {
         if ($payload->catalogItemIds !== null) {
-            $query->whereHas('offeredServices', fn ($q) =>
-                $q->whereIn('catalog_item_id', $payload->catalogItemIds)
+            $query->whereHas('offeredServices', fn ($q) => $q->whereIn('catalog_item_id', $payload->catalogItemIds)
             );
         }
 
         if ($payload->availableNow !== null && $payload->availableNow) {
-            $query->whereHas('chairs', fn ($q) =>
-                $q->whereDoesntHave('bookings', fn ($b) =>
-                    $b->where('status', 'confirmed')
-                        ->where('time_slot', '<=', DB::raw('NOW()'))
-                        ->where(DB::raw("time_slot + INTERVAL '1 hour'"), '>', DB::raw('NOW()'))
-                )
+            $query->whereHas('chairs', fn ($q) => $q->whereDoesntHave('bookings', fn ($b) => $b->where('status', 'confirmed')
+                ->where('time_slot', '<=', DB::raw('NOW()'))
+                ->where(DB::raw("time_slot + INTERVAL '1 hour'"), '>', DB::raw('NOW()'))
+            )
             );
         }
 
@@ -128,10 +127,9 @@ final class ExploreBranchesEloquentResolver
         }
 
         if ($payload->ratingMin !== null) {
-            $query->whereHas('reviews', fn ($q) =>
-                $q->select(DB::raw('avg(rating)'))
-                    ->groupBy('subject_id')
-                    ->having(DB::raw('avg(rating)'), '>=', $payload->ratingMin)
+            $query->whereHas('reviews', fn ($q) => $q->select(DB::raw('avg(rating)'))
+                ->groupBy('subject_id')
+                ->having(DB::raw('avg(rating)'), '>=', $payload->ratingMin)
             );
         }
 

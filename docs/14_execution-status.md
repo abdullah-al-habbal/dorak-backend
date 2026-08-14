@@ -1,5 +1,7 @@
 # Dorak Platform — Execution Status
 
+> ⚠️ **HISTORICAL (updated 2026-08-09):** Frontend section superseded — Flutter frontend removed 2026-08-09, being rebuilt (new UI/UX). Backend test counts stale: actual = **463 passing** (was 401). "Remaining Work: None" is inaccurate — see `current_state.md` for genuine gaps (A/B framework, real AI face analysis, Phase 3).
+
 > **Last Updated:** 2026-07-25
 
 ---

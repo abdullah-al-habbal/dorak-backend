@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Modules\Booking\Http\Actions\Client;
 
 use Illuminate\Http\JsonResponse;
+use Modules\Booking\Handlers\Client\ListUserBookingsHandler;
 use Modules\Booking\Http\Requests\Client\ListUserBookingsRequest;
 use Modules\Booking\Http\Resources\Client\BookingResource;
-use Modules\Booking\Handlers\Client\ListUserBookingsHandler;
 use Modules\Core\Http\Actions\BaseApiAction;
 
 final class ListUserBookingsAction extends BaseApiAction

@@ -6,8 +6,8 @@ namespace Modules\BarberAffiliation\Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Modules\Barber\Models\BarberModel;
-use Modules\BarberAffiliation\Enums\AffiliationStatus;
 use Modules\BarberAffiliation\Enums\AffiliableType;
+use Modules\BarberAffiliation\Enums\AffiliationStatus;
 use Modules\BarberAffiliation\Models\BarberAffiliationModel;
 use Modules\Branch\Models\BranchModel;
 

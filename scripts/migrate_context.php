@@ -25,13 +25,12 @@ declare(strict_types=1);
  * After all migrations, grep tests/ for old namespace references and fix manually:
  *   grep -rn "use Modules\\" tests/ | grep -E "(Actions|Handlers|Resolvers|CQRS|Requests|Resources)\\\"
  */
-
 $oldFile = $argv[1] ?? null;
 $newFile = $argv[2] ?? null;
 $oldNamespace = $argv[3] ?? null;
 $newNamespace = $argv[4] ?? null;
 
-if (!$oldFile || !$newFile || !$oldNamespace || !$newNamespace) {
+if (! $oldFile || ! $newFile || ! $oldNamespace || ! $newNamespace) {
     fwrite(STDERR, "Usage: php scripts/migrate_context.php <old-file> <new-file> <old-ns> <new-ns>\n");
     exit(1);
 }
@@ -40,12 +39,12 @@ $className = pathinfo($oldFile, PATHINFO_FILENAME);
 
 // Step 1: Create directory and move file
 $newDir = dirname($newFile);
-if (!is_dir($newDir)) {
+if (! is_dir($newDir)) {
     mkdir($newDir, 0777, true);
     echo "  Created directory: $newDir\n";
 }
 
-if (!rename($oldFile, $newFile)) {
+if (! rename($oldFile, $newFile)) {
     fwrite(STDERR, "  ERROR: Failed to move $oldFile -> $newFile\n");
     exit(1);
 }
@@ -56,7 +55,7 @@ $content = file_get_contents($newFile);
 $oldNsDecl = "namespace $oldNamespace;";
 $newNsDecl = "namespace $newNamespace;";
 
-if (!str_contains($content, $oldNsDecl)) {
+if (! str_contains($content, $oldNsDecl)) {
     fwrite(STDERR, "  WARNING: Namespace '$oldNamespace' not found in $newFile\n");
     // Try to find what namespace is actually there
     if (preg_match('/^namespace\s+(.+?);/m', $content, $matches)) {
@@ -73,26 +72,34 @@ $oldUse = "use $oldNamespace\\$className;";
 $newUse = "use $newNamespace\\$className;";
 
 $filesUpdated = 0;
-$rootDir = realpath(__DIR__ . '/..');
-$searchDirs = [$rootDir . '/modules'];
+$rootDir = realpath(__DIR__.'/..');
+$searchDirs = [$rootDir.'/modules'];
 
 // Also search in bootstrap/ and config/ for any class references
-$searchDirs[] = $rootDir . '/bootstrap';
-$searchDirs[] = $rootDir . '/config';
+$searchDirs[] = $rootDir.'/bootstrap';
+$searchDirs[] = $rootDir.'/config';
 
 foreach ($searchDirs as $searchDir) {
-    if (!is_dir($searchDir)) continue;
+    if (! is_dir($searchDir)) {
+        continue;
+    }
 
     $iterator = new RecursiveIteratorIterator(
         new RecursiveDirectoryIterator($searchDir, RecursiveDirectoryIterator::SKIP_DOTS)
     );
 
     foreach ($iterator as $file) {
-        if ($file->getExtension() !== 'php') continue;
-        if (str_contains($file->getPathname(), '/vendor/')) continue;
+        if ($file->getExtension() !== 'php') {
+            continue;
+        }
+        if (str_contains($file->getPathname(), '/vendor/')) {
+            continue;
+        }
 
         $fileContent = @file_get_contents($file->getPathname());
-        if ($fileContent === false) continue;
+        if ($fileContent === false) {
+            continue;
+        }
 
         if (str_contains($fileContent, $oldUse)) {
             $fileContent = str_replace($oldUse, $newUse, $fileContent);

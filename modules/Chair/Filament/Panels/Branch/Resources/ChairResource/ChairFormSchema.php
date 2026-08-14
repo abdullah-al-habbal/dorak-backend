@@ -9,7 +9,6 @@ use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Form;
-use Modules\Barber\Models\BarberModel;
 use Modules\Chair\Enums\ChairStatus;
 
 final class ChairFormSchema

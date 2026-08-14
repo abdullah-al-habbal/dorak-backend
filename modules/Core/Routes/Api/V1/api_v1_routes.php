@@ -1,6 +1,6 @@
 <?php
 
-// /home/lenovo/work/me/dorak/dorak-backend/modules/Core/Routes/Api/V1/api_v1_routes.php
+// root/modules/Core/Routes/Api/V1/api_v1_routes.php
 declare(strict_types=1);
 
 use Illuminate\Support\Facades\Route;

@@ -1,4 +1,4 @@
-{{-- /home/lenovo/work/me/dorak/dorak-backend/modules/Website/Resources/views/layouts/app.blade.php --}}
+{{-- root/modules/Website/Resources/views/layouts/app.blade.php --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ app()->getLocale() === 'ar' ? 'rtl' : 'ltr' }}" data-theme="neutral">
 <head>

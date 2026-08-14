@@ -5,9 +5,9 @@ declare(strict_types=1);
 use Illuminate\Support\Facades\Route;
 use Modules\ServiceCatalog\Http\Actions\Client\CreateCatalogItemAction;
 use Modules\ServiceCatalog\Http\Actions\Client\DeleteCatalogItemAction;
+use Modules\ServiceCatalog\Http\Actions\Client\UpdateCatalogItemAction;
 use Modules\ServiceCatalog\Http\Actions\Shared\ListCatalogItemsAction;
 use Modules\ServiceCatalog\Http\Actions\Shared\ShowCatalogItemAction;
-use Modules\ServiceCatalog\Http\Actions\Client\UpdateCatalogItemAction;
 
 Route::get('/service-catalog/items', ListCatalogItemsAction::class)->name('service-catalog.items.list');
 Route::get('/service-catalog/items/{id}', ShowCatalogItemAction::class)->name('service-catalog.items.show');

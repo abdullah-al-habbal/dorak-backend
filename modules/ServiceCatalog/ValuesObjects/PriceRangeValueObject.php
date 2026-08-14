@@ -12,8 +12,7 @@ final readonly class PriceRangeValueObject
         private float $min,
         private float $max,
         private string $currency,
-    ) {
-    }
+    ) {}
 
     public static function fromArray(array $data): self
     {

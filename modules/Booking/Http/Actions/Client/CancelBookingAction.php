@@ -27,7 +27,7 @@ final class CancelBookingAction extends BaseApiAction
             };
 
             return $this->error(
-                message: __('booking::messages.' . $result->errorCode),
+                message: __('booking::messages.'.$result->errorCode),
                 status: $status,
             );
         }

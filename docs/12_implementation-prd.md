@@ -1,5 +1,7 @@
 # 12 — Implementation PRD: From Current State to MVP
 
+> ⚠️ **HISTORICAL (updated 2026-08-09):** All Track A + Track B gaps resolved. The Flutter frontend was removed on 2026-08-09 and is being rebuilt from scratch (new UI/UX). Sections referencing `dorak_client_app` screens (§1 Track B consumer, §4) are superseded — treat API endpoints as the stable contract.
+
 > **Preface:** All 20 backend modules have database schema + Filament admin panels. "CRUD" in Dorak means **Filament management UI**, not REST API. This document clarifies what exists, what's missing, and what to build in what order — across **two tracks**: Admin Panel (Filament) and Client API (REST).
 > Consumes the current-state snapshot from `dorak/report.md` and the ticket definitions in `process/KANBAN.md`.
 

@@ -12,7 +12,7 @@ composer analyze        # phpstan level 9 via larastan
 - **Core module** `Modules\Core` — foundation config, migrations, shared infrastructure. Feature modules (e.g. `Modules\Client`) add their own providers via `bootstrap/providers.php`.
 - No `app/`, `config/`, `routes/` directories
 - `bootstrap/app.php` registers `AssignRequestUuidMiddleware` globally; API routes return JSON
-- `Modules\Core\Providers\ApplicationServiceProvider::loadConfig()` manually `require`s every file in `modules/Core/Config/*.php` and sets config key = filename — Laravel does NOT auto-load these
+- `Modules\Core\Providers\ApplicationServiceProvider::loadAppConfig()` manually `require`s every file in `modules/Core/Config/*.php` and sets config key = filename — Laravel does NOT auto-load these. It **skips when config is cached** (keys already baked into `config.php`; re-requiring would call `env()` which returns null after caching) and **preserves `app.providers`** (injected from `bootstrap/providers.php` — clobbering it breaks provider registration after `config:cache`).
 - Translations loaded from `modules/Core/lang/` under `core::` namespace
 - Migrations loaded from `modules/Core/Database/Migrations/`
 - Error handling via `ErrorCodeEnum` (string backed) with HTTP status + `core::messages.*` lang keys
@@ -38,11 +38,13 @@ Before implementing any feature, read `docs/13_technical-concepts.md` — mandat
 - PSR-4: `Modules\\` → `modules/`, `Database\\Seeders\\` → `database/seeders/`, `Tests\\` → `tests/`
 - Test config uses sqlite `:memory:`, array cache/session/mail, sync queue
 
-## Remaining Gaps (from `docs/12_implementation-prd.md`)
+## Remaining Gaps (from `docs/02_prd.md` §5 + §8)
 
 All original backend gaps resolved — Application, OfferedService, Ban, Social Login APIs all built and contract-tested.
 
-See `docs/feature-index.md` → "Remaining Backend Gaps" for details.
+Genuine remaining gaps (not in code): A/B testing framework, real AI face analysis (`modules/ClientFaceProfile/Jobs/AnalyzeFacePhotoJob.php` is an MVP stub), Phase 3 "Power & Polish", ~8 open product decisions. See `current_state.md` §3.
+
+> **Frontend (2026-08-09):** Flutter apps removed from this repo — moved to `~/dorak-frontend`, being rebuilt from scratch (new UI/UX). Backend docs referencing `dorak-frontend/apps/...` paths are historical; the API contract sections (`docs/feature-index.md`, `docs/13_technical-concepts.md`) remain the stable contract for the rebuild.
 
 ## Framework
 

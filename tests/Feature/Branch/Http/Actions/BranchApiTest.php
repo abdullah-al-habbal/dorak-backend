@@ -10,7 +10,6 @@ use Modules\Branch\Models\BranchModel;
 use Modules\Chair\Enums\ChairStatus;
 use Modules\Chair\Events\ChairStatusUpdated;
 use Modules\Chair\Models\ChairModel;
-use Modules\JobPosting\Enums\JobPostingStatusEnum;
 use Modules\JobPosting\Models\ApplicationModel;
 use Modules\JobPosting\Models\JobPostingModel;
 use Modules\Review\Models\ReviewModel;

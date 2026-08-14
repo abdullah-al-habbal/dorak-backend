@@ -25,6 +25,14 @@ final class ApplicationServiceProvider extends BaseModuleServiceProvider
 
     public function register(): void
     {
+        // When config is cached, the custom config keys are already baked into
+        // bootstrap/cache/config.php (loadAppConfig ran during `config:cache`).
+        // Re-requiring the files here would call env() — which returns null once
+        // config is cached — and trigger TypeErrors / null-value config.
+        if ($this->app->configurationIsCached()) {
+            return;
+        }
+
         $this->loadAppConfig();
     }
 
@@ -72,7 +80,17 @@ final class ApplicationServiceProvider extends BaseModuleServiceProvider
 
         foreach (glob($path.'/*.php') as $file) {
             $key = basename($file, '.php');
-            $config->set($key, require $file);
+            $values = require $file;
+
+            // The framework injects `app.providers` from bootstrap/providers.php.
+            // Never let the file-defined config clobber it — replacing it breaks
+            // provider registration after `config:cache` (all framework providers
+            // silently vanish on the next boot).
+            if ($key === 'app' && $config->has('app.providers')) {
+                $values['providers'] = $config->get('app.providers');
+            }
+
+            $config->set($key, $values);
         }
     }
 }

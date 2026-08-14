@@ -1,4 +1,4 @@
-{{-- /home/lenovo/work/me/dorak/dorak-backend/modules/Website/Resources/views/components/hero.blade.php --}}
+{{-- root/modules/Website/Resources/views/components/hero.blade.php --}}
 @props(['content' => null])
 
 @if ($content)

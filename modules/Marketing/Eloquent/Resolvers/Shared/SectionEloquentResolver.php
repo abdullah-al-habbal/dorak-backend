@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Modules\Marketing\Eloquent\Resolvers\Shared;
 
 use Illuminate\Database\Eloquent\Collection;
-
 use Modules\Marketing\Models\SectionModel;
 
 final class SectionEloquentResolver

@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Modules\ClientFaceProfile\Eloquent\Resolvers;
 
-use Illuminate\Support\Facades\Storage;
 use Modules\ClientFaceProfile\CQRS\Command\UploadFaceProfilePhotoCommand;
 use Modules\ClientFaceProfile\Models\ClientFaceProfileModel;
 

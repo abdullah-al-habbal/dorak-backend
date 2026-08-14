@@ -1,6 +1,6 @@
 <?php
 
-// /home/lenovo/work/me/dorak/dorak-backend/modules/Core/Config/auth.php
+// root/modules/Core/Config/auth.php
 declare(strict_types=1);
 
 namespace Modules\Core\Config;

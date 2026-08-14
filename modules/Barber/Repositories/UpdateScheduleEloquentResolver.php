@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Modules\Barber\Repositories;
 
+use Illuminate\Support\Facades\DB;
 use Modules\Barber\CQRS\Command\Barber\UpdateScheduleCommand;
 use Modules\Barber\Models\BarberScheduleModel;
-use Illuminate\Support\Facades\DB;
 
 final class UpdateScheduleEloquentResolver
 {

@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Modules\ClientHistory\ValuesObjects;
 
-use Webmozart\Assert\Assert;
-
 final readonly class ServiceHistoryMetadataValueObject
 {
     private function __construct(

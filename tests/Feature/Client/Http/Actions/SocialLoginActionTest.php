@@ -3,11 +3,12 @@
 declare(strict_types=1);
 
 use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\User;
 use Modules\Client\Models\ClientModel;
 use Modules\Client\Models\SocialAccountModel;
 
 beforeEach(function () {
-    $this->user = new \Laravel\Socialite\Two\User;
+    $this->user = new User;
     $this->user->id = 'google-uid-123';
     $this->user->name = 'Test User';
     $this->user->email = 'social@example.com';
@@ -29,7 +30,7 @@ it('returns 422 with empty access_token', function () {
 });
 
 it('returns 401 with invalid access_token', function () {
-    Socialite::shouldReceive('driver')->with('google')->andThrow(new \Exception('Invalid token'));
+    Socialite::shouldReceive('driver')->with('google')->andThrow(new Exception('Invalid token'));
 
     $response = $this->postJson('/api/v1/client/social/google', [
         'access_token' => 'invalid-token-value',
@@ -71,7 +72,7 @@ it('returns existing client when social account already linked', function () {
         'provider_id' => 'google-existing-uid',
     ]);
 
-    $user = new \Laravel\Socialite\Two\User;
+    $user = new User;
     $user->id = 'google-existing-uid';
     $user->name = 'Existing User';
     $user->email = 'existing@example.com';
@@ -97,7 +98,7 @@ it('returns existing client when social account already linked', function () {
 it('links social account to existing client by email', function () {
     $client = ClientModel::factory()->create(['email' => 'linked@example.com']);
 
-    $user = new \Laravel\Socialite\Two\User;
+    $user = new User;
     $user->id = 'google-new-link-uid';
     $user->name = 'Link User';
     $user->email = 'linked@example.com';

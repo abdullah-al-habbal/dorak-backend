@@ -1,4 +1,4 @@
-{{-- /home/lenovo/work/me/dorak/dorak-backend/modules/Website/Resources/views/pages/features.blade.php --}}
+{{-- root/modules/Website/Resources/views/pages/features.blade.php --}}
 <x-website::layouts.app :page="$page" :locale="$locale">
     @php
         $sections = $page['sections'] ?? [];

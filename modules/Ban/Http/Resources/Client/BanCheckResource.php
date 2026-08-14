@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Modules\Ban\Http\Resources\Client;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use Modules\Client\Models\ClientModel;
 
 final class BanCheckResource extends JsonResource
 {

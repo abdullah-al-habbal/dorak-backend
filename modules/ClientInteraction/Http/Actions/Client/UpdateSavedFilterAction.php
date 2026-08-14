@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Modules\ClientInteraction\Http\Actions\Client;
 
 use Illuminate\Http\JsonResponse;
+use Modules\ClientInteraction\Handlers\UpdateSavedFilterHandler;
 use Modules\ClientInteraction\Http\Requests\Client\UpdateSavedFilterRequest;
 use Modules\ClientInteraction\Http\Resources\ClientSavedFilterResource;
-use Modules\ClientInteraction\Handlers\UpdateSavedFilterHandler;
 use Modules\Core\Http\Actions\BaseApiAction;
 
 final class UpdateSavedFilterAction extends BaseApiAction

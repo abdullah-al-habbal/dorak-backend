@@ -31,5 +31,3 @@ it('loads list page', function () {
 
     $this->get('/admin/brands')->assertStatus(200);
 });
-
-

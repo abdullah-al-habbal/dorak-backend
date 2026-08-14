@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Modules\ServiceCatalog\Handlers\Client;
 
-
 use Modules\ServiceCatalog\CQRS\Command\Client\DeleteCatalogItemCommand;
 use Modules\ServiceCatalog\Models\ServiceCatalogItemModel;
 

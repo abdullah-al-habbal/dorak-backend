@@ -7,6 +7,8 @@ use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
+use Laravel\Socialite\Facades\Socialite;
+use Laravel\Socialite\Two\User;
 use Modules\Admin\Models\AdminModel;
 use Modules\Ban\Models\BanModel;
 use Modules\Barber\Models\BarberModel;
@@ -676,7 +678,7 @@ describe('Ban API', function () {
 describe('Social Login API', function () {
 
     it('registers new client via social token', function () {
-        $user = new \Laravel\Socialite\Two\User;
+        $user = new User;
         $user->id = 'google-123';
         $user->name = 'Google User';
         $user->email = 'google@example.com';
@@ -688,7 +690,7 @@ describe('Social Login API', function () {
         $driver = Mockery::mock();
         $driver->shouldReceive('stateless')->andReturn($stateless);
 
-        Laravel\Socialite\Facades\Socialite::shouldReceive('driver')->with('google')->andReturn($driver);
+        Socialite::shouldReceive('driver')->with('google')->andReturn($driver);
 
         $response = $this->postJson('/api/v1/client/social/google', [
             'access_token' => 'valid-token',
@@ -708,7 +710,7 @@ describe('Social Login API', function () {
             'provider_id' => 'google-456',
         ]);
 
-        $user = new \Laravel\Socialite\Two\User;
+        $user = new User;
         $user->id = 'google-456';
         $user->name = 'Existing User';
         $user->email = 'existing@example.com';
@@ -720,7 +722,7 @@ describe('Social Login API', function () {
         $driver = Mockery::mock();
         $driver->shouldReceive('stateless')->andReturn($stateless);
 
-        Laravel\Socialite\Facades\Socialite::shouldReceive('driver')->with('google')->andReturn($driver);
+        Socialite::shouldReceive('driver')->with('google')->andReturn($driver);
 
         $response = $this->postJson('/api/v1/client/social/google', [
             'access_token' => 'token-456-google',
@@ -733,7 +735,7 @@ describe('Social Login API', function () {
     it('links new social account to existing client by email', function () {
         $client = ClientModel::factory()->create(['email' => 'same@example.com']);
 
-        $user = new \Laravel\Socialite\Two\User;
+        $user = new User;
         $user->id = 'google-789';
         $user->name = 'Same Email';
         $user->email = 'same@example.com';
@@ -745,7 +747,7 @@ describe('Social Login API', function () {
         $driver = Mockery::mock();
         $driver->shouldReceive('stateless')->andReturn($stateless);
 
-        Laravel\Socialite\Facades\Socialite::shouldReceive('driver')->with('google')->andReturn($driver);
+        Socialite::shouldReceive('driver')->with('google')->andReturn($driver);
 
         $response = $this->postJson('/api/v1/client/social/google', [
             'access_token' => 'token-789-google',

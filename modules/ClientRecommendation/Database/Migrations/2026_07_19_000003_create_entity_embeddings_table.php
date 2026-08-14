@@ -25,7 +25,7 @@ return new class extends Migration
 
         try {
             DB::statement('ALTER TABLE entity_embeddings ALTER COLUMN embedding TYPE vector(1536) USING embedding::vector');
-        } catch (\Throwable) {
+        } catch (Throwable) {
             // pgvector not available — json column suffices
         }
     }

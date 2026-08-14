@@ -5,12 +5,12 @@ declare(strict_types=1);
 namespace Modules\Booking\Eloquent\Resolvers\Client;
 
 use Modules\Booking\CQRS\Command\Client\CreateBookingCommand;
+use Modules\Booking\Eloquent\Resolvers\Shared\ChairNotAvailableException;
+use Modules\Booking\Eloquent\Resolvers\Shared\DoubleBookingException;
 use Modules\Booking\Enums\BookingStatus;
 use Modules\Booking\Models\BookingModel;
 use Modules\Chair\Enums\ChairStatus;
 use Modules\Chair\Models\ChairModel;
-use Modules\Booking\Eloquent\Resolvers\Shared\ChairNotAvailableException;
-use Modules\Booking\Eloquent\Resolvers\Shared\DoubleBookingException;
 
 final class CreateBookingEloquentResolver
 {
