@@ -1,14 +1,14 @@
 # 02 — Product Requirements Document (PRD)
 
 > **This is the master document.** All other files support and expand it.
-> Product: **Kraseena** (placeholder name — see `01_vision-and-scope.md`).
+> Product: **Dorak** (placeholder name — see `01_vision-and-scope.md`).
 > Scope of this PRD: the **MVP** plus the immediate phases, with decisions frozen and open questions flagged.
 
 ---
 
 ## 1. Product summary
 
-Kraseena is a **multi‑tenant SaaS platform** for the Syrian grooming and beauty industry. It gives **owners** an operational management engine (storefront, seats, hours, staff, jobs) and gives **clients** a **visual, location‑aware discovery and booking** experience across two universes — **Men's Grooming** and **Women's Beauty**. Independent **barbers/stylists** are first‑class and can operate freelance (including **at‑home**) or affiliate with shops.
+Dorak is a **multi‑tenant SaaS platform** for the Syrian grooming and beauty industry. It gives **owners** an operational management engine (storefront, seats, hours, staff, jobs) and gives **clients** a **visual, location‑aware discovery and booking** experience across two universes — **Men's Grooming** and **Women's Beauty**. Independent **barbers/stylists** are first‑class and can operate freelance (including **at‑home**) or affiliate with shops.
 
 The product is anchored on four invariants — **Branch‑First, Barber‑Standalone, Backend‑Driven UI, Two Universes** — defined in `01_vision-and-scope.md`.
 
@@ -42,7 +42,7 @@ Full narratives in `03_persona-journeys.md`; permission rules in `04_house-rules
 | **Brand Owner** | Owns the business (1 → many branches) | Operational control across all branches; grow without pain | Admin panel |
 | **Branch Manager** | Runs day‑to‑day at one branch | Manage that branch's seats, hours, staff, bookings | Admin panel |
 | **Barber / Stylist** | Independent professional | Own profile & services; work freelance/at‑home and/or for shops; find work | Mobile app (+ light panel) |
-| **Platform Admin** | Kraseena operator | Onboard tenants, moderate, manage currencies & flags | Admin panel |
+| **Platform Admin** | Dorak operator | Onboard tenants, moderate, manage currencies & flags | Admin panel |
 
 ---
 

@@ -6,19 +6,19 @@
 
 ## The one‑box view
 
-Kraseena is a single system to its users. People interact with it; a few external services support it (kept minimal for MVP).
+Dorak is a single system to its users. People interact with it; a few external services support it (kept minimal for MVP).
 
 ```mermaid
 flowchart TB
-    subgraph PEOPLE[People who use Kraseena]
+    subgraph PEOPLE[People who use Dorak]
         CL["Client<br/>(man or woman seeking grooming/beauty)"]
         OW["Brand Owner<br/>(owns the business)"]
         MG["Branch Manager<br/>(runs one location)"]
         BB["Barber / Stylist<br/>(independent professional)"]
-        AD["Platform Admin<br/>(Kraseena operator)"]
+        AD["Platform Admin<br/>(Dorak operator)"]
     end
 
-    SYS["KRASEENA<br/>Salon & barbershop management + discovery platform<br/>(two universes: Men's Grooming / Women's Beauty)"]
+    SYS["Dorak<br/>Salon & barbershop management + discovery platform<br/>(two universes: Men's Grooming / Women's Beauty)"]
 
     subgraph EXT[Supporting external services - minimal for MVP]
         MAP["Map / location provider<br/>(simplest workable option) [Later: localize]"]
@@ -59,7 +59,7 @@ flowchart TB
 
 ## What this level fixes
 
-- Kraseena is **one product** with **five kinds of users** and a **small** set of external dependencies.
+- Dorak is **one product** with **five kinds of users** and a **small** set of external dependencies.
 - The **two‑universe** nature is a property of the system as a whole, not a separate system.
 - External dependencies are **swappable and minimal**, protecting the MVP from heavy integration work.
 

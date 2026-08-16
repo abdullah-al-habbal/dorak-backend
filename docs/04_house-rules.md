@@ -1,6 +1,6 @@
 # 04 — House Rules (The Business Laws)
 
-> The **unshakeable laws** of how Kraseena operates, written as simple **If / Then** statements. The test: *if a child can understand the rule, it's written correctly.*
+> The **unshakeable laws** of how Dorak operates, written as simple **If / Then** statements. The test: *if a child can understand the rule, it's written correctly.*
 > These freeze product logic. They are the source of truth for behavior; entities are in `06_entity-model-abstract.md`, flows in `07_user-flows.md`, hard situations in `08_edge-cases.md`.
 
 ---

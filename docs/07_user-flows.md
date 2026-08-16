@@ -124,7 +124,7 @@ flowchart TD
 ```mermaid
 sequenceDiagram
     participant S as Shop (Owner/Manager)
-    participant K as Kraseena
+    participant K as Dorak
     participant B as Barber
     S->>K: Invite to Team
     K->>K: Create affiliation (pending)
