@@ -6,6 +6,7 @@ namespace Modules\Client\Handlers\Client;
 
 use Modules\Client\CQRS\Command\Client\RegisterCommand;
 use Modules\Client\Eloquent\Resolvers\Client\RegisterEloquentResolver;
+use Modules\Client\Jobs\SendEmailVerificationCodeJob;
 use Modules\Client\ValuesObjects\RegisterResult;
 
 final class RegisterHandler
@@ -19,6 +20,12 @@ final class RegisterHandler
         $client = $this->resolver->resolve($command);
 
         $token = $client->createToken('client-app')->plainTextToken;
+
+        try {
+            SendEmailVerificationCodeJob::dispatch($client->id)->afterCommit();
+        } catch (\Throwable $e) {
+            report($e);
+        }
 
         return RegisterResult::success(
             $token,

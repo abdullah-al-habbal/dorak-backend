@@ -26,6 +26,7 @@ final class SendEmailVerificationHandler
         $code = (string) random_int(100000, 999999);
 
         Cache::put("email_verify_{$client->id}", $code, now()->addMinutes(10));
+        Cache::forget("email_verify_attempts_{$client->id}");
 
         Mail::to($client->email)->send(new SendEmailVerificationCode($code));
 

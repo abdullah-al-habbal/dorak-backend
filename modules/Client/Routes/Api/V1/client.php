@@ -33,7 +33,7 @@ Route::prefix('client')->name('client.')->group(function (): void {
         Route::post('/avatar', UploadAvatarAction::class)->name('avatar.upload');
         Route::delete('/account', DeleteAccountAction::class)->name('account.delete');
         Route::post('/email/verify', VerifyEmailAction::class)->name('email.verify');
-        Route::post('/email/verify/send', SendEmailVerificationAction::class)->name('email.verify.send');
+        Route::post('/email/verify/send', SendEmailVerificationAction::class)->name('email.verify.send')->middleware('throttle:3,1');
         Route::patch('/password', ChangePasswordAction::class)->name('password.change');
     });
 });

@@ -11,6 +11,8 @@ use Modules\Client\ValuesObjects\VerifyEmailResult;
 
 final class VerifyEmailHandler
 {
+    private const int MAX_ATTEMPTS = 5;
+
     public function __construct(
         private readonly VerifyEmailEloquentResolver $resolver,
     ) {}
@@ -26,13 +28,33 @@ final class VerifyEmailHandler
         $cached = Cache::get("email_verify_{$client->id}");
 
         if ($cached !== $command->code) {
+            $this->registerFailedAttempt($client->id);
+
             return VerifyEmailResult::invalidCode();
         }
 
         Cache::forget("email_verify_{$client->id}");
+        Cache::forget("email_verify_attempts_{$client->id}");
 
         $this->resolver->markAsVerified($client);
 
         return VerifyEmailResult::success();
+    }
+
+    private function registerFailedAttempt(string $clientId): void
+    {
+        $key = "email_verify_attempts_{$clientId}";
+
+        $attempts = Cache::increment($key, 1);
+
+        if ($attempts === false) {
+            Cache::add($key, 1, now()->addMinutes(10));
+
+            $attempts = 1;
+        }
+
+        if ($attempts >= self::MAX_ATTEMPTS) {
+            Cache::forget("email_verify_{$clientId}");
+        }
     }
 }
