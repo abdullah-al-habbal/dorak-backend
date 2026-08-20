@@ -29,7 +29,7 @@
       "id": "uuid",
       "name": "string",
       "email": "string",
-      "preferred_universe": "men|women|neutral",
+      "preferred_universe": "men|women",
       "phone": "string|null",
       "avatar": "string|null",
       "email_verified_at": "datetime|null",
@@ -58,7 +58,7 @@
   "success": true,
   "statusCode": 200,
   "data": {
-    "preferred_universe": "men|women|neutral"
+    "preferred_universe": "men|women"
   }
 }
 ```

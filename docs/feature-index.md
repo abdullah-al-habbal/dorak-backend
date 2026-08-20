@@ -16,7 +16,7 @@
 - `RegisterAction` [POST /api/v1/client/register] — name/email/password → token + client (201)
 - `LogoutAction` [POST /api/v1/client/logout] — revoke `currentAccessToken()` (auth:client)
 - `RefreshTokenAction` [POST /api/v1/client/refresh-token] — rotate token (auth:client)
-- `UpdateUniversePreferenceAction` [PATCH /api/v1/client/preferences/universe] — persists `preferred_universe` (men/women/neutral) (auth:client)
+- `UpdateUniversePreferenceAction` [PATCH /api/v1/client/preferences/universe] — persists `preferred_universe` (men/women) (auth:client)
 - `ClientModel` — fillable: name, email, password, preferred_universe. Sanctum HasApiTokens, HasUuids, HasTranslations
 
 ### Explore
@@ -26,7 +26,7 @@
 - `BarberResource` — id, name, email, is_freelancer, status, latitude, longitude, distance?, created_at
 - `BranchModel` — fillable: name, email, password, brand_id, latitude, longitude. `BranchModel::brand()` BelongsTo BrandModel
 - `BarberModel` — fillable: name, email, password. `BarberModel::services()` morphMany
-- `BrandModel` — fillable: owner_id, name, description, logo, base_currency_id. `universe` field (default neutral)
+- `BrandModel` — fillable: owner_id, name, description, logo, base_currency_id. `universe` field
 - Migration: branches.brand_id FK + latitude/longitude, barbers.latitude/longitude, brands.universe, clients.preferred_universe
 
 ### Models
@@ -162,7 +162,6 @@
 
 ### Bugs Fixed During Contract Tests
 - ClientModel: added missing `HasApiTokens` trait (Sanctum) — login/register/refresh-token were broken at runtime
-- Universe enum: added missing `Neutral` case — migration default `'neutral'` caused enum cast failure on every client read
 - Created Sanctum `personal_access_tokens` migration in Core module — table was missing from test migrations
 
 ### Skills

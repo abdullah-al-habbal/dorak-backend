@@ -1578,7 +1578,7 @@ describe('ClientInteraction API', function () {
             $created = $this->actingAs($client, 'client')
                 ->postJson('/api/v1/client/saved-filters', [
                     'name' => 'Delete Me',
-                    'filter_config' => ['universe' => 'neutral'],
+                    'filter_config' => ['universe' => 'men'],
                 ])->json('data');
 
             $response = $this->actingAs($client, 'client')

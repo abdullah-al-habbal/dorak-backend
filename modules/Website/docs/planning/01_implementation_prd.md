@@ -231,7 +231,7 @@ Tailwind v4 `app.css` uses `@theme` directive to reference these vars:
 ```js
 document.addEventListener('alpine:init', () => {
   Alpine.store('website', {
-    universe: 'neutral',    // 'neutral' | 'men' | 'women'
+    universe: 'men',    // 'men' | 'women'
     locale: 'ar',           // 'ar' | 'en'
     floorPlan: null,        // fetched JSON
     loadingFloorPlan: false,

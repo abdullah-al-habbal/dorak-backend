@@ -11,7 +11,7 @@ The grooming and beauty industry in Syria runs on memory, paper, phone calls, an
 
 - **Operational blindness.** Owners cannot easily see their seats, staff, hours, and (when they grow) their multiple branches in one place. Expansion multiplies the chaos.
 - **The waiting‑room crisis.** Clients travel to a shop with **no visibility** into whether a chair is free, who is working, or how long they will wait. Transport is costly, so a wasted trip is a real loss.
-- **Hiring bottlenecks.** Shops struggle to find vetted stylists/barbers. Independent professionals have no neutral place to be discovered or to find work.
+- **Hiring bottlenecks.** Shops struggle to find vetted stylists/barbers. Independent professionals have no place to be discovered or to find work.
 - **No real digital storefront.** Most shops have, at best, a social‑media page that cannot show seats, services, prices, or take a structured booking.
 
 ---

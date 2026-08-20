@@ -32,7 +32,7 @@ document.addEventListener('alpine:init', () => {
     }));
 
     Alpine.store('website', {
-        universe: 'neutral',
+        universe: 'men',
         locale: document.documentElement.lang || 'ar',
 
         toggleUniverse(u) {

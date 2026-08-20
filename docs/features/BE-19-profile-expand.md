@@ -51,7 +51,7 @@
     "name": {"en": "User Name", "ar": "اسم المستخدم"},
     "email": "user@example.com",
     "phone": "+966501234567",
-    "preferred_universe": "neutral"
+    "preferred_universe": "men|women"
   },
   "errors": null
 }
@@ -208,7 +208,7 @@ clients:
   email_verified_at  timestamp nullable
   password        string
   remember_token  string
-  preferred_universe  string(10) default 'neutral'
+  preferred_universe  string(10) default 'men'
   created_at      timestamp
   updated_at      timestamp
 

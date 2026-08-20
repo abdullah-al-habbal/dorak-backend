@@ -18,7 +18,7 @@ return new class extends Migration
             $table->json('description')->nullable();
             $table->string('logo')->nullable();
             $table->foreignUuid('base_currency_id')->constrained('currencies');
-            $table->string('universe', 10)->default('neutral');
+            $table->string('universe', 10)->default('men');
             $table->timestamps();
         });
     }

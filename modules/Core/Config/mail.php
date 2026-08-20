@@ -1,4 +1,5 @@
 <?php
+
 // filePath: dorak-backend/modules/Core/Config/mail.php
 
 declare(strict_types=1);
