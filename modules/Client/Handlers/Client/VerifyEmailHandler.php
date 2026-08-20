@@ -11,7 +11,7 @@ use Modules\Client\ValuesObjects\VerifyEmailResult;
 
 final class VerifyEmailHandler
 {
-    private const int MAX_ATTEMPTS = 5;
+    private const MAX_ATTEMPTS = 5;
 
     public function __construct(
         private readonly VerifyEmailEloquentResolver $resolver,
