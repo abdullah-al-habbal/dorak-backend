@@ -14,17 +14,22 @@ concurrency:
   group: deploy-dev
   cancel-in-progress: false
 
+# All names are DORAK_-prefixed on purpose. appleboy/ssh-action sets TARGET
+# in its own process environment (the path to the drone-ssh binary it
+# downloads), so a plain `TARGET` passed through `envs:` arrives on the server
+# holding the runner's value, not ours. Generic names like ENVIRONMENT are the
+# same class of hazard. Do not un-prefix these.
 env:
-  TARGET: /home/u685718414/domains/dev-dorak-backend.io/public_html/dev
-  SHARED_DIR: /home/u685718414/domains/dev-dorak-backend.io/shared
-  ENVIRONMENT: development
-  COMPOSER_FLAGS: --optimize-autoloader --no-interaction --no-scripts
+  DORAK_TARGET: /home/u685718414/domains/dev-dorak-backend.io/public_html/dev
+  DORAK_SHARED_DIR: /home/u685718414/domains/dev-dorak-backend.io/shared
+  DORAK_ENVIRONMENT: development
+  DORAK_COMPOSER_FLAGS: --optimize-autoloader --no-interaction --no-scripts
   # Exercised over real HTTP after the swap. Returns 503 when the database is
   # unreachable, so it fails a broken deployment that `artisan about` passes.
-  HEALTH_URL: https://dev-dorak-backend.io/api/v1/health
+  DORAK_HEALTH_URL: https://dev-dorak-backend.io/api/v1/health
   # How many previous releases to keep after a successful deploy, excluding the
   # live one and $OLD_DIR. Pruning never runs on failure.
-  KEEP_RELEASES: 3
+  DORAK_KEEP_RELEASES: 3
 
 jobs:
   deploy:
@@ -39,10 +44,10 @@ jobs:
           set -euo pipefail
 
           if [ "${{ contains(github.event.head_commit.message || '', '[seed-onboarding]') }}" = "true" ]; then
-            echo "SEED_ONBOARDING=true" >> "$GITHUB_ENV"
+            echo "DORAK_SEED_ONBOARDING=true" >> "$GITHUB_ENV"
             echo "✅ Onboarding seed flag detected"
           else
-            echo "SEED_ONBOARDING=false" >> "$GITHUB_ENV"
+            echo "DORAK_SEED_ONBOARDING=false" >> "$GITHUB_ENV"
           fi
 
       - name: 🚀 Deploy via SSH
@@ -52,21 +57,45 @@ jobs:
           username: ${{ secrets.HOSTINGER_USERNAME }}
           key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
           port: ${{ secrets.HOSTINGER_SSH_PORT }}
-          envs: TARGET,SHARED_DIR,ENVIRONMENT,COMPOSER_FLAGS,SEED_ONBOARDING,HEALTH_URL,KEEP_RELEASES
+          envs: DORAK_TARGET,DORAK_SHARED_DIR,DORAK_ENVIRONMENT,DORAK_COMPOSER_FLAGS,DORAK_SEED_ONBOARDING,DORAK_HEALTH_URL,DORAK_KEEP_RELEASES
           timeout: 60s
           command_timeout: 30m
           script: |
             set -Eeuo pipefail
 
-            TARGET="${TARGET}"
-            SHARED_DIR="${SHARED_DIR}"
-            ENVIRONMENT="${ENVIRONMENT}"
-            COMPOSER_FLAGS="${COMPOSER_FLAGS}"
-            SEED_ONBOARDING="${SEED_ONBOARDING}"
-            HEALTH_URL="${HEALTH_URL}"
-            KEEP_RELEASES="${KEEP_RELEASES}"
+            TARGET="${DORAK_TARGET}"
+            SHARED_DIR="${DORAK_SHARED_DIR}"
+            ENVIRONMENT="${DORAK_ENVIRONMENT}"
+            COMPOSER_FLAGS="${DORAK_COMPOSER_FLAGS}"
+            SEED_ONBOARDING="${DORAK_SEED_ONBOARDING}"
+            HEALTH_URL="${DORAK_HEALTH_URL}"
+            KEEP_RELEASES="${DORAK_KEEP_RELEASES}"
             RELEASE_SHA="${{ github.sha }}"
             BRANCH_NAME="${{ github.ref_name }}"
+
+            # ═══════════════════════════════════════════════════════════════
+            # 🛡️ Environment sanity — fail fast on a clobbered variable
+            # ═══════════════════════════════════════════════════════════════
+            # A previous run reached the server with TARGET pointing at the
+            # runner's drone-ssh binary and tried to clone a release directory
+            # next to it. Assert the paths look like this server before any
+            # filesystem work happens.
+            EXPECTED_PREFIX="/home/u685718414/domains/dev-dorak-backend.io"
+            case "$TARGET" in
+              "$EXPECTED_PREFIX"/*) : ;;
+              *) echo "❌ TARGET does not look like this server: $TARGET"
+                 echo "   expected it to start with $EXPECTED_PREFIX"
+                 echo "   a generic env name was probably clobbered by the action."
+                 exit 1 ;;
+            esac
+            case "$SHARED_DIR" in
+              "$EXPECTED_PREFIX"/*) : ;;
+              *) echo "❌ SHARED_DIR does not look like this server: $SHARED_DIR"; exit 1 ;;
+            esac
+            for v in TARGET SHARED_DIR ENVIRONMENT COMPOSER_FLAGS HEALTH_URL KEEP_RELEASES; do
+              eval "val=\${$v:-}"
+              [ -n "$val" ] || { echo "❌ $v is empty — env forwarding failed"; exit 1; }
+            done
 
             # ═══════════════════════════════════════════════════════════════
             # 🛡️ Branch guard
