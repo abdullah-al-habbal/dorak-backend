@@ -2,16 +2,29 @@ name: 🚀 Deploy Dorak Backend
 
 on:
   push:
-    branches: [dev]
+    branches: ["dev"]
   workflow_dispatch:
-    branches: [dev]
 
 permissions:
   contents: read
 
+# Do not cancel a deployment that is already running. A cancelled remote SSH
+# process can leave a release half-prepared; the remote trap cleans failures.
 concurrency:
-  group: deploy-${{ github.ref }}
-  cancel-in-progress: true
+  group: deploy-dev
+  cancel-in-progress: false
+
+env:
+  TARGET: /home/u685718414/domains/dev-dorak-backend.io/public_html/dev
+  SHARED_DIR: /home/u685718414/domains/dev-dorak-backend.io/shared
+  ENVIRONMENT: development
+  COMPOSER_FLAGS: --optimize-autoloader --no-interaction --no-scripts
+  # Exercised over real HTTP after the swap. Returns 503 when the database is
+  # unreachable, so it fails a broken deployment that `artisan about` passes.
+  HEALTH_URL: https://dev-dorak-backend.io/api/v1/health
+  # How many previous releases to keep after a successful deploy, excluding the
+  # live one and $OLD_DIR. Pruning never runs on failure.
+  KEEP_RELEASES: 3
 
 jobs:
   deploy:
@@ -19,27 +32,17 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🔍 Determine target environment
-        id: target
+      - name: 🔍 Determine seed flag
+        id: seed
+        shell: bash
         run: |
-          if [ "${GITHUB_REF_NAME}" = "main" ]; then
-            echo "TARGET=/home/u685718414/domains/dev-dorak-backend.io/public_html/main" >> $GITHUB_ENV
-            echo "ENVIRONMENT=production" >> $GITHUB_ENV
-            echo "COMPOSER_FLAGS=--no-dev --optimize-autoloader --no-interaction --no-scripts" >> $GITHUB_ENV
-          else
-            echo "TARGET=/home/u685718414/domains/dev-dorak-backend.io/public_html/dev" >> $GITHUB_ENV
-            echo "ENVIRONMENT=development" >> $GITHUB_ENV
-            echo "COMPOSER_FLAGS=--optimize-autoloader --no-interaction --no-scripts" >> $GITHUB_ENV
-          fi
+          set -euo pipefail
 
-      - name: 🔍 Check for seed flag
-        id: check_seed
-        run: |
-          if echo "${{ github.event.head_commit.message }}" | grep -qF '[seed-onboarding]'; then
-            echo "SEED_ONBOARDING=true" >> $GITHUB_ENV
+          if [ "${{ contains(github.event.head_commit.message || '', '[seed-onboarding]') }}" = "true" ]; then
+            echo "SEED_ONBOARDING=true" >> "$GITHUB_ENV"
             echo "✅ Onboarding seed flag detected"
           else
-            echo "SEED_ONBOARDING=false" >> $GITHUB_ENV
+            echo "SEED_ONBOARDING=false" >> "$GITHUB_ENV"
           fi
 
       - name: 🚀 Deploy via SSH
@@ -49,16 +52,34 @@ jobs:
           username: ${{ secrets.HOSTINGER_USERNAME }}
           key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
           port: ${{ secrets.HOSTINGER_SSH_PORT }}
-          envs: TARGET,ENVIRONMENT,COMPOSER_FLAGS,SEED_ONBOARDING
+          envs: TARGET,SHARED_DIR,ENVIRONMENT,COMPOSER_FLAGS,SEED_ONBOARDING,HEALTH_URL,KEEP_RELEASES
           timeout: 60s
           command_timeout: 30m
           script: |
             set -Eeuo pipefail
 
-            TARGET="${{ env.TARGET }}"
-            ENVIRONMENT="${{ env.ENVIRONMENT }}"
-            COMPOSER_FLAGS="${{ env.COMPOSER_FLAGS }}"
-            SEED_ONBOARDING="${{ env.SEED_ONBOARDING }}"
+            TARGET="${TARGET}"
+            SHARED_DIR="${SHARED_DIR}"
+            ENVIRONMENT="${ENVIRONMENT}"
+            COMPOSER_FLAGS="${COMPOSER_FLAGS}"
+            SEED_ONBOARDING="${SEED_ONBOARDING}"
+            HEALTH_URL="${HEALTH_URL}"
+            KEEP_RELEASES="${KEEP_RELEASES}"
+            RELEASE_SHA="${{ github.sha }}"
+            BRANCH_NAME="${{ github.ref_name }}"
+
+            # ═══════════════════════════════════════════════════════════════
+            # 🛡️ Branch guard
+            # ═══════════════════════════════════════════════════════════════
+            # TARGET is hardcoded to the dev directory and RELEASE_SHA is the
+            # SHA of whatever ref triggered this run. Without this guard a
+            # workflow_dispatch from main would deploy main's code into the
+            # dev directory, running against dev's shared .env.
+            if [ "$BRANCH_NAME" != "dev" ]; then
+              echo "❌ This workflow only deploys the dev branch (got: $BRANCH_NAME)"
+              echo "   A main deployment needs its own TARGET and its own SHARED_DIR."
+              exit 1
+            fi
 
             # ═══════════════════════════════════════════════════════════════
             # 🔑 SSH/Git setup
@@ -67,37 +88,93 @@ jobs:
             export GIT_SSH_COMMAND="ssh -i $DEPLOY_KEY -o IdentitiesOnly=yes -o StrictHostKeyChecking=no"
             PHP_BIN="$(command -v php8.5 || command -v php || echo /usr/bin/php)"
 
-            if [ "$("$PHP_BIN" -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')" != "8.5" ]; then
-              echo "❌ PHP 8.5 is required, found: $("$PHP_BIN" -v | head -n 1)"
+            PHP_VERSION="$($PHP_BIN -r 'echo PHP_MAJOR_VERSION.".".PHP_MINOR_VERSION;')"
+            if [ "$PHP_VERSION" != "8.5" ]; then
+              echo "❌ PHP 8.5 is required, found: $($PHP_BIN -v | head -n 1)"
               exit 1
             fi
 
-            echo "🐘 Using PHP: $("$PHP_BIN" -v | head -n 1)"
-
-            echo "🎯 Deploying to: $TARGET ($ENVIRONMENT)"
+            echo "🐘 Using PHP: $($PHP_BIN -v | head -n 1)"
+            echo "🎯 Deploying branch: $BRANCH_NAME"
+            echo "🎯 Deploying commit: $RELEASE_SHA"
+            echo "🎯 Target: $TARGET ($ENVIRONMENT)"
 
             # ═══════════════════════════════════════════════════════════════
-            # 📁 Atomic swap deployment (zero downtime)
+            # 📁 Release paths + failure cleanup
             # ═══════════════════════════════════════════════════════════════
-            RELEASE_DIR="${TARGET}_release_$(date +%Y%m%d_%H%M%S)"
-            CURRENT_DIR="${TARGET}"
+            RELEASE_DIR="${TARGET}_release_$(date +%Y%m%d_%H%M%S)_${RELEASE_SHA:0:12}"
+            CURRENT_DIR="$TARGET"
+            OLD_DIR="${CURRENT_DIR}_old"
+            OLD_TMP_DIR="${CURRENT_DIR}_old_tmp_${RELEASE_SHA:0:12}"
+            # Two independent facts drive cleanup. Collapsing them into one flag
+            # loses the case where no previous release existed: the new release
+            # is already live at $CURRENT_DIR and there is nothing to restore,
+            # so it must be removed instead.
+            HAD_PREVIOUS_RELEASE=false   # was there a $CURRENT_DIR before this run
+            RELEASE_IS_LIVE=false        # has the release been moved into $CURRENT_DIR
+            MIGRATIONS_APPLIED=false
 
-            # Clone fresh (without deleting current)
-            echo "📥 Cloning fresh repository..."
-            git clone git@github-dbnkalhbalbgmail:abdullah-al-habbal/dorak-backend.git "$RELEASE_DIR"
+            cleanup_failed_release() {
+              local rc=$?
+
+              # Never hold a working directory we are about to delete.
+              cd / || true
+
+              if [ "$rc" -ne 0 ]; then
+                if [ "$HAD_PREVIOUS_RELEASE" = "true" ]; then
+                  # A previous release exists at $OLD_TMP_DIR. Restore it,
+                  # discarding the failed release if it already went live.
+                  if [ -d "$OLD_TMP_DIR" ]; then
+                    echo "↩️ Deployment failed; restoring previous release"
+                    rm -rf -- "$CURRENT_DIR" 2>/dev/null || true
+                    mv -- "$OLD_TMP_DIR" "$CURRENT_DIR" || true
+                  fi
+                elif [ "$RELEASE_IS_LIVE" = "true" ]; then
+                  # First-ever deployment: nothing to roll back to, and a failed
+                  # release must not be left serving. Remove it.
+                  echo "🧹 Deployment failed with no previous release; removing the failed release"
+                  rm -rf -- "$CURRENT_DIR" || true
+                fi
+
+                # Only reachable when the swap never happened.
+                if [ -n "${RELEASE_DIR:-}" ] && [ -d "$RELEASE_DIR" ]; then
+                  echo "🧹 Removing incomplete release: $RELEASE_DIR"
+                  rm -rf -- "$RELEASE_DIR" || true
+                fi
+
+                # The code rolls back. The schema does not. Say so loudly —
+                # a rollback that looks clean but isn't is worse than none.
+                if [ "$MIGRATIONS_APPLIED" = "true" ]; then
+                  echo ""
+                  echo "⚠️  ═══════════════════════════════════════════════════════════"
+                  echo "⚠️  DATABASE MIGRATIONS WERE ALREADY APPLIED AND ARE NOT ROLLED BACK."
+                  echo "⚠️  The restored release is running against a NEWER schema."
+                  echo "⚠️  Verify the application manually before assuming recovery."
+                  echo "⚠️  ═══════════════════════════════════════════════════════════"
+                fi
+              fi
+
+              exit "$rc"
+            }
+            trap cleanup_failed_release EXIT
+
+            # ═══════════════════════════════════════════════════════════════
+            # 📥 Clone the exact commit CI asked for
+            # ═══════════════════════════════════════════════════════════════
+            echo "📥 Cloning repository..."
+            git clone --no-checkout git@github-dbnkalhbalbgmail:abdullah-al-habbal/dorak-backend.git "$RELEASE_DIR"
             cd "$RELEASE_DIR"
+            git checkout --detach "$RELEASE_SHA"
 
-            # Checkout target branch
-            git checkout ${{ github.ref_name }}
+            ACTUAL_SHA="$(git rev-parse HEAD)"
+            if [ "$ACTUAL_SHA" != "$RELEASE_SHA" ]; then
+              echo "❌ Commit mismatch: expected $RELEASE_SHA, got $ACTUAL_SHA"
+              exit 1
+            fi
 
             # ═══════════════════════════════════════════════════════════════
-            # 🔑 Prepare .env before installing dependencies
-            # composer install uses --no-scripts, so the app must be
-            # bootable (valid .env) before package:discover runs later.
-            # key:generate is deferred until after composer install because
-            # a fresh clone has no vendor/ and artisan cannot boot yet.
+            # 🔑 Shared .env
             # ═══════════════════════════════════════════════════════════════
-            SHARED_DIR="/home/u685718414/domains/dev-dorak-backend.io/shared"
             ENV_FILE="$SHARED_DIR/.env"
 
             if [ ! -f "$ENV_FILE" ]; then
@@ -108,6 +185,26 @@ jobs:
             ln -s "$ENV_FILE" .env
 
             # ═══════════════════════════════════════════════════════════════
+            # 🗄️ Shared Laravel storage
+            # ═══════════════════════════════════════════════════════════════
+            # Storage must survive release swaps: it holds uploaded avatars and
+            # the seeded onboarding hero images, whose paths are recorded in the
+            # database. A per-release storage tree orphans them on every deploy.
+            mkdir -p \
+              "$SHARED_DIR/storage/app/public" \
+              "$SHARED_DIR/storage/logs" \
+              "$SHARED_DIR/storage/framework/cache" \
+              "$SHARED_DIR/storage/framework/sessions" \
+              "$SHARED_DIR/storage/framework/views"
+
+            rm -rf storage
+            ln -s "$SHARED_DIR/storage" storage
+
+            # Storage symlink (Hostinger disables exec, so no artisan storage:link)
+            rm -f public/storage
+            ln -s ../storage/app/public public/storage
+
+            # ═══════════════════════════════════════════════════════════════
             # 📦 Install dependencies
             # ═══════════════════════════════════════════════════════════════
             echo "📦 Installing PHP dependencies..."
@@ -115,55 +212,211 @@ jobs:
             $PHP_BIN artisan package:discover --ansi
 
             # ═══════════════════════════════════════════════════════════════
-            # 🗄️ Prepare directories & symlinks
-            # ═══════════════════════════════════════════════════════════════
-            mkdir -p storage/logs
-            mkdir -p storage/framework/{cache,sessions,views}
-            mkdir -p storage/app/public
-
-            # Storage symlink (Hostinger disables exec)
-            rm -f public/storage
-            ln -s ../storage/app/public public/storage
-
-            # ═══════════════════════════════════════════════════════════════
-            # 🗄️ Migrations + Seeding
+            # 🗄️ Migrations + optional seeding
             # ═══════════════════════════════════════════════════════════════
             MIGRATE_LOCK="/tmp/laravel_migrate_$(basename "$TARGET").lock"
             echo "🗄️ Running migrations..."
             flock -n "$MIGRATE_LOCK" $PHP_BIN artisan migrate --force
+            MIGRATIONS_APPLIED=true
 
-            if [ "${SEED_ONBOARDING}" = "true" ]; then
+            if [ "$SEED_ONBOARDING" = "true" ]; then
               echo "🌱 Running OnboardingConfigSeeder..."
               $PHP_BIN artisan db:seed --class="Modules\Onboarding\Database\Seeders\OnboardingConfigSeeder" --force
             fi
 
             # ═══════════════════════════════════════════════════════════════
-            # 🧹 Cache & optimize
+            # 🧹 Pre-swap caches only
             # ═══════════════════════════════════════════════════════════════
-            echo "🧹 Clearing and caching..."
-            $PHP_BIN artisan optimize:clear
-            $PHP_BIN artisan config:cache
+            # route:cache is path-independent and writes only to the release's
+            # own bootstrap/cache, so it can be built here and is ready the
+            # instant the swap lands.
+            #
+            # config:cache and view:cache MUST NOT run here. Both bake absolute
+            # paths — config stores storage/logs, the public disk root and the
+            # compiled-view directory; Blade names each compiled view by a hash
+            # of its absolute source path. Building them at $RELEASE_DIR and
+            # then renaming the directory leaves every path pointing at a
+            # directory that no longer exists, which is what Laravel's local
+            # driver then recreated as a ghost release directory.
+            #
+            # optimize:clear MUST NOT run here either. `storage` is already a
+            # symlink into $SHARED_DIR at this point, and optimize:clear runs
+            # cache:clear and view:clear — which would empty the shared
+            # application cache and the shared compiled-view directory while
+            # the PREVIOUS release is still live and serving requests. A fresh
+            # clone has no config/route/view cache to clear anyway, so the only
+            # effect would be collateral damage to the running app.
+            echo "🧹 Caching routes (release-local)..."
             $PHP_BIN artisan route:cache
+
+            # ═══════════════════════════════════════════════════════════════
+            # 🔄 Atomic release swap
+            # ═══════════════════════════════════════════════════════════════
+            echo "🔄 Swapping to new release..."
+
+            cd /
+            rm -rf -- "$OLD_TMP_DIR" 2>/dev/null || true
+
+            if [ -d "$CURRENT_DIR" ]; then
+              mv "$CURRENT_DIR" "$OLD_TMP_DIR"
+              HAD_PREVIOUS_RELEASE=true
+            else
+              echo "ℹ️ No existing release at $CURRENT_DIR — first deployment, no rollback target."
+            fi
+
+            mv "$RELEASE_DIR" "$CURRENT_DIR"
+            RELEASE_IS_LIVE=true
+
+            # RELEASE_DIR no longer exists after a successful move, so the
+            # trap's release-removal branch is inert from here on.
+            cd "$CURRENT_DIR"
+
+            # ═══════════════════════════════════════════════════════════════
+            # 🧹 Build path-dependent caches at the FINAL release path
+            # ═══════════════════════════════════════════════════════════════
+            echo "🧹 Caching configuration at the final path..."
+            $PHP_BIN artisan config:cache
+
+            # Assertion 1 — what Laravel actually baked.
+            # storage_path() is a plain string join with no symlink resolution
+            # (Application::storagePath -> basePath('storage')), so the correct
+            # expectation is the release path, not the shared path. Read it back
+            # from the cache file rather than through tinker: PsySH writes banner
+            # and deprecation noise to stdout, which makes `tail -n 1` unreliable.
+            PUBLIC_ROOT="$($PHP_BIN -r '$c = require "bootstrap/cache/config.php"; echo $c["filesystems"]["disks"]["public"]["root"];')"
+            EXPECTED_PUBLIC_ROOT="$CURRENT_DIR/storage/app/public"
+            if [ "$PUBLIC_ROOT" != "$EXPECTED_PUBLIC_ROOT" ]; then
+              echo "❌ Config cache baked the wrong public disk root."
+              echo "   expected: $EXPECTED_PUBLIC_ROOT"
+              echo "   got:      $PUBLIC_ROOT"
+              echo "   A path containing '_release_' means config:cache ran before the swap."
+              exit 1
+            fi
+
+            # Assertion 2 — no release-specific path survived anywhere in the
+            # cached config. Assertion 1 only checks one key; this catches any
+            # other baked path (logs, compiled views, session files) and is the
+            # direct regression test for the original ghost-directory bug.
+            if grep -q '_release_' bootstrap/cache/config.php; then
+              echo "❌ Cached config still contains a _release_ path:"
+              grep -o "[^\"']*_release_[^\"']*" bootstrap/cache/config.php | sort -u | head -5
+              exit 1
+            fi
+
+            # Assertion 3 — that the path resolves into shared storage.
+            # Assertions 1 and 2 cannot see this: they only prove the strings.
+            RESOLVED_STORAGE="$(readlink -f "$CURRENT_DIR/storage")"
+            EXPECTED_STORAGE="$(readlink -f "$SHARED_DIR/storage")"
+            if [ "$RESOLVED_STORAGE" != "$EXPECTED_STORAGE" ]; then
+              echo "❌ storage does not resolve to shared storage."
+              echo "   expected: $EXPECTED_STORAGE"
+              echo "   got:      $RESOLVED_STORAGE"
+              exit 1
+            fi
+
+            # view:cache only WRITES compiled views; it never deletes. That is
+            # deliberate here: storage/framework/views is shared, so a view:clear
+            # would destroy compiled views that the rollback target ($OLD_DIR)
+            # still relies on, and would force a recompile storm on the live app
+            # for no benefit — view:cache already overwrites everything it needs.
+            # The cost is that each release adds its own set of compiled views
+            # (Blade keys them by absolute source path). That is a slow-growing
+            # pile of small files, tracked as a separate pruning task rather than
+            # paid for by destroying shared runtime state.
+            echo "🧹 Caching views at the final path..."
             $PHP_BIN artisan view:cache
 
             # ═══════════════════════════════════════════════════════════════
-            # 🔄 Atomic swap (zero downtime)
+            # ✅ Verify application boot after the swap
             # ═══════════════════════════════════════════════════════════════
-            echo "🔄 Swapping to new release..."
-            # Remove old backup if exists
-            rm -rf "${CURRENT_DIR}_old" 2>/dev/null || true
-            # Move current to old backup
-            if [ -d "$CURRENT_DIR" ]; then
-              mv "$CURRENT_DIR" "${CURRENT_DIR}_old"
-            fi
-            # Move new release to current
-            mv "$RELEASE_DIR" "$CURRENT_DIR"
-
-            # ═══════════════════════════════════════════════════════════════
-            # ✅ Verify
-            # ═══════════════════════════════════════════════════════════════
-            cd "$CURRENT_DIR"
+            # artisan about proves the CLI can boot the framework. It does not
+            # prove the site serves traffic — a broken web stack still exits 0.
             $PHP_BIN artisan about
 
+            # ═══════════════════════════════════════════════════════════════
+            # 🩺 HTTP health check — the real gate
+            # ═══════════════════════════════════════════════════════════════
+            # GET /api/v1/health (HealthCheckAction) exercises the full HTTP
+            # path and returns 503 when the database is unreachable, 200 with
+            # status ok|degraded otherwise. It also round-trips the cache, so a
+            # broken shared-storage symlink surfaces here rather than in prod.
+            echo "🩺 HTTP health check: $HEALTH_URL"
+            HEALTH_STATUS=""
+            HEALTH_BODY=""
+            for attempt in 1 2 3 4 5; do
+              HEALTH_BODY="$(curl -sS -m 20 -o /tmp/health_body.$$ -w '%{http_code}' "$HEALTH_URL" 2>/dev/null || echo "000")"
+              HEALTH_STATUS="$HEALTH_BODY"
+              if [ "$HEALTH_STATUS" -ge 200 ] 2>/dev/null && [ "$HEALTH_STATUS" -lt 300 ]; then
+                break
+              fi
+              echo "   attempt $attempt: HTTP $HEALTH_STATUS — retrying in 3s"
+              sleep 3
+            done
+
+            HEALTH_JSON="$(cat /tmp/health_body.$$ 2>/dev/null || true)"
+            rm -f /tmp/health_body.$$
+
+            if ! { [ "$HEALTH_STATUS" -ge 200 ] 2>/dev/null && [ "$HEALTH_STATUS" -lt 300 ]; }; then
+              echo "❌ Health check failed: HTTP $HEALTH_STATUS"
+              echo "   body: ${HEALTH_JSON:0:800}"
+              exit 1
+            fi
+
+            # A 2xx is necessary but not sufficient: the endpoint returns 200
+            # for 'degraded'. Fail only on 'down'; report 'degraded' loudly.
+            case "$HEALTH_JSON" in
+              *'"status":"down"'*)
+                echo "❌ Health check reports status=down"
+                echo "   body: ${HEALTH_JSON:0:800}"
+                exit 1 ;;
+              *'"status":"degraded"'*)
+                echo "⚠️  Health check reports status=degraded — deployment continues, investigate:"
+                echo "   body: ${HEALTH_JSON:0:800}" ;;
+              *'"status":"ok"'*)
+                echo "✅ Health check OK (HTTP $HEALTH_STATUS)" ;;
+              *)
+                echo "❌ Health check returned HTTP $HEALTH_STATUS but no recognisable status field."
+                echo "   body: ${HEALTH_JSON:0:800}"
+                exit 1 ;;
+            esac
+
+            # Only now promote the previous release to the stable rollback name.
+            # Until this point the trap can still put it back.
+            rm -rf -- "$OLD_DIR" 2>/dev/null || true
+            if [ -d "$OLD_TMP_DIR" ]; then
+              mv "$OLD_TMP_DIR" "$OLD_DIR"
+            fi
+
+            # Deployment is now committed: the release is verified and live, and
+            # the previous one sits at its stable rollback name. Disarm both
+            # cleanup paths so a later non-zero exit cannot delete a good release.
+            HAD_PREVIOUS_RELEASE=false
+            RELEASE_IS_LIVE=false
+
+            # ═══════════════════════════════════════════════════════════════
+            # 🧹 Release retention — only after a proven-good deployment
+            # ═══════════════════════════════════════════════════════════════
+            # Orphan *_release_* directories should no longer be created (the
+            # trap removes failures, and config:cache no longer bakes dead
+            # paths). This is a bounded backstop, not the fix. It runs only
+            # here, after health has passed, so a failed deploy never destroys
+            # the evidence needed to debug it.
+            LIVE_PATH="$(readlink -f "$CURRENT_DIR")"
+            PRUNED=0
+            for d in $(ls -1dt "${TARGET}"_release_* 2>/dev/null | tail -n +$((KEEP_RELEASES + 1))); do
+              # Three guards: never the live release, never $OLD_DIR, and never
+              # anything `current` resolves to.
+              [ "$(readlink -f "$d")" = "$LIVE_PATH" ] && continue
+              [ "$(readlink -f "$d")" = "$(readlink -f "$OLD_DIR" 2>/dev/null)" ] && continue
+              [ "$d" = "$CURRENT_DIR" ] && continue
+              echo "🧹 Pruning old release: $d"
+              rm -rf -- "$d" && PRUNED=$((PRUNED + 1))
+            done
+            echo "🧹 Pruned $PRUNED old release directory(ies); keeping newest $KEEP_RELEASES."
+
             echo "🎉 Deployment to $ENVIRONMENT completed successfully!"
-            echo "💡 Old release: ${CURRENT_DIR}_old (remove manually after verification)"
+            echo "💡 Commit:           $RELEASE_SHA"
+            echo "💡 Current release:  $CURRENT_DIR"
+            echo "💡 Previous release: $OLD_DIR"
+            echo "💡 Shared storage:   $EXPECTED_STORAGE"
+            echo "💡 Health:           $HEALTH_URL -> HTTP $HEALTH_STATUS"
