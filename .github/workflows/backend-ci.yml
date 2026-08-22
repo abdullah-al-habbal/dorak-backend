@@ -55,6 +55,30 @@ jobs:
           extensions: dom, mbstring, tokenizer, pdo_mysql
           coverage: none
 
+      # Deployments migrate BEFORE the atomic swap, so the previous release
+      # serves traffic against the new schema. Only expand (backward-compatible)
+      # migrations are safe there. This also rejects edits to already-shipped
+      # migrations, which `migrate` never re-runs — the divergence that commit
+      # 8a07a89 introduced on the preferred_universe default.
+      # Policy: docs/16_deployment-operations.md
+      - name: Migration expand/contract guard
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [ -n "${GITHUB_BASE_REF:-}" ]; then
+            # pull_request: diff against the target branch
+            git fetch --no-tags --depth=0 origin "$GITHUB_BASE_REF" 2>/dev/null || true
+            BASE="origin/$GITHUB_BASE_REF"
+          else
+            # push: diff against the previous head; all-zeros on a new branch,
+            # in which case the script falls back to scanning everything.
+            BASE="${{ github.event.before }}"
+          fi
+
+          echo "base ref: $BASE"
+          php scripts/check_migrations.php --base="$BASE"
+
       - name: Validate Composer configuration
         run: composer validate --strict
 
