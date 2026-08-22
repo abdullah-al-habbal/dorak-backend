@@ -1,25 +1,124 @@
-name: Backend CI/CD
+name: Backend CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["dev", "main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["dev", "main"]
+
+permissions:
+  contents: read
 
 jobs:
   quality-gate:
     runs-on: ubuntu-latest
 
+    # The suite has only ever run on MySQL and the 57 migrations were written
+    # for it, so CI uses the same engine as local (.env.testing -> mysql) and
+    # production. sqlite in-memory would be faster but is unproven here.
+    services:
+      mysql:
+        image: mysql:8
+        env:
+          MYSQL_DATABASE: dorak_test
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    env:
+      # phpunit.xml sets APP_KEY, cache, session, mail and queue but no DB_*,
+      # and both .env.testing and database/database.sqlite are gitignored — so
+      # without these the suite falls through to the framework default (sqlite)
+      # pointing at a file that does not exist in CI.
+      DB_CONNECTION: mysql
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_DATABASE: dorak_test
+      DB_USERNAME: root
+      DB_PASSWORD: root
+
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.4'
-          extensions: dom, mbstring, tokenizer
+          php-version: '8.5'
+          extensions: dom, mbstring, tokenizer, pdo_mysql
+          coverage: none
 
+      - name: Validate Composer configuration
+        run: composer validate --strict
+
+      # --no-scripts is deliberate and must stay. Laravel's post-autoload-dump
+      # script runs `artisan package:discover`, which boots the app and loads
+      # modules/Core/Config/filesystems.php. That file evaluates
+      # rtrim(env('APP_URL'), '/') with no default, so on a clean checkout with
+      # no .env it dies with:
+      #   TypeError: rtrim(): Argument #1 ($string) must be of type string, null given
+      # Verified against a clean `git archive` of HEAD: composer install WITH
+      # scripts exits 1. Dependency installation must not depend on app config.
       - name: Install Dependencies
-        run: composer install -q --no-ansi --no-interaction --no-scripts --no-progress --prefer-dist
+        run: composer install --no-ansi --no-interaction --no-progress --prefer-dist --no-scripts
+
+      # Package discovery is not skipped, only deferred until an environment
+      # exists. Running it explicitly here still validates that every service
+      # provider registers and the app boots — the check the composer script
+      # would have given us — but from a known-good environment.
+      - name: Prepare environment
+        run: |
+          set -euo pipefail
+          cp .env.example .env
+          php artisan key:generate
+          php artisan package:discover --ansi
+
+      - name: Validate PHP syntax
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # This is a modular layout: app/ and routes/ do not exist. Naming a
+          # missing directory makes find exit non-zero, which under pipefail
+          # fails the whole step, so iterate only over what is present.
+          for dir in bootstrap config database modules tests; do
+            [ -d "$dir" ] || continue
+            echo "→ $dir"
+            find "$dir" -type f -name '*.php' -print0 \
+              | xargs -0 -r -n1 php -l > /dev/null
+          done
+
+      - name: Wait for MySQL
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          # Probe with PDO rather than mysqladmin: pdo_mysql is installed by
+          # the Setup PHP step above, whereas a MySQL client on the runner
+          # image is not something this workflow controls. A successful PDO
+          # connect also proves auth works, which a TCP check does not.
+          for i in $(seq 1 30); do
+            if php -r '
+                try {
+                  new PDO("mysql:host=127.0.0.1;port=3306;dbname=dorak_test", "root", "root");
+                  exit(0);
+                } catch (Throwable $e) {
+                  exit(1);
+                }' 2>/dev/null; then
+              echo "✅ MySQL ready after $((i * 2))s"
+              exit 0
+            fi
+            sleep 2
+          done
+          echo "❌ MySQL did not become ready within 60s"
+          exit 1
+
+      - name: Run tests
+        run: php artisan test --without-tty
