@@ -30,6 +30,14 @@ env:
   # How many previous releases to keep after a successful deploy, excluding the
   # live one and $OLD_DIR. Pruning never runs on failure.
   DORAK_KEEP_RELEASES: 3
+  # Hoisted out of the script block on purpose. GitHub treats a `script:` value
+  # containing `${{ }}` as a single expression and caps it at 21000 characters,
+  # counting the raw indented text. Exceeding it fails the whole workflow file
+  # with "Exceeded max expression length" and produces a run with no jobs, which
+  # no local YAML parser or actionlint will catch. With zero expressions in the
+  # block it is a plain string and the cap does not apply.
+  DORAK_SHA: ${{ github.sha }}
+  DORAK_REF: ${{ github.ref_name }}
 
 jobs:
   deploy:
@@ -57,7 +65,7 @@ jobs:
           username: ${{ secrets.HOSTINGER_USERNAME }}
           key: ${{ secrets.HOSTINGER_SSH_PRIVATE_KEY }}
           port: ${{ secrets.HOSTINGER_SSH_PORT }}
-          envs: DORAK_TARGET,DORAK_SHARED_DIR,DORAK_ENVIRONMENT,DORAK_COMPOSER_FLAGS,DORAK_SEED_ONBOARDING,DORAK_HEALTH_URL,DORAK_KEEP_RELEASES
+          envs: DORAK_TARGET,DORAK_SHARED_DIR,DORAK_ENVIRONMENT,DORAK_COMPOSER_FLAGS,DORAK_SEED_ONBOARDING,DORAK_HEALTH_URL,DORAK_KEEP_RELEASES,DORAK_SHA,DORAK_REF
           timeout: 60s
           command_timeout: 30m
           script: |
@@ -70,8 +78,8 @@ jobs:
             SEED_ONBOARDING="${DORAK_SEED_ONBOARDING}"
             HEALTH_URL="${DORAK_HEALTH_URL}"
             KEEP_RELEASES="${DORAK_KEEP_RELEASES}"
-            RELEASE_SHA="${{ github.sha }}"
-            BRANCH_NAME="${{ github.ref_name }}"
+            RELEASE_SHA="${DORAK_SHA}"
+            BRANCH_NAME="${DORAK_REF}"
 
             # ═══════════════════════════════════════════════════════════════
             # 🛡️ Environment sanity — fail fast on a clobbered variable
@@ -92,7 +100,7 @@ jobs:
               "$EXPECTED_PREFIX"/*) : ;;
               *) echo "❌ SHARED_DIR does not look like this server: $SHARED_DIR"; exit 1 ;;
             esac
-            for v in TARGET SHARED_DIR ENVIRONMENT COMPOSER_FLAGS HEALTH_URL KEEP_RELEASES; do
+            for v in TARGET SHARED_DIR ENVIRONMENT COMPOSER_FLAGS HEALTH_URL KEEP_RELEASES RELEASE_SHA BRANCH_NAME; do
               eval "val=\${$v:-}"
               [ -n "$val" ] || { echo "❌ $v is empty — env forwarding failed"; exit 1; }
             done
