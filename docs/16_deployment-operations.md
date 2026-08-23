@@ -353,36 +353,94 @@ expand-only discipline does, and a waiver suspends it for that release.
 
 ---
 
-## TODO 49 — Compiled-view retention
+## Compiled-view retention — investigated, no cleanup needed
 
-`storage/framework/views` lives in **shared** storage, and Blade names each
-compiled view by a hash of its **absolute** source path. Every release therefore
-adds its own complete set of compiled views. They accumulate.
+**Conclusion: `shared/storage/framework/views` cannot grow indefinitely. No
+pruning mechanism exists, and none should be added.**
 
-The deployment deliberately **does not** clear them:
+An earlier draft of this document claimed the opposite — that `view:cache` only
+writes, that each release adds its own set keyed by absolute source path, and
+that stale files accumulate. That was wrong on every count. Corrected below with
+the evidence.
 
-- `view:clear` before the swap would empty the shared directory while the
-  **previous** release is still serving — a recompile storm on live traffic.
-- `view:clear` after the swap would destroy compiled views the rollback target
-  (`${TARGET}_old`) still relies on.
-- `view:cache` only ever writes, and overwrites what it needs, so clearing buys
-  nothing.
+### How Laravel actually manages compiled views
 
-Same reasoning removed `optimize:clear` from the pre-swap phase entirely: it
-runs `cache:clear` and `view:clear`, and by that point `storage` is already
-symlinked into `$SHARED_DIR`.
+**Filenames are deterministic.** `Compiler::getCompiledPath()`:
 
-Pruning is a **separate controlled mechanism**, not a deployment step. Required
-properties when built:
+```php
+return $this->cachePath.'/'.hash('xxh128', 'v2'.Str::after($path, $this->basePath)).'.'.$this->compiledExtension;
+```
 
-1. Never touch views belonging to the live release or to `${TARGET}_old`.
-2. Run on a schedule, not in the deployment path.
-3. Age-based, with a floor (never empty the directory).
+`$basePath` comes from `ViewServiceProvider`:
 
-Scale check: the growth is a few dozen small PHP files per release. Low urgency;
-correctness of the live app takes priority over disk tidiness.
+```php
+$app['config']->get('view.relative_hash', false) ? $app->basePath() : ''
+```
 
-Release **directories** are handled separately and are bounded — `deploy.yml`
-prunes to `KEEP_RELEASES` (3) after a successful health check, with three
-guards: never the live release, never `${TARGET}_old`, never whatever `current`
-resolves to.
+`view.relative_hash` is unset in this project (verified at runtime: `NULL`), so
+`basePath` is `''` and the hash covers the **absolute** source path. That would
+matter if releases were served from their own directories — but the atomic swap
+moves every release into the same fixed path, `public_html/dev`, so the absolute
+paths are identical on every deploy and the hashes are stable.
+
+**`view:cache` deletes before it writes.** `ViewCacheCommand::handle()` opens
+with:
+
+```php
+$this->callSilent('view:clear');
+```
+
+and `ViewClearCommand` globs `config('view.compiled').'/*'` and deletes it all.
+So the directory is wiped and rebuilt on every deploy.
+
+### Evidence
+
+Local reproduction:
+
+```text
+view:clear                     ->   0 files
+view:cache (run 1)             -> 317 files
+plant a stale compiled file    -> 318 files
+view:cache (run 2)             -> 317 files
+identical filename set across runs : YES
+planted stale file survived        : NO — removed
+net growth over 2 runs + 1 stale   : 0
+```
+
+317 compiled files come from 13 first-party Blade templates plus vendor package
+views (Filament and friends). That number is a property of the dependency tree,
+not of deployment count.
+
+### Answers to the questions asked
+
+| Question | Answer |
+|---|---|
+| Filenames deterministic for a given source path? | Yes — `xxh128` of the path |
+| Does `view:cache` remove old files? | **Yes** — it calls `view:clear` first |
+| Referenced by path from runtime state? | No. Resolved by hashing the source path at render time |
+| Does Laravel ever need an older release's compiled files? | No. A miss triggers lazy recompilation |
+| Are stale files harmless? | Yes, and moot — `view:cache` removes them |
+| Safe for concurrent requests? | Yes. A request that misses compiles the view on the fly |
+| Is age-based pruning reliable? | Irrelevant, and would be unsafe — all files share one mtime |
+| Is release-ownership pruning possible? | No, and unnecessary — paths are release-independent |
+| Should cleanup run after a successful deploy? | No cleanup should run at all |
+
+### Consequence for the deployment
+
+`deploy.yml` runs `view:cache` **after** the swap and does not call `view:clear`
+separately — but `view:cache` clears internally regardless, so the shared
+directory is briefly emptied and immediately rebuilt.
+
+That is safe **because it happens after the swap**, when the new release is
+already live: the gap between clear and recompile is covered by Blade's lazy
+compile on a cache miss. It would **not** be safe before the swap, when the
+previous release is still serving out of the same shared directory — which is
+why `optimize:clear` (which also runs `view:clear`) stays out of the pre-swap
+phase.
+
+The rollback target `${TARGET}_old` does not need its compiled views preserved;
+after a rollback they are recompiled lazily on first request.
+
+**Nothing to implement.** Adding a pruning mechanism here would be automation
+for a problem that does not exist, and every candidate design (age-based,
+release-ownership) is either unreliable or actively unsafe.

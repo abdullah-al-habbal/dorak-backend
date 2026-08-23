@@ -388,15 +388,17 @@ jobs:
               exit 1
             fi
 
-            # view:cache only WRITES compiled views; it never deletes. That is
-            # deliberate here: storage/framework/views is shared, so a view:clear
-            # would destroy compiled views that the rollback target ($OLD_DIR)
-            # still relies on, and would force a recompile storm on the live app
-            # for no benefit — view:cache already overwrites everything it needs.
-            # The cost is that each release adds its own set of compiled views
-            # (Blade keys them by absolute source path). That is a slow-growing
-            # pile of small files, tracked as a separate pruning task rather than
-            # paid for by destroying shared runtime state.
+            # No separate view:clear here, and none is needed: ViewCacheCommand
+            # calls view:clear itself before recompiling (framework
+            # ViewCacheCommand::handle). The shared compiled-view directory is
+            # therefore wiped and rebuilt on every deploy and cannot accumulate.
+            # Proven locally: two consecutive view:cache runs produce an
+            # identical 317-file set, and a planted stale file is removed.
+            #
+            # Safe post-swap because the new release is already live: the gap
+            # between clear and recompile is covered by Blade's lazy compile on
+            # a cache miss. Do not move this before the swap — at that point the
+            # PREVIOUS release is still serving out of the same shared directory.
             echo "🧹 Caching views at the final path..."
             $PHP_BIN artisan view:cache
 
