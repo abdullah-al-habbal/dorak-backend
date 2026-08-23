@@ -176,9 +176,20 @@ jobs:
                 if [ "$MIGRATIONS_APPLIED" = "true" ]; then
                   echo ""
                   echo "⚠️  ═══════════════════════════════════════════════════════════"
-                  echo "⚠️  DATABASE MIGRATIONS WERE ALREADY APPLIED AND ARE NOT ROLLED BACK."
+                  echo "⚠️  DATABASE MIGRATIONS RAN AND ARE NOT ROLLED BACK."
                   echo "⚠️  The restored release is running against a NEWER schema."
-                  echo "⚠️  Verify the application manually before assuming recovery."
+                  echo "⚠️  A failed migrate run may have applied SOME migrations:"
+                  echo "⚠️  MySQL has no transactional DDL, so each one commits on its own."
+                  echo "⚠️"
+                  echo "⚠️  DO NOT run 'artisan migrate:rollback' to recover."
+                  echo "⚠️  The restored release does not contain the new migration files,"
+                  echo "⚠️  so Laravel prints 'Migration not found', SKIPS them, and rolls"
+                  echo "⚠️  back the rest of the batch instead — exiting 0. On a fresh-ish"
+                  echo "⚠️  database that is the entire schema."
+                  echo "⚠️"
+                  echo "⚠️  Recover by: inspecting 'artisan migrate:status' against the"
+                  echo "⚠️  restored code, then rolling FORWARD with a corrective migration,"
+                  echo "⚠️  or restoring from backup. See docs/16_deployment-operations.md."
                   echo "⚠️  ═══════════════════════════════════════════════════════════"
                 fi
               fi
@@ -245,8 +256,34 @@ jobs:
             # ═══════════════════════════════════════════════════════════════
             MIGRATE_LOCK="/tmp/laravel_migrate_$(basename "$TARGET").lock"
             echo "🗄️ Running migrations..."
-            flock -n "$MIGRATE_LOCK" $PHP_BIN artisan migrate --force
+
+            # MIGRATIONS_APPLIED must be set as soon as the migrate command is
+            # allowed to start, NOT after it succeeds. MySQL/MariaDB have no
+            # transactional DDL, so Laravel commits each migration individually:
+            # a run that fails on migration 7 leaves 1-6 applied AND recorded in
+            # the `migrations` table. Verified locally — a valid migration was
+            # applied and recorded while the command exited 1 because a later
+            # one failed. Setting the flag afterwards means the rollback warning
+            # never fires for exactly the case that needs it most.
+            #
+            # `-E 99` distinguishes "another deployment holds the lock" (nothing
+            # ran, no warning warranted) from "migrate ran and failed".
+            set +e
+            flock -E 99 -n "$MIGRATE_LOCK" $PHP_BIN artisan migrate --force
+            MIGRATE_RC=$?
+            set -e
+
+            if [ "$MIGRATE_RC" -eq 99 ]; then
+              echo "❌ Another deployment holds the migration lock; no migrations were run."
+              exit 1
+            fi
+
             MIGRATIONS_APPLIED=true
+
+            if [ "$MIGRATE_RC" -ne 0 ]; then
+              echo "❌ Migrations failed (exit $MIGRATE_RC). Some may already be applied."
+              exit "$MIGRATE_RC"
+            fi
 
             if [ "$SEED_ONBOARDING" = "true" ]; then
               echo "🌱 Running OnboardingConfigSeeder..."

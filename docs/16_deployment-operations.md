@@ -226,36 +226,130 @@ responsibility — the sequence above is the checklist.
 application rollback  ≠  database rollback
 ```
 
-The deployment restores the previous release directory. It does **not** revert
-migrations, and it never will automatically.
+### What "application rollback is safe" means
 
-The trap warns whenever migrations already ran:
+Precisely this: **the previous release can serve traffic correctly against the
+newer schema, indefinitely, with no manual intervention.**
+
+Note the pre-swap window and the post-rollback state are the *same* condition —
+old code against new schema. That is why expand/contract is not merely a
+migration convention here: it is what makes rollback safe at all. If a release
+is expand-only, rollback is safe. If it is not, rollback restores code that will
+break, and the deployment's "recovery" is an illusion.
+
+Rollback is **not** safe, whatever the trap prints, when the release contains a
+contract operation, an enum-case removal, or a data transformation.
+
+### Which migrations are allowed in the current pre-swap model
+
+Only **expand** operations, unwaived:
+
+| Operation | Allowed pre-swap | Why |
+|---|---|---|
+| New table | ✅ | Old code does not know it exists |
+| Nullable column on existing table | ✅ | Old `INSERT`s omit it; NULL is valid |
+| Column with a `default()` | ✅ | Old `INSERT`s omit it; the default applies |
+| New index | ✅ | Invisible to application code |
+| Nullable FK | ✅ | Old `INSERT`s omit it |
+| `softDeletes()` on an existing table | ⚠️ | Structurally safe, semantically not — see below |
+| NOT NULL without default | ❌ | Old `INSERT`s fail immediately |
+| New UNIQUE on an existing table | ❌ | Old code may write a now-illegal duplicate |
+| Drop / rename / narrow / `->change()` | ❌ | Old code queries what is gone |
+| Enum-case removal, cast narrowing | ❌ | Existing rows throw on cast |
+| Data transformation | ❌ | Not reversible by `down()` |
+
+Current repository state: 52 `CREATE`-only, 4 additive `ALTER`, **0 UNIQUE added
+to an existing table**, **0 destructive operations**. Every migration is in the
+allowed set, so code rollback is genuinely safe today.
+
+**The `softDeletes()` caveat.** `0001_01_01_200002` added `deleted_at` to
+`clients`. Structurally that is a nullable column and old code keeps working.
+But a release *before* `SoftDeletes` was on the model has no global scope, so it
+would return soft-deleted clients as if they were live. Structural
+compatibility is not behavioural compatibility. Rolling back across a migration
+like this needs a moment's thought even though the guard permits it.
+
+### What happens when migrations have run and the deployment then fails
+
+1. The trap restores the previous release directory.
+2. **The schema stays migrated.** Nothing reverts it.
+3. The trap prints the warning below.
+
+Two findings make this sharper than it looks, both verified rather than assumed:
+
+**Migrations may be partially applied.** MySQL/MariaDB have no transactional
+DDL, so Laravel commits each migration on its own. A run that fails on
+migration 7 leaves 1–6 applied *and recorded*. Verified locally: a valid
+migration was applied and written to the `migrations` table while the command
+exited 1 because a later one failed. `deploy.yml` therefore sets
+`MIGRATIONS_APPLIED` **before** invoking `migrate`, not after — setting it
+afterwards meant the warning never fired for the case that needs it most.
+
+**`artisan migrate:rollback` is actively dangerous here — do not use it.**
+The restored release does not contain the new migration's file. Laravel's
+`Migrator::rollbackMigrations` (framework `Migrator.php:333`) prints
+`Migration not found` and `continue`s — it *skips* that migration, leaves the
+schema changed and the `migrations` row in place, and **rolls back the rest of
+the batch anyway, exiting 0**.
+
+Verified end to end on a throwaway database:
 
 ```text
-⚠️  DATABASE MIGRATIONS WERE ALREADY APPLIED AND ARE NOT ROLLED BACK.
-⚠️  The restored release is running against a NEWER schema.
-⚠️  Verify the application manually before assuming recovery.
+migrate:rollback  →  exit 0
+  probe migration : table STILL exists, migrations row STILL present
+  everything else in batch 1 : rolled back
 ```
 
-Per migration class:
+On a database whose baseline is a single batch, that is the entire schema
+destroyed, reported as success. An operator reaching for `migrate:rollback`
+after a failed deploy would make the incident far worse.
 
-| Kind | On rollback |
-|---|---|
-| Expand (additive, nullable/defaulted) | **Safe.** Restored code ignores the new columns. This is every migration in the repo today. |
-| Destructive (drop / rename / narrow) | **Unsafe.** Restored code queries columns that no longer exist. Restore from backup. |
-| Enum value removal | **Unsafe.** Rows holding a retired value throw on cast — the `neutral` failure mode. |
-| Data transformation | **Unsafe unless a real `down()` exists.** Most `down()` here only drop tables, which does not undo data changes. |
+### Recovery procedure
 
-Because the policy keeps every migration in the expand class, code rollback is
-safe in practice **today**. That guarantee holds only for as long as the guard
-does. A waived contract migration removes it for that release, which is the
-point of making the waiver explicit.
+```text
+1. Read the trap output: did migrations run?
+2. artisan migrate:status  — run from the RESTORED release.
+     Rows marked "Ran?  Yes" with no corresponding file are the migrations
+     the restored code does not know about.
+3. Decide, do NOT run migrate:rollback:
+     • expand-only (the normal case) — no action needed. The restored
+       release runs correctly against the newer schema. Fix forward.
+     • contract or data change — restore from backup, or hand-write a
+       corrective forward migration in the next release.
+4. Never delete rows from the `migrations` table to "undo" a migration.
+```
 
-`down()` coverage: all 56 migrations have a non-empty `down()`, and all of them
-drop. That is correct for `CREATE` migrations and lossy for the four ALTERs —
-rolling those back discards the added columns' data. `down()` is a development
-convenience here, not a production recovery mechanism. Production recovery is
-restore-from-backup.
+### `down()` is a development convenience, not a recovery mechanism
+
+All 56 migrations have a non-empty `down()`, and all of them drop. That is
+correct for `CREATE` migrations and lossy for the four ALTERs — rolling those
+back discards the added columns' data.
+
+None of that matters in production, because the rollback path cannot reach
+those `down()` methods: the restored release does not contain the files. This
+is also why the guard's test suite deliberately does **not** test `down()`
+reversibility — a green "rollback works" test would assert a capability that
+does not exist in the deployment.
+
+Production recovery is restore-from-backup, or fix-forward.
+
+### Enforcement, and its honest limits
+
+`scripts/check_migrations.php` (CI-blocking) rejects contract operations and
+edits to shipped migrations. `tests/Unit/Deployment/MigrationGuardTest.php`
+covers the guard itself — 9 cases — because CI-blocking logic that silently
+stops working takes the policy down with it.
+
+What is **not** enforced, and must not be assumed safe:
+
+- **Enum-case removal and cast narrowing.** They live in `Enums/` and `casts()`,
+  not migrations. This is the class that caused the actual incident.
+- **Behavioural compatibility.** The `softDeletes()` case above passes every
+  automated check and still changes what old code returns.
+- **Data transformations** written outside a migration.
+
+The guard raises the floor. It does not make rollback safe by itself — the
+expand-only discipline does, and a waiver suspends it for that release.
 
 ---
 
